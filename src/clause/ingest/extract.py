@@ -1,3 +1,4 @@
+import hashlib
 import re
 import unicodedata
 from datetime import date, datetime
@@ -103,10 +104,14 @@ def extract_document(entry: ManifestEntry, raw: bytes, *, fetched_at: datetime) 
         doc_type=_classify(entry.title, window),
         published_date=published,
         effective_date=None,
-        # Document.sha256 keeps its own name and meaning (raw fetched bytes, unchanged
-        # by this rename) — only ManifestEntry's field was renamed, to
-        # content_sha256, since it hashes canonical text rather than raw bytes.
-        sha256=entry.content_sha256,
+        # Recomputed here, at extraction time, from the exact text this row stores
+        # (document.text == this `text`) — NOT copied from entry.content_sha256,
+        # which is a discovery-time hash that need not match either the raw fetched
+        # bytes or documents.text (see ManifestEntry.content_sha256's own docstring,
+        # and docs/superpowers/specs/2026-09-19-ingestion-and-storage-design.md
+        # section 9). This way Document.sha256 is a checkable integrity value for
+        # what is actually in documents.text: sha256(document.text.encode()).
+        sha256=hashlib.sha256(text.encode("utf-8")).hexdigest(),
         fetched_at=fetched_at,
         text=text,
     )
