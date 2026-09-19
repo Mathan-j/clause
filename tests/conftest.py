@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from clause.db.schema import Base
 
 DB_URL = os.environ.get(
-    "CLAUSE_TEST_DATABASE_URL", "postgresql+psycopg://clause:clause@localhost:5432/clause"
+    "CLAUSE_TEST_DATABASE_URL", "postgresql+psycopg://clause:clause@localhost:5434/clause"
 )
 
 

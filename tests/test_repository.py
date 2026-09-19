@@ -1,4 +1,5 @@
-from datetime import UTC, date, datetime
+import dataclasses
+from datetime import UTC, date, datetime, timedelta, timezone
 
 import pytest
 from sqlalchemy import select
@@ -18,11 +19,39 @@ DOC = Document(
 )
 
 
-def test_upsert_is_idempotent(db_session) -> None:
-    upsert_document(db_session, DOC)
+def test_upsert_updates_an_existing_document(db_session) -> None:
+    """A sha256 mismatch means the content changed; re-ingest must overwrite the row,
+    not merely avoid duplicating it.
+    """
     upsert_document(db_session, DOC)
     db_session.commit()
-    assert len(db_session.scalars(select(DocumentRow)).all()) == 1
+
+    revised = dataclasses.replace(
+        DOC, title="Revised title", text="different text " * 50, sha256="b" * 64
+    )
+    upsert_document(db_session, revised)
+    db_session.commit()
+
+    rows = db_session.scalars(select(DocumentRow)).all()
+    assert len(rows) == 1
+    assert rows[0].title == "Revised title"
+    assert rows[0].sha256 == "b" * 64
+    assert rows[0].text == revised.text
+
+
+def test_fetched_at_round_trips_with_offset_intact(db_session) -> None:
+    """DateTime(timezone=True) must not silently drop the offset a tz-aware value
+    carries; correctness must not depend on the session timezone happening to be UTC.
+    """
+    ist = timezone(timedelta(hours=5, minutes=30))
+    aware = dataclasses.replace(DOC, fetched_at=datetime(2026, 9, 19, 18, 30, tzinfo=ist))
+    upsert_document(db_session, aware)
+    db_session.commit()
+
+    row = db_session.get(DocumentRow, DOC.doc_id)
+    assert row is not None
+    assert row.fetched_at.tzinfo is not None
+    assert row.fetched_at.astimezone(UTC) == aware.fetched_at.astimezone(UTC)
 
 
 def test_replace_chunks_swaps_only_that_strategy(db_session) -> None:

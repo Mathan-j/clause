@@ -32,7 +32,7 @@ def upgrade() -> None:
     sa.Column('published_date', sa.Date(), nullable=False),
     sa.Column('effective_date', sa.Date(), nullable=True),
     sa.Column('sha256', sa.String(length=64), nullable=False),
-    sa.Column('fetched_at', sa.DateTime(), nullable=False),
+    sa.Column('fetched_at', sa.DateTime(timezone=True), nullable=False),
     sa.Column('text', sa.Text(), nullable=False),
     sa.PrimaryKeyConstraint('doc_id')
     )
@@ -47,7 +47,7 @@ def upgrade() -> None:
     sa.Column('source_url', sa.Text(), nullable=False),
     sa.Column('effective_date', sa.Date(), nullable=True),
     sa.Column('doc_type', sa.String(length=32), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     sa.ForeignKeyConstraint(['doc_id'], ['documents.doc_id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('chunk_id')
     )

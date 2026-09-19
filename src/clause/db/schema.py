@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from sqlalchemy import ForeignKey, Index, Integer, String, Text
+from sqlalchemy import DateTime, ForeignKey, Index, Integer, String, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -21,7 +21,7 @@ class DocumentRow(Base):
     published_date: Mapped[date]
     effective_date: Mapped[date | None]
     sha256: Mapped[str] = mapped_column(String(64))
-    fetched_at: Mapped[datetime]
+    fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     text: Mapped[str] = mapped_column(Text)
 
 
@@ -44,7 +44,7 @@ class ChunkRow(Base):
     effective_date: Mapped[date | None]
     doc_type: Mapped[str] = mapped_column(String(32))
 
-    created_at: Mapped[datetime]
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
 
 Index("ix_chunks_doc_strategy", ChunkRow.doc_id, ChunkRow.strategy)
