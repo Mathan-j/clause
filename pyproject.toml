@@ -4,9 +4,12 @@ version = "0.1.0"
 description = "Regulatory answer engine with span-level citations over RBI circulars"
 requires-python = ">=3.12,<3.13"
 dependencies = [
+    "alembic>=1.20.0",
     "httpx>=0.28.1",
+    "psycopg[binary]>=3.3.6",
     "pydantic-settings>=2.15.0",
     "selectolax>=0.4.12",
+    "sqlalchemy>=2.0",
 ]
 
 [dependency-groups]
@@ -22,6 +25,9 @@ packages = ["src/clause"]
 [tool.ruff]
 line-length = 100
 src = ["src", "tests"]
+# Alembic-generated scaffolding: env.py's module-level import placement and the
+# versions/ revision scripts are Alembic's own template output, not hand-written.
+exclude = ["migrations/versions/*", "migrations/env.py"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "PL", "RUF"]
