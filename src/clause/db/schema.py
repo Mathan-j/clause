@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from sqlalchemy import DateTime, ForeignKey, Index, Integer, String, Text
+from sqlalchemy import DateTime, ForeignKey, Index, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -45,6 +45,17 @@ class ChunkRow(Base):
     doc_type: Mapped[str] = mapped_column(String(32))
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+    __table_args__ = (
+        # chunk_id is a serial PK and replace_chunks() is delete-then-insert, so
+        # every ingest renumbers every chunk; (doc_id, strategy, ordinal) is the
+        # stable natural key Phase 2 needs for "ground-truth chunk ids" in the
+        # golden set. It also makes a failed/partial delete in replace_chunks()
+        # error loudly (duplicate key) instead of silently doubling rows.
+        UniqueConstraint(
+            "doc_id", "strategy", "ordinal", name="uq_chunks_doc_strategy_ordinal"
+        ),
+    )
 
 
 Index("ix_chunks_doc_strategy", ChunkRow.doc_id, ChunkRow.strategy)

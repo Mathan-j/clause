@@ -74,7 +74,18 @@ def main(argv: list[str] | None = None) -> int:
     if failures:
         print(f"\n{len(failures)} document(s) failed: {', '.join(failures)}", file=sys.stderr)
         return 1
-    print("ingest complete, all documents succeeded", file=sys.stderr)
+
+    entry_count = len(load_manifest(args.manifest))
+    if entry_count == 0:
+        print(
+            f"\nmanifest {args.manifest} contains no entries -- ingested 0 documents. "
+            "This is not success: PROMPT.md's Phase 1 definition of done requires "
+            "at least 50 real documents.",
+            file=sys.stderr,
+        )
+        return 1
+
+    print(f"ingest complete, all {entry_count} document(s) succeeded", file=sys.stderr)
     return 0
 
 
