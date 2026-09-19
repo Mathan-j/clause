@@ -15,6 +15,23 @@ HEADER = re.compile(
 
 _WS = re.compile(r"[ \t\xa0]+")
 
+_MONTHS = {
+    "january": 1,
+    "february": 2,
+    "march": 3,
+    "april": 4,
+    "may": 5,
+    "june": 6,
+    "july": 7,
+    "august": 8,
+    "september": 9,
+    "october": 10,
+    "november": 11,
+    "december": 12,
+}
+
+CLASSIFY_WINDOW_CHARS = 600
+
 
 class ExtractionError(Exception):
     """The response parsed, but is not a usable document."""
@@ -38,12 +55,21 @@ def parse_header(text: str) -> tuple[str, str, date]:
     match = HEADER.search(text)
     if match is None:
         raise ExtractionError("no RBI header line (circular no / dept ref / date) found")
-    published = datetime.strptime(match.group("published"), "%B %d, %Y").date()
+
+    raw = match.group("published")
+    try:
+        month_name, rest = raw.split(" ", 1)
+        day_str, year_str = rest.split(", ", 1)
+        month = _MONTHS[month_name.lower()]
+        published = date(int(year_str), month, int(day_str))
+    except (KeyError, ValueError) as exc:
+        raise ExtractionError(f"unparseable header date {raw!r}: {exc}") from exc
+
     return match.group("circular_no"), match.group("dept_ref"), published
 
 
-def _classify(title: str, text: str) -> str:
-    haystack = f"{title} {text[:400]}".lower()
+def _classify(title: str, body: str) -> str:
+    haystack = f"{title} {body}".lower()
     if "master direction" in haystack:
         return "master_direction"
     if "circular" in haystack:
@@ -58,6 +84,13 @@ def extract_document(entry: ManifestEntry, raw: bytes, *, fetched_at: datetime) 
 
     circular_no, dept_ref, published = parse_header(text)
 
+    header_at = text.find(circular_no)
+    window = (
+        text[header_at : header_at + CLASSIFY_WINDOW_CHARS]
+        if header_at >= 0
+        else text[:CLASSIFY_WINDOW_CHARS]
+    )
+
     return Document(
         doc_id=entry.doc_id,
         rbi_id=entry.rbi_id,
@@ -65,7 +98,7 @@ def extract_document(entry: ManifestEntry, raw: bytes, *, fetched_at: datetime) 
         circular_no=circular_no,
         dept_ref=dept_ref,
         title=entry.title,
-        doc_type=_classify(entry.title, text),
+        doc_type=_classify(entry.title, window),
         published_date=published,
         effective_date=None,
         sha256=entry.sha256,

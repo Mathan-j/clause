@@ -49,6 +49,31 @@ def test_parse_header_raises_when_absent() -> None:
         parse_header("no header here at all")
 
 
+def test_parse_header_raises_extraction_error_on_invalid_date() -> None:
+    with pytest.raises(ExtractionError):
+        parse_header(
+            "RBI/2026-27/262 DOR.AML.REC.1/14.01/2026-27 February 30, 2026"
+        )
+
+
+def test_parse_header_raises_extraction_error_on_unknown_month() -> None:
+    with pytest.raises(ExtractionError):
+        parse_header(
+            "RBI/2026-27/262 DOR.AML.REC.1/14.01/2026-27 Septembre 18, 2026"
+        )
+
+
+def test_classify_reads_the_document_body_not_page_chrome() -> None:
+    text = canonical_text(RAW.decode("utf-8", errors="replace"))
+    circular_no, _, _ = parse_header(text)
+    header_at = text.find(circular_no)
+    assert header_at > 0, "the real fixture has page chrome before the document body"
+    window = text[header_at : header_at + 600]
+    # This is the window _classify actually scans: real document content, not nav.
+    assert circular_no in window
+    assert "skip to main content" not in window.lower()
+
+
 def test_extract_document_populates_the_document() -> None:
     doc = extract_document(ENTRY, RAW, fetched_at=datetime(2026, 9, 19, tzinfo=UTC))
     assert doc.doc_id == "rbi-13704"
@@ -56,6 +81,7 @@ def test_extract_document_populates_the_document() -> None:
     assert doc.doc_type in {"master_direction", "circular", "notification"}
     assert len(doc.text) > 500
     assert doc.text == canonical_text(RAW.decode("utf-8", errors="replace"))
+    assert doc.effective_date is None
 
 
 def test_extract_document_rejects_short_text() -> None:
