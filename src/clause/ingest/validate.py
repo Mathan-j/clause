@@ -3,7 +3,7 @@ import re
 from clause.htmltext import visible_text
 
 BLOCK_MARKERS: tuple[str, ...] = ("Unauthorised Access", "Support ID:")
-CIRCULAR_REFERENCE = re.compile(r"RBI/\d{4}-\d{2}/\d+")
+CIRCULAR_REFERENCE = re.compile(r"RBI/(?:[A-Z]+/)?\d{4}-\d{2}/\d+")
 HTTP_OK = 200
 
 

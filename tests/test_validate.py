@@ -50,6 +50,16 @@ def test_short_document_is_rejected() -> None:
         )
 
 
+def test_department_prefixed_circular_number_is_accepted() -> None:
+    body = "<html><body>RBI/DOR/2021-22/86 " + ("regulatory text " * 100) + "</body></html>"
+    _ok(body)
+
+
+def test_block_page_still_rejected_under_broadened_pattern() -> None:
+    with pytest.raises(ValidationError, match="bot-check"):
+        _ok(BLOCK)
+
+
 def test_visible_text_strips_scripts_and_styles() -> None:
     html = (
         "<html><head><style>p{color:red}</style></head>"
