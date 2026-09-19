@@ -95,6 +95,7 @@ def test_non_html_response_is_rejected_and_not_cached(tmp_path: Path) -> None:
 
 def test_retries_then_succeeds(tmp_path: Path) -> None:
     attempts = {"n": 0}
+    sleeps: list[float] = []
 
     def handler(request: httpx.Request) -> httpx.Response:
         attempts["n"] += 1
@@ -103,9 +104,12 @@ def test_retries_then_succeeds(tmp_path: Path) -> None:
         return httpx.Response(200, content=CIRCULAR, headers={"content-type": "text/html"})
 
     s = _settings(tmp_path)
-    f = Fetcher(s, _client(handler), RateLimiter(0.0), sleep=lambda _: None)
+    f = Fetcher(s, _client(handler), RateLimiter(0.0), sleep=sleeps.append)
     assert f.fetch(_entry(hashlib.sha256(CIRCULAR).hexdigest())) == CIRCULAR
     assert attempts["n"] == 3
+    assert len(sleeps) == 2, "one backoff sleep between each failed attempt and the next"
+    assert all(d > 0 for d in sleeps), "backoff must actually wait"
+    assert sleeps[1] > sleeps[0], "backoff must grow between attempts"
 
 
 def test_rate_limiter_waits_between_calls() -> None:
