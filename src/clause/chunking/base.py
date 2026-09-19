@@ -33,11 +33,25 @@ def make_chunk(document: Document, strategy: str, ordinal: int, start: int, end:
     )
 
 
+class SliceIntegrityError(Exception):
+    """A chunk's stored text does not match document.text[char_start:char_end].
+
+    Raised explicitly, never via a bare ``assert``, because ``assert`` statements are
+    stripped entirely under ``python -O``. CLAUDE.md's non-negotiable — "an answer
+    containing a citation that does not resolve is a hard failure, never a warning" —
+    must hold under an optimised interpreter too, not only in a debug build.
+    """
+
+
 def assert_slices(document: Document, chunks: list[Chunk]) -> None:
-    """Assert the invariant. Used by tests and by the ingest CLI before writing."""
+    """Assert the invariant. Used by tests and by the ingest CLI before writing.
+
+    Raises SliceIntegrityError (not AssertionError) so this check survives `python -O`.
+    """
     for c in chunks:
         actual = document.text[c.char_start : c.char_end]
-        assert actual == c.text, (
-            f"{c.doc_id}#{c.ordinal} ({c.strategy}): span [{c.char_start}:{c.char_end}] "
-            f"yields {actual[:60]!r} but chunk stores {c.text[:60]!r}"
-        )
+        if actual != c.text:
+            raise SliceIntegrityError(
+                f"{c.doc_id}#{c.ordinal} ({c.strategy}): span [{c.char_start}:{c.char_end}] "
+                f"yields {actual[:60]!r} but chunk stores {c.text[:60]!r}"
+            )

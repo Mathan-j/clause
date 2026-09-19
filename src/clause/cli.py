@@ -6,7 +6,7 @@ from pathlib import Path
 import httpx
 from sqlalchemy.orm import Session
 
-from clause.chunking.base import assert_slices
+from clause.chunking.base import SliceIntegrityError, assert_slices
 from clause.chunking.fixed import FixedWindowChunker
 from clause.chunking.structural import StructuralChunker
 from clause.config import Settings, get_settings
@@ -43,7 +43,13 @@ def ingest(manifest_path: Path, *, session: Session, settings: Settings | None =
                     # An unresolvable citation is a hard failure, never a warning.
                     assert_slices(document, chunks)
                     replace_chunks(session, document.doc_id, chunker.name, chunks)
-            except (FetchError, ValidationError, ExtractionError, AssertionError) as exc:
+            except (
+                FetchError,
+                ValidationError,
+                ExtractionError,
+                ValueError,
+                SliceIntegrityError,
+            ) as exc:
                 print(f"FAILED {entry.doc_id}: {exc}", file=sys.stderr)
                 failures.append(entry.doc_id)
                 session.rollback()

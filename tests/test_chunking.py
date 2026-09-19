@@ -4,7 +4,7 @@ from itertools import pairwise
 
 import pytest
 
-from clause.chunking.base import assert_slices, make_chunk
+from clause.chunking.base import SliceIntegrityError, assert_slices, make_chunk
 from clause.chunking.fixed import FixedWindowChunker
 from clause.models import Document
 
@@ -62,7 +62,7 @@ def test_assert_slices_catches_a_transformed_chunk() -> None:
     good = make_chunk(doc, "fixed_window", 0, 0, 5)
     # dataclasses.replace, not __dict__: Chunk uses slots=True and has no __dict__.
     tampered = dataclasses.replace(good, text="HELLO")
-    with pytest.raises(AssertionError):
+    with pytest.raises(SliceIntegrityError):
         assert_slices(doc, [tampered])
 
 
