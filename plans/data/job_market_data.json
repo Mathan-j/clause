@@ -1,0 +1,7889 @@
+{
+ "snapshot_date": "2026-09-18",
+ "total_records": 138,
+ "unique_postings": 138,
+ "postings": [
+  {
+   "source": "Hirist",
+   "source_url": "https://www.hirist.tech/j/artificial-intelligence-engineer-1576661",
+   "company": "Sparrow Risk Management",
+   "company_tier": "indian_product",
+   "title": "Artificial Intelligence Engineer",
+   "years_min": 1,
+   "years_max": 3,
+   "location": "Gurgaon",
+   "work_mode": "onsite",
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "FastAPI",
+    "RESTful services"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "vector databases",
+    "Pinecone",
+    "Weaviate",
+    "FAISS",
+    "Qdrant",
+    "embeddings",
+    "chunking",
+    "indexing"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LlamaIndex",
+    "agentic workflows",
+    "tool calling",
+    "function calling",
+    "Agentic AI"
+   ],
+   "llm_providers": [
+    "OpenAI",
+    "Claude",
+    "Llama"
+   ],
+   "cloud": [],
+   "data": [
+    "Data Pipeline"
+   ],
+   "ops_deploy": [
+    "observability",
+    "Langsmith",
+    "A/B tests",
+    "guardrails",
+    "cost controls"
+   ],
+   "ml_deep": [],
+   "soft_asks": [
+    "stakeholder_management",
+    "requirements_gathering"
+   ],
+   "deliverables": "LLM agentic workflows and RAG pipelines plus FastAPI backend for manufacturing digital-twin platform",
+   "excerpt": "1-3 years professional software development experience. Hands-on experience with LLMs (OpenAI, Claude, Llama)",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_tech_boards",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Hirist",
+   "source_url": "https://www.hirist.tech/j/paymeindia-data-scientist-genai-llm-1-4-yrs-1576788",
+   "company": "PayMe India",
+   "company_tier": "indian_product",
+   "title": "Data Scientist - GenAI/LLM",
+   "years_min": 1,
+   "years_max": 4,
+   "location": "Noida",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "FastAPI",
+    "APIs"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "vector databases",
+    "FAISS",
+    "Pinecone",
+    "Weaviate",
+    "ChromaDB",
+    "embedding models"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LlamaIndex",
+    "AutoGen",
+    "LangGraph",
+    "multi-agent systems"
+   ],
+   "llm_providers": [
+    "GPT",
+    "LLaMA",
+    "Falcon",
+    "Mistral",
+    "Claude",
+    "Hugging Face Transformers"
+   ],
+   "cloud": [
+    "AWS",
+    "GCP",
+    "Azure"
+   ],
+   "data": [],
+   "ops_deploy": [
+    "Docker",
+    "MLOps",
+    "LLMOps",
+    "automated evaluation"
+   ],
+   "ml_deep": [
+    "TensorFlow",
+    "PyTorch",
+    "fine-tuning",
+    "NLP",
+    "Deep Learning",
+    "prompt engineering"
+   ],
+   "soft_asks": [],
+   "deliverables": "Fine-tuned LLM chatbots and RAG-backed enterprise AI for fintech lender",
+   "excerpt": "1-4 years experience in ML, Deep Learning and NLP-based model development",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_tech_boards",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Hirist",
+   "source_url": "https://www.hirist.tech/j/ideapoke-ai-engineer-1620706",
+   "company": "Ideapoke Technologies",
+   "company_tier": "indian_product",
+   "title": "AI Engineer",
+   "years_min": 2,
+   "years_max": 3,
+   "location": "Bangalore",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "FastAPI",
+    "Flask",
+    "Django"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG pipelines"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LangGraph",
+    "Agentic AI workflows",
+    "multi-agent AI architectures",
+    "tool orchestration"
+   ],
+   "llm_providers": [
+    "GPT",
+    "LLaMA",
+    "Claude",
+    "HuggingFace Transformers"
+   ],
+   "cloud": [
+    "Azure"
+   ],
+   "data": [
+    "MongoDB",
+    "MySQL",
+    "Redis"
+   ],
+   "ops_deploy": [
+    "GitHub Actions",
+    "Kubernetes",
+    "vLLM",
+    "ONNX Runtime",
+    "monitoring",
+    "LLM evaluation"
+   ],
+   "ml_deep": [
+    "PyTorch",
+    "spaCy",
+    "NLTK",
+    "LoRA",
+    "QLoRA",
+    "PEFT",
+    "NLP"
+   ],
+   "soft_asks": [
+    "requirements_gathering"
+   ],
+   "deliverables": "GenAI applications, RAG pipelines and agentic multi-step reasoning workflows",
+   "excerpt": "2-3 years in AI/ML engineering, NLP or Generative AI. Experience with LLM frameworks such as LangChain and LangGraph",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_tech_boards",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Hirist",
+   "source_url": "https://www.hirist.tech/j/algonomy-ai-software-engineer-1565912",
+   "company": "Algonomy",
+   "company_tier": "indian_product",
+   "title": "AI Software Engineer - GenAI & Cloud Native",
+   "years_min": 3,
+   "years_max": 4,
+   "location": "Bangalore",
+   "work_mode": "hybrid",
+   "salary_lpa": null,
+   "languages": [
+    "Python",
+    "Node.js"
+   ],
+   "backend": [
+    "FastAPI",
+    "gRPC",
+    "microservices"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG pipelines",
+    "vector databases",
+    "Azure Cognitive Search",
+    "AWS OpenSearch"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "CrewAI",
+    "AutoGen",
+    "agentic systems"
+   ],
+   "llm_providers": [
+    "AWS Bedrock",
+    "Azure OpenAI",
+    "OpenAI"
+   ],
+   "cloud": [
+    "AWS",
+    "Azure",
+    "serverless",
+    "SageMaker Endpoints"
+   ],
+   "data": [
+    "data pipelines",
+    "synthetic data"
+   ],
+   "ops_deploy": [
+    "Terraform",
+    "CloudFormation",
+    "CI/CD",
+    "GitHub Actions",
+    "Prometheus",
+    "CloudWatch",
+    "monitoring",
+    "automated testing",
+    "Triton"
+   ],
+   "ml_deep": [
+    "LoRA",
+    "PEFT",
+    "fine-tune LLMs"
+   ],
+   "soft_asks": [
+    "system_design"
+   ],
+   "deliverables": "Cloud-native backend services, IaC and CI/CD for generative and agentic AI features",
+   "excerpt": "3-4 years in software development plus 1-2 years in AI (agentic/generative)",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_tech_boards",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Hirist",
+   "source_url": "https://www.hirist.tech/j/palni-generative-ai-engineer-1599592",
+   "company": "Palni",
+   "company_tier": "consultancy",
+   "title": "Generative AI Engineer - Python/LLM",
+   "years_min": 1,
+   "years_max": 3,
+   "location": "Hyderabad",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "FastAPI",
+    "Flask",
+    "Django"
+   ],
+   "frontend": [
+    "React",
+    "Angular"
+   ],
+   "retrieval_vector": [
+    "embeddings",
+    "vector databases",
+    "RAG",
+    "FAISS",
+    "Pinecone",
+    "Weaviate",
+    "OpenSearch"
+   ],
+   "agent_frameworks": [
+    "AI agents",
+    "tool calling"
+   ],
+   "llm_providers": [
+    "OpenAI",
+    "Anthropic",
+    "open-source models"
+   ],
+   "cloud": [
+    "AWS"
+   ],
+   "data": [
+    "SQL"
+   ],
+   "ops_deploy": [],
+   "ml_deep": [],
+   "soft_asks": [
+    "poc_prototype",
+    "stakeholder_management",
+    "requirements_gathering",
+    "system_design"
+   ],
+   "deliverables": "Fast GenAI demos and AI agents for banking/enterprise clients plus reusable building blocks",
+   "excerpt": "Strong proficiency in Python. Hands-on experience with GenAI / LLM-based systems",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_tech_boards",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Hirist",
+   "source_url": "https://www.hirist.tech/j/au-small-finance-bank-ai-engineer-1671913",
+   "company": "AU Small Finance Bank",
+   "company_tier": "other",
+   "title": "AI Engineer - Conversational AI",
+   "years_min": 2,
+   "years_max": 4,
+   "location": "Mumbai",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "APIs"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG pipelines",
+    "vector databases",
+    "semantic search",
+    "retrieval quality",
+    "grounding"
+   ],
+   "agent_frameworks": [
+    "Agentic AI",
+    "AI agents",
+    "multi-agent workflows",
+    "tool usage"
+   ],
+   "llm_providers": [
+    "OpenAI"
+   ],
+   "cloud": [],
+   "data": [
+    "enterprise knowledge bases"
+   ],
+   "ops_deploy": [
+    "AI testing",
+    "benchmarking",
+    "regression validation",
+    "evaluation datasets",
+    "hallucination measurement",
+    "latency"
+   ],
+   "ml_deep": [
+    "Speech Recognition",
+    "Conversational AI",
+    "Prompt Engineering"
+   ],
+   "soft_asks": [
+    "stakeholder_management",
+    "requirements_gathering"
+   ],
+   "deliverables": "Enterprise conversational AI and agentic copilots for banking",
+   "excerpt": "Design, develop, test and optimize enterprise-grade conversational AI and Agentic AI solutions for banking",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_tech_boards",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Hirist",
+   "source_url": "https://www.hirist.tech/j/drivex-ai-native-full-stack-engineer-1672224",
+   "company": "DriveX",
+   "company_tier": "indian_product",
+   "title": "AI Native Full Stack Engineer",
+   "years_min": 2,
+   "years_max": 4,
+   "location": "Bangalore",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "TypeScript"
+   ],
+   "backend": [
+    "Node JS"
+   ],
+   "frontend": [
+    "React JS",
+    "React Native",
+    "Expo"
+   ],
+   "retrieval_vector": [],
+   "agent_frameworks": [
+    "AI agents"
+   ],
+   "llm_providers": [
+    "LLMs"
+   ],
+   "cloud": [],
+   "data": [
+    "databases"
+   ],
+   "ops_deploy": [
+    "end-to-end deployment"
+   ],
+   "ml_deep": [],
+   "soft_asks": [
+    "requirements_gathering",
+    "system_design"
+   ],
+   "deliverables": "End-to-end full-stack product features with AI tools as assist",
+   "excerpt": "Exposure to AI coding tools, AI agents, LLMs or AI-assisted development an added advantage",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_tech_boards",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Hirist",
+   "source_url": "https://www.hirist.tech/j/aatmix-ai-engineer-sde-ii-1671392",
+   "company": "Aatmix",
+   "company_tier": "ai_startup",
+   "title": "AI Engineer / SDE II - Full Stack",
+   "years_min": 3,
+   "years_max": 6,
+   "location": "Bangalore",
+   "work_mode": null,
+   "salary_lpa": "12-22",
+   "languages": [],
+   "backend": [
+    "Node.js"
+   ],
+   "frontend": [
+    "React.js"
+   ],
+   "retrieval_vector": [],
+   "agent_frameworks": [
+    "LangChain",
+    "AI agents",
+    "Agentic AI"
+   ],
+   "llm_providers": [
+    "LLM"
+   ],
+   "cloud": [],
+   "data": [
+    "SQL",
+    "noSQL",
+    "data modeling"
+   ],
+   "ops_deploy": [
+    "rigorous testing",
+    "monitoring protocols"
+   ],
+   "ml_deep": [
+    "prompt engineering"
+   ],
+   "soft_asks": [
+    "stakeholder_management",
+    "system_design"
+   ],
+   "deliverables": "Full-stack applications on agentic AI SDLC platform with LangChain-orchestrated LLM features",
+   "excerpt": "Proven ability to implement and orchestrate AI workflows using LangChain with deep understanding of prompt engineering",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_tech_boards",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Hirist",
+   "source_url": "https://www.hirist.tech/j/ai-engineer-rag-llm-1616914",
+   "company": "Aruvee Intelligence",
+   "company_tier": "ai_startup",
+   "title": "AI Engineer - RAG & LLM",
+   "years_min": 0,
+   "years_max": 3,
+   "location": "Remote India / Singapore",
+   "work_mode": "remote",
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG pipelines",
+    "chunking",
+    "embedding",
+    "vector stores",
+    "Pinecone",
+    "Weaviate",
+    "pgvector",
+    "BGE",
+    "E5",
+    "sentence-transformers",
+    "re-ranking"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LlamaIndex",
+    "agentic workflows"
+   ],
+   "llm_providers": [
+    "LLaMA",
+    "Mistral",
+    "Qwen",
+    "Hugging Face Transformers"
+   ],
+   "cloud": [
+    "AWS",
+    "GCP",
+    "Azure"
+   ],
+   "data": [
+    "document ingestion"
+   ],
+   "ops_deploy": [
+    "Docker",
+    "Kubernetes",
+    "MLflow",
+    "W&B",
+    "MLOps",
+    "vLLM",
+    "TGI",
+    "Ollama",
+    "RAGAS",
+    "evaluation pipelines",
+    "guardrails",
+    "GGUF",
+    "AWQ",
+    "GPTQ"
+   ],
+   "ml_deep": [
+    "PyTorch",
+    "PEFT",
+    "fine-tune",
+    "SFT",
+    "LoRA/QLoRA",
+    "RLHF",
+    "DPO"
+   ],
+   "soft_asks": [],
+   "deliverables": "RAG pipelines and domain fine-tuned LLM agents for semiconductor fab engineers",
+   "excerpt": "Fresh graduates welcome. 0-3 years of experience in ML/NLP or AI development",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_tech_boards",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Wellfound",
+   "source_url": "https://wellfound.com/jobs/3725654-founding-agentic-ai-engineer",
+   "company": "Boock.ai",
+   "company_tier": "ai_startup",
+   "title": "Founding Agentic AI Engineer",
+   "years_min": 1,
+   "years_max": 3,
+   "location": "Remote India",
+   "work_mode": "remote",
+   "salary_lpa": "4-6",
+   "languages": [
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [
+    "Vector databases",
+    "embeddings"
+   ],
+   "agent_frameworks": [
+    "LangGraph",
+    "LangChain",
+    "CrewAI",
+    "n8n",
+    "multi-agent coordination",
+    "agent memory",
+    "sub-agents"
+   ],
+   "llm_providers": [
+    "LLMs"
+   ],
+   "cloud": [],
+   "data": [],
+   "ops_deploy": [
+    "automated evaluation",
+    "QA",
+    "self-repair loops",
+    "monitoring",
+    "cost",
+    "scalability"
+   ],
+   "ml_deep": [
+    "Multimodal AI"
+   ],
+   "soft_asks": [],
+   "deliverables": "Core agentic AI platform with collaborating agents for ebook/audiobook generation",
+   "excerpt": "1-3 years hands-on experience with LLMs and agentic AI systems. Practical experience with LangGraph, LangChain, CrewAI, n8n",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_tech_boards",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Wellfound",
+   "source_url": "https://wellfound.com/jobs/4717812-junior-ai-engineer",
+   "company": "Planso",
+   "company_tier": "ai_startup",
+   "title": "Junior AI Engineer",
+   "years_min": 2,
+   "years_max": null,
+   "location": "Coimbatore, Madurai",
+   "work_mode": "hybrid",
+   "salary_lpa": "7-10",
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "FastAPI"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "embeddings",
+    "reranking",
+    "RAG",
+    "vector databases",
+    "information retrieval"
+   ],
+   "agent_frameworks": [
+    "agentic workflows",
+    "LangChain",
+    "LangGraph",
+    "LlamaIndex"
+   ],
+   "llm_providers": [
+    "LLM APIs",
+    "Hugging Face"
+   ],
+   "cloud": [],
+   "data": [
+    "structured and unstructured data",
+    "knowledge graphs"
+   ],
+   "ops_deploy": [
+    "evaluation datasets",
+    "accuracy relevance reliability",
+    "guardrails"
+   ],
+   "ml_deep": [
+    "machine learning",
+    "NLP",
+    "PyTorch"
+   ],
+   "soft_asks": [
+    "documentation",
+    "poc_prototype"
+   ],
+   "deliverables": "LLM document understanding and retrieval pipelines from prototype to production",
+   "excerpt": "Familiarity with LLM APIs, embeddings and RAG. Understanding of evaluation metrics such as precision and recall",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_tech_boards",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Wellfound",
+   "source_url": "https://wellfound.com/jobs/4716557-ai-engineer-agentic-ai",
+   "company": "Pocketpills",
+   "company_tier": "global_product",
+   "title": "AI Engineer (Agentic AI & LLM Applications)",
+   "years_min": 3,
+   "years_max": 6,
+   "location": "Gurgaon",
+   "work_mode": "hybrid",
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "REST APIs"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG systems",
+    "embeddings",
+    "vector search",
+    "retrieval optimization",
+    "reranking",
+    "pgvector",
+    "Pinecone",
+    "Weaviate",
+    "Qdrant"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LangGraph",
+    "LlamaIndex",
+    "MCP",
+    "intelligent agents",
+    "tool calling",
+    "memory systems"
+   ],
+   "llm_providers": [
+    "LLM"
+   ],
+   "cloud": [
+    "cloud infrastructure"
+   ],
+   "data": [],
+   "ops_deploy": [
+    "Docker",
+    "observability",
+    "LangSmith",
+    "guardrails",
+    "evaluation frameworks",
+    "benchmarking",
+    "automated testing",
+    "latency",
+    "cost efficiency"
+   ],
+   "ml_deep": [
+    "prompt engineering"
+   ],
+   "soft_asks": [],
+   "deliverables": "Multi-step agentic workflows with tool calling, state and memory plus RAG and observability",
+   "excerpt": "Design and implement intelligent agents and workflows using frameworks like LangChain, LangGraph",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_tech_boards",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Wellfound",
+   "source_url": "https://wellfound.com/jobs/3026401-applied-ai-engineer",
+   "company": "Lamatic.ai",
+   "company_tier": "ai_startup",
+   "title": "Applied AI Engineer",
+   "years_min": 1,
+   "years_max": null,
+   "location": "India remote / Miami",
+   "work_mode": "remote",
+   "salary_lpa": null,
+   "languages": [
+    "JavaScript"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [
+    "agentic systems"
+   ],
+   "llm_providers": [
+    "Generative AI"
+   ],
+   "cloud": [],
+   "data": [],
+   "ops_deploy": [],
+   "ml_deep": [],
+   "soft_asks": [
+    "client_facing",
+    "requirements_gathering",
+    "stakeholder_management"
+   ],
+   "deliverables": "Configuring agentic pipelines for customers and onboarding them",
+   "excerpt": "Interest in Generative AI with aptitude for designing agentic systems",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_tech_boards",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Wellfound",
+   "source_url": "https://wellfound.com/jobs/4562447-junior-ai-engineer",
+   "company": "Silstone Health",
+   "company_tier": "ai_startup",
+   "title": "Junior AI Engineer",
+   "years_min": 1,
+   "years_max": 2,
+   "location": "Remote India",
+   "work_mode": "remote",
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "REST APIs"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG pipelines",
+    "vector databases"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LangGraph",
+    "LlamaIndex",
+    "CrewAI",
+    "Agentic AI workflows"
+   ],
+   "llm_providers": [
+    "LLMs",
+    "Generative AI"
+   ],
+   "cloud": [],
+   "data": [
+    "databases"
+   ],
+   "ops_deploy": [
+    "Git",
+    "GitHub",
+    "debug test optimize"
+   ],
+   "ml_deep": [],
+   "soft_asks": [],
+   "deliverables": "LLM applications with RAG and agentic workflows integrated to APIs and databases",
+   "excerpt": "Active GitHub profile with public repositories showcasing AI/LLM, RAG, or Agentic AI projects",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_tech_boards",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Cutshort",
+   "source_url": "https://cutshort.io/job/Applied-AI-Engineer-with-Fullstack-rlclB1Mf",
+   "company": "Hashone Careers",
+   "company_tier": "staffing",
+   "title": "Applied AI Engineer with Fullstack",
+   "years_min": 3,
+   "years_max": 8,
+   "location": "Remote",
+   "work_mode": "remote",
+   "salary_lpa": "12-40",
+   "languages": [
+    "Python",
+    "TypeScript"
+   ],
+   "backend": [
+    "Node.js",
+    "backend APIs"
+   ],
+   "frontend": [
+    "React",
+    "Next.js"
+   ],
+   "retrieval_vector": [
+    "RAG pipelines",
+    "Vector Databases"
+   ],
+   "agent_frameworks": [
+    "AI agents",
+    "tool/function-calling",
+    "LangChain",
+    "LangGraph",
+    "LlamaIndex"
+   ],
+   "llm_providers": [
+    "OpenAI",
+    "Claude",
+    "Gemini",
+    "Generative AI"
+   ],
+   "cloud": [
+    "AWS",
+    "GCP",
+    "Azure",
+    "Vercel"
+   ],
+   "data": [
+    "PostgreSQL"
+   ],
+   "ops_deploy": [
+    "Docker",
+    "CI/CD",
+    "production deployments"
+   ],
+   "ml_deep": [],
+   "soft_asks": [
+    "stakeholder_management"
+   ],
+   "deliverables": "AI/LLM product features end to end: agents, RAG, tool calling behind APIs with React front end",
+   "excerpt": "Hands-on experience with LLMs / Generative AI. Experience with RAG, AI Agents or tool/function calling",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_tech_boards",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Cutshort",
+   "source_url": "https://cutshort.io/job/Jr-AI-ML-Engineer-Pune-Rf5z9Kon",
+   "company": "ideas to impacts innovation",
+   "company_tier": "other",
+   "title": "Jr. AI/ML Engineer",
+   "years_min": 1,
+   "years_max": 3,
+   "location": "Pune",
+   "work_mode": "hybrid",
+   "salary_lpa": "8-12",
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "FastAPI",
+    "REST APIs"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "Vector Databases",
+    "embedding-based search",
+    "RAG architectures",
+    "semantic search",
+    "embedding optimization"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LangGraph",
+    "AI Agent workflows",
+    "AI orchestration"
+   ],
+   "llm_providers": [
+    "LLMs"
+   ],
+   "cloud": [
+    "AWS",
+    "Azure",
+    "GCP"
+   ],
+   "data": [],
+   "ops_deploy": [
+    "Git",
+    "CI/CD",
+    "Docker",
+    "testing",
+    "inference pipelines",
+    "performance optimization"
+   ],
+   "ml_deep": [
+    "Machine Learning concepts"
+   ],
+   "soft_asks": [
+    "code_review",
+    "system_design"
+   ],
+   "deliverables": "AI applications on Python/FastAPI with LangChain and LangGraph workflows and RAG",
+   "excerpt": "1-3 years hands-on software development. Hands-on experience with LangChain and LangGraph",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_tech_boards",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Cutshort",
+   "source_url": "https://cutshort.io/job/Gen-AI-Engineer-Bengaluru-tB25iNPq",
+   "company": "NeoGenCode Technologies",
+   "company_tier": "staffing",
+   "title": "Gen AI Engineer",
+   "years_min": 3,
+   "years_max": 5,
+   "location": "Bengaluru",
+   "work_mode": "hybrid",
+   "salary_lpa": "10-24",
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "REST APIs",
+    "microservices",
+    "streaming responses"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG pipelines",
+    "vector databases",
+    "FAISS",
+    "Pinecone",
+    "Weaviate",
+    "Chroma",
+    "embeddings"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LlamaIndex",
+    "Semantic Kernel",
+    "AI agents",
+    "orchestration layers"
+   ],
+   "llm_providers": [
+    "OpenAI",
+    "Azure OpenAI",
+    "open-source models"
+   ],
+   "cloud": [
+    "AWS",
+    "Azure",
+    "GCP"
+   ],
+   "data": [],
+   "ops_deploy": [
+    "Docker",
+    "Kubernetes",
+    "CI/CD",
+    "MLOps",
+    "evaluation frameworks",
+    "hallucination detection",
+    "observability"
+   ],
+   "ml_deep": [
+    "NLP",
+    "transformer-based models",
+    "fine-tuning",
+    "multimodal models",
+    "OCR"
+   ],
+   "soft_asks": [
+    "documentation",
+    "system_design",
+    "stakeholder_management"
+   ],
+   "deliverables": "Production GenAI applications: RAG over vector DBs, structured outputs, function calling",
+   "excerpt": "Hands-on experience with LLMs and GenAI frameworks. Experience in prompt engineering and system design",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_tech_boards",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Cutshort",
+   "source_url": "https://cutshort.io/job/AI-Engineer-Lightning-5ouDGjqF",
+   "company": "Confidential multimedia AI platform",
+   "company_tier": "ai_startup",
+   "title": "AI Engineer",
+   "years_min": 1,
+   "years_max": 5,
+   "location": "Remote",
+   "work_mode": "remote",
+   "salary_lpa": "up to 30",
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "FastAPI"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG pipelines"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LangGraph"
+   ],
+   "llm_providers": [
+    "LLaMA",
+    "CLIP",
+    "SAM",
+    "diffusion models"
+   ],
+   "cloud": [
+    "AWS",
+    "GCP"
+   ],
+   "data": [
+    "data pipelines"
+   ],
+   "ops_deploy": [
+    "Docker",
+    "WebSockets",
+    "evaluation tooling",
+    "quality consistency relevance metrics"
+   ],
+   "ml_deep": [
+    "PyTorch",
+    "TensorFlow",
+    "deep learning",
+    "CV",
+    "U-Net",
+    "ResNet",
+    "segmentation models"
+   ],
+   "soft_asks": [
+    "documentation"
+   ],
+   "deliverables": "Prototyping and integrating CV, LLM and generative models into media pipeline",
+   "excerpt": "Strong Python plus deep learning fundamentals. Experience with CV or LLM projects",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_tech_boards",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "amazon.jobs",
+   "source_url": "https://www.amazon.jobs/en/jobs/10486421",
+   "company": "Amazon Music",
+   "company_tier": "global_product",
+   "title": "Machine Learning Engineer",
+   "years_min": 1,
+   "years_max": null,
+   "location": "Bengaluru",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Java",
+    "Python",
+    "C++",
+    "Go",
+    "TypeScript"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [],
+   "cloud": [],
+   "data": [],
+   "ops_deploy": [
+    "online serving systems",
+    "monitoring",
+    "troubleshooting"
+   ],
+   "ml_deep": [
+    "large language models",
+    "computer vision",
+    "natural language processing",
+    "deep learning classifiers"
+   ],
+   "soft_asks": [
+    "stakeholder_management"
+   ],
+   "deliverables": "ML pipelines and low-latency serving to detect and enrich music catalog metadata",
+   "excerpt": "1+ years of non-internship professional software development experience",
+   "snapshot_date": "2026-09-18",
+   "territory": "global_product_careers",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "amazon.jobs",
+   "source_url": "https://www.amazon.jobs/en/jobs/10418966",
+   "company": "Amazon",
+   "company_tier": "global_product",
+   "title": "Machine Learning Engineer II",
+   "years_min": 2,
+   "years_max": null,
+   "location": "Bengaluru",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "C++",
+    "Java",
+    "Perl",
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [
+    "Document Retrieval",
+    "Search Engine Technologies",
+    "Lucene"
+   ],
+   "agent_frameworks": [],
+   "llm_providers": [],
+   "cloud": [],
+   "data": [
+    "Big Data",
+    "NoSQL",
+    "Map-Reduce"
+   ],
+   "ops_deploy": [
+    "distributed systems",
+    "high throughput systems"
+   ],
+   "ml_deep": [
+    "machine learning algorithms",
+    "Natural Language Processing",
+    "Document Understanding"
+   ],
+   "soft_asks": [
+    "stakeholder_management",
+    "poc_prototype"
+   ],
+   "deliverables": "ML models for retail search relevance validated by large-scale experiments",
+   "excerpt": "2+ years of non-internship professional software development experience",
+   "snapshot_date": "2026-09-18",
+   "territory": "global_product_careers",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "amazon.jobs",
+   "source_url": "https://www.amazon.jobs/en/jobs/10490052",
+   "company": "Amazon Alexa",
+   "company_tier": "global_product",
+   "title": "Applied Scientist, Alexa International Tech",
+   "years_min": 0,
+   "years_max": null,
+   "location": "Bengaluru",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Java",
+    "C++",
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [],
+   "cloud": [],
+   "data": [],
+   "ops_deploy": [
+    "LLM evaluation and tooling",
+    "online and offline evaluation metrics"
+   ],
+   "ml_deep": [
+    "Large Language Models",
+    "ASR",
+    "TTS",
+    "Speech to Speech",
+    "deep learning",
+    "SFT",
+    "DPO",
+    "RLHF",
+    "RLAIF",
+    "machine translation"
+   ],
+   "soft_asks": [],
+   "deliverables": "Multi-lingual LLM, ASR, TTS and speech-to-speech models plus evaluation methodology",
+   "excerpt": "Foundational knowledge of state-of-the-art LLM architectures and training",
+   "snapshot_date": "2026-09-18",
+   "territory": "global_product_careers",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "amazon.jobs",
+   "source_url": "https://www.amazon.jobs/en/jobs/10498825",
+   "company": "Amazon Alexa Edge AI",
+   "company_tier": "global_product",
+   "title": "Applied Scientist, Alexa Edge AI",
+   "years_min": 1,
+   "years_max": null,
+   "location": "Bengaluru",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Java",
+    "C++",
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [],
+   "cloud": [],
+   "data": [],
+   "ops_deploy": [
+    "evaluation frameworks",
+    "deployment at scale",
+    "inference optimization"
+   ],
+   "ml_deep": [
+    "computer vision",
+    "audio processing",
+    "multimodal",
+    "distributed training",
+    "model compression",
+    "pruning",
+    "quantization",
+    "distillation",
+    "speech recognition"
+   ],
+   "soft_asks": [
+    "mentoring"
+   ],
+   "deliverables": "Deep learning models for CV, audio and multimodal fusion on edge and cloud",
+   "excerpt": "1+ years of building models for business application experience",
+   "snapshot_date": "2026-09-18",
+   "territory": "global_product_careers",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "amazon.jobs",
+   "source_url": "https://www.amazon.jobs/en/jobs/10516477",
+   "company": "Amazon Alexa AI",
+   "company_tier": "global_product",
+   "title": "Data Scientist, Alexa AI",
+   "years_min": 2,
+   "years_max": null,
+   "location": "Bengaluru",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "SQL",
+    "Python",
+    "R"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [],
+   "cloud": [],
+   "data": [
+    "SQL",
+    "Hadoop",
+    "Spark",
+    "Hive"
+   ],
+   "ops_deploy": [
+    "evaluating AI systems"
+   ],
+   "ml_deep": [
+    "ASR",
+    "NLU",
+    "Machine Learning",
+    "Computer Vision"
+   ],
+   "soft_asks": [
+    "documentation"
+   ],
+   "deliverables": "Data experiments and algorithms advancing speech and language technology",
+   "excerpt": "1+ years of data querying languages, 2+ years data/research scientist",
+   "snapshot_date": "2026-09-18",
+   "territory": "global_product_careers",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "amazon.jobs",
+   "source_url": "https://www.amazon.jobs/en/jobs/10507927",
+   "company": "Amazon CMT",
+   "company_tier": "global_product",
+   "title": "Applied Scientist I",
+   "years_min": null,
+   "years_max": null,
+   "location": "Chennai",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Java",
+    "C++",
+    "Python",
+    "SQL"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [],
+   "cloud": [],
+   "data": [
+    "SQL",
+    "RDBMS",
+    "Data Warehouse"
+   ],
+   "ops_deploy": [],
+   "ml_deep": [
+    "machine learning",
+    "large language models in production",
+    "recommender systems"
+   ],
+   "soft_asks": [
+    "poc_prototype",
+    "documentation"
+   ],
+   "deliverables": "Models for product similarity and price recommendations pushed into production",
+   "excerpt": "Experience programming in Java, C++, Python. Experience with SQL and RDBMS",
+   "snapshot_date": "2026-09-18",
+   "territory": "global_product_careers",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "amazon.jobs",
+   "source_url": "https://www.amazon.jobs/en/jobs/10458636",
+   "company": "Amazon India",
+   "company_tier": "global_product",
+   "title": "Applied Scientist, International ML",
+   "years_min": null,
+   "years_max": null,
+   "location": "Bengaluru",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Java",
+    "C++",
+    "Python",
+    "SQL"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [],
+   "cloud": [],
+   "data": [
+    "SQL",
+    "RDBMS",
+    "Data Warehouse"
+   ],
+   "ops_deploy": [],
+   "ml_deep": [
+    "machine learning",
+    "statistical techniques"
+   ],
+   "soft_asks": [],
+   "deliverables": "Production ML for recommendations, fraud models, catalog extraction",
+   "excerpt": "Experience programming in Java, C++, Python or related language",
+   "snapshot_date": "2026-09-18",
+   "territory": "global_product_careers",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "amazon.jobs",
+   "source_url": "https://www.amazon.jobs/en/jobs/10541351",
+   "company": "Amazon GO-AI",
+   "company_tier": "global_product",
+   "title": "Support Engineer I, MLDOps",
+   "years_min": 1,
+   "years_max": null,
+   "location": "Chennai",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [
+    "Agentic systems",
+    "conversational AI"
+   ],
+   "llm_providers": [],
+   "cloud": [
+    "Lambda",
+    "API Gateway",
+    "DynamoDB",
+    "serverless",
+    "cloud telephony"
+   ],
+   "data": [
+    "real-time analytics"
+   ],
+   "ops_deploy": [
+    "troubleshooting",
+    "debugging",
+    "runbooks",
+    "integration guides"
+   ],
+   "ml_deep": [
+    "Generative AI"
+   ],
+   "soft_asks": [
+    "documentation",
+    "stakeholder_management",
+    "mentoring",
+    "client_facing"
+   ],
+   "deliverables": "Cloud contact-centre channels with conversational AI and intelligent routing",
+   "excerpt": "1+ years of software development or technical support experience",
+   "snapshot_date": "2026-09-18",
+   "territory": "global_product_careers",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Databricks careers",
+   "source_url": "https://databricks.com/company/careers/open-positions/job?gh_jid=8632126002",
+   "company": "Databricks",
+   "company_tier": "global_product",
+   "title": "Full Stack Developer (AI Agents)",
+   "years_min": 3,
+   "years_max": null,
+   "location": "Bengaluru",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python",
+    "Node.js"
+   ],
+   "backend": [
+    "Node.js",
+    "REST",
+    "GraphQL"
+   ],
+   "frontend": [
+    "React.js"
+   ],
+   "retrieval_vector": [],
+   "agent_frameworks": [
+    "LangChain",
+    "LangGraph",
+    "ReAct loop",
+    "AI agents",
+    "LLM orchestration",
+    "prompt engineering",
+    "tools/plugins"
+   ],
+   "llm_providers": [
+    "Large Language Models"
+   ],
+   "cloud": [],
+   "data": [
+    "event-driven architectures",
+    "webhooks",
+    "CDC"
+   ],
+   "ops_deploy": [
+    "observability",
+    "logging",
+    "tracing",
+    "CI/CD",
+    "DevOps",
+    "testable code"
+   ],
+   "ml_deep": [],
+   "soft_asks": [
+    "system_design",
+    "documentation",
+    "agile"
+   ],
+   "deliverables": "Production AI agents with agentic logic in Python, React UI and run-level observability",
+   "excerpt": "3+ years full-stack with Python and React.js. Proven experience designing, building and deploying at least 1 production-deployed AI agent",
+   "snapshot_date": "2026-09-18",
+   "territory": "global_product_careers",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Databricks careers",
+   "source_url": "https://databricks.com/company/careers/open-positions/job?gh_jid=8099751002",
+   "company": "Databricks",
+   "company_tier": "global_product",
+   "title": "AI Engineer - FDE (Forward Deployed Engineer)",
+   "years_min": null,
+   "years_max": null,
+   "location": "Remote India",
+   "work_mode": "remote",
+   "salary_lpa": null,
+   "languages": [],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG"
+   ],
+   "agent_frameworks": [
+    "multi-agent systems",
+    "LangChain",
+    "DSPy"
+   ],
+   "llm_providers": [
+    "HuggingFace"
+   ],
+   "cloud": [
+    "AWS",
+    "Azure",
+    "GCP"
+   ],
+   "data": [
+    "Apache Spark",
+    "pandas"
+   ],
+   "ops_deploy": [
+    "LLMOps",
+    "evaluation",
+    "optimizations",
+    "production-grade GenAI deployments"
+   ],
+   "ml_deep": [
+    "fine-tuning",
+    "scikit-learn",
+    "PyTorch",
+    "Text2SQL"
+   ],
+   "soft_asks": [
+    "client_facing",
+    "stakeholder_management"
+   ],
+   "deliverables": "Customer-facing GenAI applications taken to production rollout",
+   "excerpt": "Experience building GenAI applications including RAG, multi-agent systems, Text2SQL, fine-tuning with HuggingFace, LangChain and DSPy",
+   "snapshot_date": "2026-09-18",
+   "territory": "global_product_careers",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Adobe Careers",
+   "source_url": "https://adobe.wd5.myworkdayjobs.com/external_experienced/job/Noida/Computer-Scientist---I_R170875",
+   "company": "Adobe",
+   "company_tier": "global_product",
+   "title": "Computer Scientist I",
+   "years_min": 3,
+   "years_max": 6,
+   "location": "Noida",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "C++",
+    "Java",
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "KAG"
+   ],
+   "agent_frameworks": [],
+   "llm_providers": [],
+   "cloud": [],
+   "data": [],
+   "ops_deploy": [],
+   "ml_deep": [
+    "GenAI"
+   ],
+   "soft_asks": [
+    "code_review",
+    "requirements_gathering"
+   ],
+   "deliverables": "Software applications with GenAI concepts as background knowledge",
+   "excerpt": "Knowledge of GenAI concepts like RAG, KAG and latest developments in this area",
+   "snapshot_date": "2026-09-18",
+   "territory": "global_product_careers",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Google Careers",
+   "source_url": "https://www.google.com/about/careers/applications/jobs/results/99011220777902790",
+   "company": "Google",
+   "company_tier": "global_product",
+   "title": "Software Engineer III, AI/ML Infrastructure",
+   "years_min": 2,
+   "years_max": null,
+   "location": "Bengaluru",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [],
+   "cloud": [],
+   "data": [
+    "data processing"
+   ],
+   "ops_deploy": [
+    "ML infrastructure",
+    "model deployment",
+    "model evaluation",
+    "optimization",
+    "kernel debugging",
+    "performance tuning"
+   ],
+   "ml_deep": [
+    "Speech/audio",
+    "reinforcement learning",
+    "model optimization"
+   ],
+   "soft_asks": [
+    "code_review",
+    "documentation"
+   ],
+   "deliverables": "ML infrastructure and performance work at Google scale",
+   "excerpt": "2 years of software development experience. 1 year of experience with ML infrastructure",
+   "snapshot_date": "2026-09-18",
+   "territory": "global_product_careers",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Google Careers",
+   "source_url": "https://www.google.com/about/careers/applications/jobs/results/83807658246578886",
+   "company": "Google",
+   "company_tier": "global_product",
+   "title": "Software Engineer III, AI/ML",
+   "years_min": 2,
+   "years_max": null,
+   "location": "Hyderabad",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [],
+   "cloud": [],
+   "data": [
+    "data processing"
+   ],
+   "ops_deploy": [
+    "ML infrastructure",
+    "model deployment",
+    "model evaluation",
+    "optimization",
+    "debugging"
+   ],
+   "ml_deep": [
+    "Speech/audio",
+    "reinforcement learning",
+    "model optimization"
+   ],
+   "soft_asks": [
+    "code_review",
+    "documentation"
+   ],
+   "deliverables": "Product and system development code in a specialized ML area",
+   "excerpt": "2 years of software development experience. 1 year of experience with ML infrastructure",
+   "snapshot_date": "2026-09-18",
+   "territory": "global_product_careers",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Google Careers",
+   "source_url": "https://www.google.com/about/careers/applications/jobs/results/103397997294822086",
+   "company": "Google Cloud",
+   "company_tier": "global_product",
+   "title": "Software Engineer III, AI/ML, Google Cloud",
+   "years_min": 2,
+   "years_max": null,
+   "location": "Bengaluru",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python",
+    "C++"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [
+    "LLM",
+    "Multi-Modal",
+    "Large Vision Models"
+   ],
+   "cloud": [
+    "AI Platform"
+   ],
+   "data": [
+    "data processing"
+   ],
+   "ops_deploy": [
+    "ML infrastructure",
+    "model deployment",
+    "model evaluation",
+    "optimization"
+   ],
+   "ml_deep": [
+    "GenAI",
+    "Machine Learning",
+    "text image video audio generation"
+   ],
+   "soft_asks": [
+    "system_design"
+   ],
+   "deliverables": "End-to-end GenAI features for Cloud editors across front-end, serving and modeling",
+   "excerpt": "1 year of experience with core GenAI concepts (LLM, Multi-Modal, Large Vision Models)",
+   "snapshot_date": "2026-09-18",
+   "territory": "global_product_careers",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Greenhouse",
+   "source_url": "https://job-boards.greenhouse.io/inmobi/jobs/8073988",
+   "company": "InMobi",
+   "company_tier": "indian_product",
+   "title": "SDE II - AI",
+   "years_min": 3,
+   "years_max": 5,
+   "location": "Bangalore",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python",
+    "SQL",
+    "Java"
+   ],
+   "backend": [
+    "REST API",
+    "microservices"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "vector databases",
+    "semantic search",
+    "contextual retrieval",
+    "vector search"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LangGraph",
+    "CrewAI",
+    "AutoGen",
+    "n8n",
+    "MCP",
+    "Agentic AI",
+    "multi-agent workflows",
+    "ReAct-style agents"
+   ],
+   "llm_providers": [
+    "LLMs",
+    "Generative AI",
+    "Copilot Studio"
+   ],
+   "cloud": [
+    "GCP",
+    "Azure",
+    "Azure AI",
+    "GKE",
+    "Databricks"
+   ],
+   "data": [
+    "SQL",
+    "Spark",
+    "Airflow",
+    "Caching",
+    "data pipelines"
+   ],
+   "ops_deploy": [
+    "CI/CD",
+    "Docker",
+    "monitoring",
+    "evaluate model and workflow performance",
+    "inference cost/latency optimization"
+   ],
+   "ml_deep": [
+    "TensorFlow",
+    "PyTorch",
+    "fine-tuning pipelines",
+    "prompt engineering"
+   ],
+   "soft_asks": [
+    "stakeholder_management",
+    "system_design",
+    "mentoring",
+    "agile",
+    "documentation"
+   ],
+   "deliverables": "LLM applications, chatbots, copilots and multi-agent workflows with vector-DB retrieval and MCP",
+   "excerpt": "3-5 years software development with Python, SQL, TensorFlow/PyTorch. Experience designing and building LLM-powered applications",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_product_cos",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Greenhouse",
+   "source_url": "https://job-boards.greenhouse.io/inmobi/jobs/8073655",
+   "company": "InMobi",
+   "company_tier": "indian_product",
+   "title": "SDE IV (ML Engineering)",
+   "years_min": null,
+   "years_max": null,
+   "location": "Lucknow",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [],
+   "backend": [
+    "services"
+   ],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [],
+   "cloud": [],
+   "data": [
+    "data pipelines"
+   ],
+   "ops_deploy": [
+    "shared evaluation infrastructure",
+    "monitor",
+    "ship and iterate in production"
+   ],
+   "ml_deep": [
+    "finetuning",
+    "distillation pipelines"
+   ],
+   "soft_asks": [
+    "system_design"
+   ],
+   "deliverables": "Production finetuning/distillation pipelines, routing algorithms and eval infrastructure",
+   "excerpt": "Strong software/ML engineering fundamentals. Willingness to learn model finetuning and distillation on the job",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_product_cos",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "LinkedIn",
+   "source_url": "https://in.linkedin.com/jobs/view/4463308615",
+   "company": "Exterro India",
+   "company_tier": "global_product",
+   "title": "Machine Learning Engineer",
+   "years_min": 1,
+   "years_max": 3,
+   "location": "Chennai",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "back-end development"
+   ],
+   "frontend": [
+    "Full stack"
+   ],
+   "retrieval_vector": [
+    "internal and external knowledge systems"
+   ],
+   "agent_frameworks": [
+    "agentic AI solutions",
+    "AI agents"
+   ],
+   "llm_providers": [
+    "GPT",
+    "Llama",
+    "Mistral",
+    "Hugging Face Transformers"
+   ],
+   "cloud": [
+    "AWS",
+    "GCP",
+    "Azure"
+   ],
+   "data": [
+    "SQL",
+    "relational databases",
+    "large-scale data processing"
+   ],
+   "ops_deploy": [
+    "Git",
+    "model deployment",
+    "productionising ML models"
+   ],
+   "ml_deep": [
+    "PyTorch",
+    "TensorFlow",
+    "GenAI",
+    "LLM",
+    "NLP",
+    "NLTK",
+    "spaCy",
+    "fine-tune"
+   ],
+   "soft_asks": [
+    "documentation",
+    "requirements_gathering"
+   ],
+   "deliverables": "ML models focused on GenAI, LLMs and NLP plus AI agents for real-life problems",
+   "excerpt": "1-3 years professional experience in machine learning engineering, particularly GenAI, LLM and NLP domains",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_product_cos",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "LinkedIn",
+   "source_url": "https://in.linkedin.com/jobs/view/4452912576",
+   "company": "Jnaara",
+   "company_tier": "ai_startup",
+   "title": "Software Engineer - Agentic AI (Quant Research)",
+   "years_min": 2,
+   "years_max": 4,
+   "location": "Chennai",
+   "work_mode": "onsite",
+   "salary_lpa": "15-30",
+   "languages": [
+    "Python",
+    "TypeScript"
+   ],
+   "backend": [
+    "FastAPI",
+    "Celery",
+    "async-first services"
+   ],
+   "frontend": [
+    "React",
+    "Next.js"
+   ],
+   "retrieval_vector": [
+    "retrieval layers",
+    "retrieval systems"
+   ],
+   "agent_frameworks": [
+    "Multi-Agent Systems",
+    "agent workflows",
+    "multi-agent orchestration",
+    "tool delegation"
+   ],
+   "llm_providers": [
+    "LLM APIs",
+    "LLM-as-judge"
+   ],
+   "cloud": [
+    "AWS",
+    "Terraform",
+    "S3"
+   ],
+   "data": [
+    "Snowflake",
+    "Postgres",
+    "Redis",
+    "pipelines"
+   ],
+   "ops_deploy": [
+    "GitHub Actions",
+    "evaluation harnesses",
+    "golden datasets",
+    "regression tests",
+    "tracing",
+    "latency profiling",
+    "observability"
+   ],
+   "ml_deep": [],
+   "soft_asks": [
+    "system_design",
+    "poc_prototype",
+    "documentation"
+   ],
+   "deliverables": "Multi-agent workflows with state persistence, memory and reasoning traces plus eval harnesses",
+   "excerpt": "2-4 years building real software. A public GitHub with at least one stellar agentic-AI project you built yourself",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_product_cos",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "LinkedIn",
+   "source_url": "https://in.linkedin.com/jobs/view/4464856836",
+   "company": "Smart Data Solutions",
+   "company_tier": "global_product",
+   "title": "Software Engineer I, Machine Learning",
+   "years_min": 1,
+   "years_max": null,
+   "location": "Sholinganallur, Tamil Nadu",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python",
+    "Java",
+    "C#",
+    "C++"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAGs"
+   ],
+   "agent_frameworks": [],
+   "llm_providers": [
+    "LLMs"
+   ],
+   "cloud": [],
+   "data": [
+    "MySQL"
+   ],
+   "ops_deploy": [
+    "Git",
+    "containerization",
+    "deploy",
+    "troubleshoot"
+   ],
+   "ml_deep": [
+    "machine learning",
+    "NLP",
+    "deep learning",
+    "computer vision"
+   ],
+   "soft_asks": [
+    "documentation",
+    "requirements_gathering"
+   ],
+   "deliverables": "ML models and infrastructure for healthcare claim routing and workflow automation",
+   "excerpt": "1+ year of experience with machine learning, NLP or deep learning. Must have experience with LLMs and RAGs",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_product_cos",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "LinkedIn",
+   "source_url": "https://in.linkedin.com/jobs/view/4461154877",
+   "company": "Responsive",
+   "company_tier": "global_product",
+   "title": "Software Engineer",
+   "years_min": 2,
+   "years_max": null,
+   "location": "Greater Coimbatore Area",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Java"
+   ],
+   "backend": [
+    "Spring"
+   ],
+   "frontend": [
+    "React"
+   ],
+   "retrieval_vector": [
+    "search and retrieval",
+    "ElasticSearch",
+    "Apache Solr",
+    "semantic search",
+    "text processing"
+   ],
+   "agent_frameworks": [],
+   "llm_providers": [],
+   "cloud": [
+    "GCP",
+    "Azure",
+    "AWS"
+   ],
+   "data": [
+    "MongoDB"
+   ],
+   "ops_deploy": [
+    "Test Driven Development",
+    "performance tuning"
+   ],
+   "ml_deep": [
+    "NLP",
+    "AI-driven solutions"
+   ],
+   "soft_asks": [
+    "agile",
+    "system_design"
+   ],
+   "deliverables": "Distributed SaaS response-management application with AI-driven search and NLP",
+   "excerpt": "2+ years in software design and development using Java. Expertise in search and retrieval technologies",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_product_cos",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "LinkedIn",
+   "source_url": "https://in.linkedin.com/jobs/view/4457091805",
+   "company": "Freshworks",
+   "company_tier": "indian_product",
+   "title": "Specialist - Bots Strategy",
+   "years_min": 1,
+   "years_max": 3,
+   "location": "Chennai",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [
+    "structured knowledge articles",
+    "knowledge management"
+   ],
+   "agent_frameworks": [
+    "bot configuration",
+    "workflows",
+    "automations",
+    "guardrails"
+   ],
+   "llm_providers": [
+    "AI tools"
+   ],
+   "cloud": [],
+   "data": [
+    "dashboards"
+   ],
+   "ops_deploy": [
+    "simulations",
+    "E2E tests",
+    "conversation audits",
+    "bot KPIs"
+   ],
+   "ml_deep": [
+    "intent fixes",
+    "conversational design"
+   ],
+   "soft_asks": [
+    "stakeholder_management",
+    "documentation",
+    "requirements_gathering",
+    "client_facing"
+   ],
+   "deliverables": "End-to-end AI/bot experience: intents, Q&A content, workflows, guardrails and deflection KPIs",
+   "excerpt": "1-3 years in chatbot operations, conversational design or knowledge management in B2B SaaS",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_product_cos",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "LinkedIn",
+   "source_url": "https://in.linkedin.com/jobs/view/4462799465",
+   "company": "DataWeave",
+   "company_tier": "indian_product",
+   "title": "Senior Data Engineer",
+   "years_min": 4,
+   "years_max": 7,
+   "location": "Coimbatore",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [
+    "Solr",
+    "ElasticSearch"
+   ],
+   "agent_frameworks": [],
+   "llm_providers": [],
+   "cloud": [],
+   "data": [
+    "mysql",
+    "Cassandra",
+    "Data pipelines",
+    "big data stack"
+   ],
+   "ops_deploy": [
+    "incremental testing and deployment"
+   ],
+   "ml_deep": [
+    "data mining"
+   ],
+   "soft_asks": [
+    "documentation"
+   ],
+   "deliverables": "Scalable crawler bots and big-data pipelines for competitive-intelligence products",
+   "excerpt": "4-7 years of experience. Expert in Python with strong grasp of CS fundamentals",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_product_cos",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "LinkedIn",
+   "source_url": "https://in.linkedin.com/jobs/view/4190155357",
+   "company": "Meesho",
+   "company_tier": "indian_product",
+   "title": "Data Scientist III",
+   "years_min": 4,
+   "years_max": 7,
+   "location": "Bengaluru",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python",
+    "R",
+    "SQL"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [],
+   "cloud": [],
+   "data": [
+    "SQL"
+   ],
+   "ops_deploy": [
+    "A/B tests",
+    "model testing"
+   ],
+   "ml_deep": [
+    "Neural Networks",
+    "Machine Learning",
+    "Statistics",
+    "Linear Algebra"
+   ],
+   "soft_asks": [
+    "stakeholder_management",
+    "mentoring"
+   ],
+   "deliverables": "Models for fraud detection, inventory optimisation, discounting and demand forecasting",
+   "excerpt": "4-7 years as a Data Scientist in a fast-paced organization",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_product_cos",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "LinkedIn",
+   "source_url": "https://in.linkedin.com/jobs/view/4466175883",
+   "company": "Credit Saison India",
+   "company_tier": "indian_product",
+   "title": "Machine Learning Engineer",
+   "years_min": 2,
+   "years_max": 5,
+   "location": "Bengaluru",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python",
+    "SQL"
+   ],
+   "backend": [
+    "inference serving architectures"
+   ],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [
+    "foundational AI technologies"
+   ],
+   "cloud": [
+    "AWS"
+   ],
+   "data": [
+    "real-time and batch feature pipelines",
+    "distributed real-time computing"
+   ],
+   "ops_deploy": [
+    "MLflow",
+    "Kubeflow",
+    "Docker",
+    "TF Serving",
+    "ONNX",
+    "observability",
+    "tracing",
+    "alerting",
+    "monitoring dashboards",
+    "shadow deployments"
+   ],
+   "ml_deep": [
+    "core ML algorithms",
+    "neural networks",
+    "deep learning"
+   ],
+   "soft_asks": [
+    "stakeholder_management",
+    "system_design"
+   ],
+   "deliverables": "Real-time feature pipelines and inference serving for credit decisioning models",
+   "excerpt": "2-5 years hands-on deploying ML models into production real-time environments",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_product_cos",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "LinkedIn",
+   "source_url": "https://in.linkedin.com/jobs/view/4427331662",
+   "company": "Go Digit Insurance",
+   "company_tier": "indian_product",
+   "title": "AI consulting lead",
+   "years_min": 3,
+   "years_max": 6,
+   "location": "Bengaluru",
+   "work_mode": "onsite",
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "vector DBs",
+    "FAISS"
+   ],
+   "agent_frameworks": [
+    "LangChain"
+   ],
+   "llm_providers": [
+    "LLMs",
+    "GenAI"
+   ],
+   "cloud": [],
+   "data": [],
+   "ops_deploy": [
+    "MLOps",
+    "MLflow",
+    "CI/CD",
+    "deployment pipelines",
+    "latency",
+    "scaling",
+    "vLLM"
+   ],
+   "ml_deep": [
+    "Prompt Engineering",
+    "fine-tuning",
+    "LoRA",
+    "QLoRA",
+    "NLP",
+    "Speech AI",
+    "multilingual models",
+    "on-device ML"
+   ],
+   "soft_asks": [
+    "stakeholder_management",
+    "poc_prototype",
+    "requirements_gathering",
+    "client_facing"
+   ],
+   "deliverables": "End-to-end AI systems for insurance operations measured on TAT reduction and cost",
+   "excerpt": "3-6 years in AI/ML Engineering / GenAI roles. LLMs, RAG, Prompt Engineering and Fine-tuning",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_product_cos",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "LinkedIn",
+   "source_url": "https://in.linkedin.com/jobs/view/4465495286",
+   "company": "Mopid",
+   "company_tier": "ai_startup",
+   "title": "AI Engineer",
+   "years_min": 2,
+   "years_max": 4,
+   "location": "Bangalore",
+   "work_mode": "onsite",
+   "salary_lpa": "25-35",
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "backend engineering",
+    "API integrations"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "embeddings",
+    "vector databases"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LangGraph",
+    "AI agents",
+    "multi-step workflows",
+    "Function calling"
+   ],
+   "llm_providers": [
+    "GPT",
+    "Claude",
+    "Llama",
+    "frontier models"
+   ],
+   "cloud": [
+    "GCP"
+   ],
+   "data": [],
+   "ops_deploy": [
+    "cloud deployment",
+    "production-grade AI applications"
+   ],
+   "ml_deep": [],
+   "soft_asks": [],
+   "deliverables": "Production-grade governed and auditable AI systems for enterprise decision-making",
+   "excerpt": "AI Engineer 2-4 Years. Python and backend engineering, LLMs, RAG, embeddings and vector databases, LangChain / LangGraph",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_product_cos",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "LinkedIn",
+   "source_url": "https://in.linkedin.com/jobs/view/4461599885",
+   "company": "Shuru",
+   "company_tier": "consultancy",
+   "title": "AI Engineer",
+   "years_min": 2,
+   "years_max": 4,
+   "location": "Bengaluru",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python",
+    "TypeScript"
+   ],
+   "backend": [
+    "FastAPI"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG"
+   ],
+   "agent_frameworks": [
+    "AI agents",
+    "agent workflows",
+    "tool calling"
+   ],
+   "llm_providers": [
+    "LLMs",
+    "Claude Code",
+    "Cursor",
+    "Copilot",
+    "Codex"
+   ],
+   "cloud": [],
+   "data": [],
+   "ops_deploy": [
+    "evals",
+    "measure accuracy and prevent regressions"
+   ],
+   "ml_deep": [
+    "prompting",
+    "structured outputs"
+   ],
+   "soft_asks": [
+    "poc_prototype"
+   ],
+   "deliverables": "End-to-end AI/LLM workflows, agents and automation shipped in weekly cycles for clients",
+   "excerpt": "2-4 years software engineering. Hands-on experience building with LLMs and AI agents",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_product_cos",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "LinkedIn",
+   "source_url": "https://in.linkedin.com/jobs/view/4377180180",
+   "company": "Saara Inc",
+   "company_tier": "ai_startup",
+   "title": "Jr. AI Developer",
+   "years_min": 1,
+   "years_max": null,
+   "location": "Bengaluru",
+   "work_mode": "hybrid",
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "Django"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "vector databases"
+   ],
+   "agent_frameworks": [
+    "GenAI agents",
+    "MCPs",
+    "Agno platform",
+    "AI agent"
+   ],
+   "llm_providers": [
+    "OpenAI",
+    "Claude",
+    "Gemini",
+    "LLMs"
+   ],
+   "cloud": [
+    "Azure"
+   ],
+   "data": [
+    "Postgres"
+   ],
+   "ops_deploy": [
+    "APIs"
+   ],
+   "ml_deep": [
+    "prompt engineering",
+    "NLP",
+    "LangChain"
+   ],
+   "soft_asks": [
+    "poc_prototype"
+   ],
+   "deliverables": "GenAI agents on internal agent platform plus features for Django ecommerce SaaS",
+   "excerpt": "1+ years of experience in Python and Django. Not afraid of APIs, prompt engineering or thinking about how an AI agent should talk to customers",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_product_cos",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "LinkedIn",
+   "source_url": "https://in.linkedin.com/jobs/view/4434968022",
+   "company": "Genios AI",
+   "company_tier": "ai_startup",
+   "title": "Software Engineer - AI Platform",
+   "years_min": 3,
+   "years_max": null,
+   "location": "Bengaluru",
+   "work_mode": "hybrid",
+   "salary_lpa": null,
+   "languages": [
+    "Python",
+    "Go",
+    "SQL"
+   ],
+   "backend": [
+    "FastAPI",
+    "gRPC",
+    "APIs",
+    "microservices"
+   ],
+   "frontend": [
+    "full-stack"
+   ],
+   "retrieval_vector": [
+    "RAG architectures",
+    "embeddings",
+    "reranking models",
+    "high-scale document indexing"
+   ],
+   "agent_frameworks": [
+    "Langchain",
+    "LlamaIndex",
+    "agentic systems"
+   ],
+   "llm_providers": [
+    "OpenAI API",
+    "Hugging Face Transformers"
+   ],
+   "cloud": [],
+   "data": [
+    "SQL"
+   ],
+   "ops_deploy": [
+    "deployment",
+    "performance optimization",
+    "shipping production systems"
+   ],
+   "ml_deep": [
+    "TensorFlow",
+    "PyTorch",
+    "Scikit-Learn",
+    "prompt tuning",
+    "DSPy"
+   ],
+   "soft_asks": [
+    "poc_prototype"
+   ],
+   "deliverables": "Applied AI platform features end to end including RAG and LLM dialogue systems",
+   "excerpt": "3+ years in ML/DL pipelines, deployment and applied AI. Knowledge of RAG architectures, embeddings, reranking models",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_product_cos",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "LinkedIn",
+   "source_url": "https://in.linkedin.com/jobs/view/4447329688",
+   "company": "REVERONIX",
+   "company_tier": "ai_startup",
+   "title": "AI Engineer",
+   "years_min": 3,
+   "years_max": null,
+   "location": "Bengaluru",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python",
+    "TypeScript"
+   ],
+   "backend": [
+    "integration"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "vector stores",
+    "embeddings",
+    "RAG patterns"
+   ],
+   "agent_frameworks": [],
+   "llm_providers": [
+    "GenAI"
+   ],
+   "cloud": [],
+   "data": [],
+   "ops_deploy": [
+    "evals",
+    "observability",
+    "fallback design",
+    "guardrails"
+   ],
+   "ml_deep": [],
+   "soft_asks": [
+    "system_design"
+   ],
+   "deliverables": "Ship AI systems in production with retrieval stacks, evals, guardrails and fallback design",
+   "excerpt": "3+ years software engineering with at least 1 year shipping AI systems in production. Have built and run evals",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_product_cos",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "LinkedIn",
+   "source_url": "https://in.linkedin.com/jobs/view/4444868253",
+   "company": "FactoFlare AI",
+   "company_tier": "ai_startup",
+   "title": "Machine Learning Engineer",
+   "years_min": 3,
+   "years_max": null,
+   "location": "Bengaluru",
+   "work_mode": "hybrid",
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "model serving"
+   ],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [
+    "AI agent systems"
+   ],
+   "llm_providers": [],
+   "cloud": [
+    "cloud computing"
+   ],
+   "data": [
+    "data processing frameworks",
+    "feature stores",
+    "ML metadata"
+   ],
+   "ops_deploy": [
+    "MLOps",
+    "containerization",
+    "orchestration",
+    "real-time ML inference",
+    "edge deployment"
+   ],
+   "ml_deep": [
+    "ML frameworks",
+    "distributed training",
+    "large-scale ML systems"
+   ],
+   "soft_asks": [
+    "system_design"
+   ],
+   "deliverables": "ML engineering and MLOps for autonomous AI-agent platform",
+   "excerpt": "3+ years in machine learning engineering or MLOps. Experience with containerization, orchestration and cloud computing",
+   "snapshot_date": "2026-09-18",
+   "territory": "indian_product_cos",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "TopGenAIJobs",
+   "source_url": "https://www.topgenaijobs.com/jobs/gen-ai-engineer-at-infosys-in-bengaluru-tk129y",
+   "company": "Infosys",
+   "company_tier": "services_mnc",
+   "title": "GEN AI Engineer",
+   "years_min": 3,
+   "years_max": 5,
+   "location": "Bangalore",
+   "work_mode": "onsite",
+   "salary_lpa": "17-27",
+   "languages": [
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "Hybrid Search"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LlamaIndex"
+   ],
+   "llm_providers": [
+    "Hugging Face",
+    "LLM"
+   ],
+   "cloud": [
+    "AWS",
+    "GCP",
+    "Azure"
+   ],
+   "data": [],
+   "ops_deploy": [
+    "Docker",
+    "model deployment",
+    "containerization",
+    "version control",
+    "monitoring"
+   ],
+   "ml_deep": [
+    "PyTorch",
+    "TensorFlow",
+    "Keras",
+    "LoRA",
+    "QLoRA",
+    "fine-tune",
+    "Prompt Engineering"
+   ],
+   "soft_asks": [
+    "code_review",
+    "documentation"
+   ],
+   "deliverables": "Fine-tune GenAI models and build AI-powered workflows with deployment and monitoring",
+   "excerpt": "Implement and fine-tune generative AI models. Contribute to prompt engineering and AI-powered workflow development",
+   "snapshot_date": "2026-09-18",
+   "territory": "services_mnc",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "TopGenAIJobs",
+   "source_url": "https://www.topgenaijobs.com/jobs/genai-agentic-ai-engineer-at-infosys-limited-in-bengaluru-2syltr",
+   "company": "Infosys",
+   "company_tier": "services_mnc",
+   "title": "GenAI / Agentic AI Engineer",
+   "years_min": 3,
+   "years_max": 5,
+   "location": "Bengaluru",
+   "work_mode": "onsite",
+   "salary_lpa": "17-26",
+   "languages": [
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "chunking",
+    "embeddings",
+    "retrieval",
+    "grounding",
+    "Knowledge bases"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LangGraph",
+    "multi step agent workflows",
+    "routing"
+   ],
+   "llm_providers": [
+    "AWS Bedrock",
+    "Claude",
+    "Titan"
+   ],
+   "cloud": [
+    "AWS"
+   ],
+   "data": [],
+   "ops_deploy": [
+    "CI CD",
+    "Docker",
+    "Git",
+    "pytest",
+    "latency token usage and cost metrics",
+    "evaluation awareness",
+    "guardrails",
+    "access controls"
+   ],
+   "ml_deep": [
+    "Prompt Engineering",
+    "few shot"
+   ],
+   "soft_asks": [],
+   "deliverables": "GenAI features, RAG pipelines and multi-step agent workflows on AWS Bedrock",
+   "excerpt": "Implement RAG pipelines chunking embeddings retrieval grounding. Build single multi step agent workflows using LangChain LangGraph",
+   "snapshot_date": "2026-09-18",
+   "territory": "services_mnc",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "TopGenAIJobs",
+   "source_url": "https://www.topgenaijobs.com/jobs/python-developer-agentic-ai-llm-rag-engi-at-infosys-limited-in-bengaluru-g1b2h8",
+   "company": "Infosys",
+   "company_tier": "services_mnc",
+   "title": "Python Developer - Agentic AI / LLM / RAG Engineer",
+   "years_min": 1,
+   "years_max": 6,
+   "location": "Bengaluru",
+   "work_mode": "onsite",
+   "salary_lpa": "12-19",
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "FastAPI",
+    "Flask",
+    "Django",
+    "REST APIs",
+    "microservices"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "Vector Database",
+    "Embeddings",
+    "Pinecone",
+    "ChromaDB",
+    "FAISS",
+    "Weaviate",
+    "Azure AI Search",
+    "Semantic search"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LangGraph",
+    "CrewAI",
+    "AutoGen",
+    "LlamaIndex",
+    "Agentic AI",
+    "Multi-agent architectures"
+   ],
+   "llm_providers": [
+    "OpenAI",
+    "Azure OpenAI",
+    "Llama",
+    "Claude",
+    "Gemini"
+   ],
+   "cloud": [
+    "Azure",
+    "AWS",
+    "GCP"
+   ],
+   "data": [],
+   "ops_deploy": [
+    "Docker",
+    "Kubernetes",
+    "MLOps",
+    "Git",
+    "CI/CD",
+    "Model evaluation"
+   ],
+   "ml_deep": [
+    "fine-tune",
+    "Prompt Engineering",
+    "NLP",
+    "machine learning",
+    "deep learning"
+   ],
+   "soft_asks": [
+    "requirements_gathering",
+    "stakeholder_management"
+   ],
+   "deliverables": "Agentic AI systems and RAG pipelines with vector DBs plus APIs exposing them",
+   "excerpt": "Design and implement Agentic AI systems using LangChain, LangGraph, CrewAI, AutoGen. Translate requirements into AI-driven solutions",
+   "snapshot_date": "2026-09-18",
+   "territory": "services_mnc",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "TopGenAIJobs",
+   "source_url": "https://www.topgenaijobs.com/jobs/ai-ml-engineer-at-accenture-in-gurugram-ihfxho",
+   "company": "Accenture",
+   "company_tier": "services_mnc",
+   "title": "AI / ML Engineer",
+   "years_min": 2,
+   "years_max": 5,
+   "location": "Gurugram",
+   "work_mode": "onsite",
+   "salary_lpa": "13-21",
+   "languages": [],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [
+    "Generative AI"
+   ],
+   "cloud": [
+    "Cloud AI services"
+   ],
+   "data": [
+    "on-premise pipelines"
+   ],
+   "ops_deploy": [
+    "AI model design and deployment"
+   ],
+   "ml_deep": [
+    "Deep learning",
+    "Neural networks",
+    "Conversational AI",
+    "Image processing"
+   ],
+   "soft_asks": [
+    "documentation",
+    "mentoring"
+   ],
+   "deliverables": "AI/ML applications with cloud or on-prem pipelines applying generative AI",
+   "excerpt": "Design and build AI/ML applications and systems. Integrate cloud-based or on-premise pipelines for production-ready solutions",
+   "snapshot_date": "2026-09-18",
+   "territory": "services_mnc",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "TopGenAIJobs",
+   "source_url": "https://www.topgenaijobs.com/jobs/llm-full-stack-engineer-at-accenture-in-pune-96nhum",
+   "company": "Accenture",
+   "company_tier": "services_mnc",
+   "title": "LLM Full Stack Engineer",
+   "years_min": 2,
+   "years_max": 5,
+   "location": "Pune",
+   "work_mode": "onsite",
+   "salary_lpa": "13-21",
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "APIs",
+    "Server-side technologies"
+   ],
+   "frontend": [
+    "React.js"
+   ],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [
+    "Large Language Models",
+    "Gen AI"
+   ],
+   "cloud": [
+    "AWS Machine Learning"
+   ],
+   "data": [],
+   "ops_deploy": [
+    "DevOps"
+   ],
+   "ml_deep": [],
+   "soft_asks": [
+    "system_design",
+    "mentoring"
+   ],
+   "deliverables": "Applications integrated with LLMs and enterprise services, APIs across front-end and server",
+   "excerpt": "Develop and integrate applications with Large Language Models and enterprise services. Minimum 2 years Python",
+   "snapshot_date": "2026-09-18",
+   "territory": "services_mnc",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "TopGenAIJobs",
+   "source_url": "https://www.topgenaijobs.com/jobs/ai-ml-engineer-at-accenture-in-bengalore-3tno1u",
+   "company": "Accenture",
+   "company_tier": "services_mnc",
+   "title": "AI / ML Engineer (Advanced Application Engineering Analyst)",
+   "years_min": 2,
+   "years_max": null,
+   "location": "Bengaluru",
+   "work_mode": "onsite",
+   "salary_lpa": "12-19",
+   "languages": [
+    "Python",
+    "R"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [
+    "GenAI models"
+   ],
+   "cloud": [
+    "cloud platforms",
+    "Cloud AI services"
+   ],
+   "data": [
+    "data preprocessing"
+   ],
+   "ops_deploy": [
+    "cloud or on-prem pipelines",
+    "testing and validation"
+   ],
+   "ml_deep": [
+    "TensorFlow",
+    "PyTorch",
+    "Machine Learning",
+    "deep learning",
+    "neural networks",
+    "chatbots",
+    "feature engineering"
+   ],
+   "soft_asks": [],
+   "deliverables": "Production-quality AI applications on cloud/on-prem pipelines applying GenAI models",
+   "excerpt": "Build proper cloud or on-prem application pipelines with production-ready quality. Apply GenAI models as part of the solution",
+   "snapshot_date": "2026-09-18",
+   "territory": "services_mnc",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "TopGenAIJobs",
+   "source_url": "https://www.topgenaijobs.com/jobs/ai-ml-computational-science-analyst-at-accenture-in-bengalore-02kvy9",
+   "company": "Accenture",
+   "company_tier": "services_mnc",
+   "title": "AI/ML Computational Science Analyst",
+   "years_min": 1,
+   "years_max": 2,
+   "location": "Bengaluru",
+   "work_mode": "onsite",
+   "salary_lpa": "8-12",
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "REST API",
+    "Full-Stack Development"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "Vector Database"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LangGraph",
+    "Agentic AI",
+    "MCP",
+    "Semantic Kernel",
+    "CrewAI",
+    "tool calling",
+    "orchestration"
+   ],
+   "llm_providers": [
+    "LLM",
+    "Gen AI"
+   ],
+   "cloud": [
+    "cloud platforms",
+    "AWS"
+   ],
+   "data": [
+    "JSON",
+    "data preparation"
+   ],
+   "ops_deploy": [
+    "Git",
+    "Docker",
+    "CI/CD",
+    "unit testing",
+    "API testing",
+    "deployment support",
+    "LLM response validation",
+    "structured output testing"
+   ],
+   "ml_deep": [
+    "prompt engineering",
+    "Machine Learning"
+   ],
+   "soft_asks": [
+    "client_facing",
+    "documentation"
+   ],
+   "deliverables": "AI-native and Agentic AI solutions for Accenture Operations delivery PODs",
+   "excerpt": "Design, build, integrate, test and deploy AI-native and Agentic AI solutions. Work closely with client problems across the delivery lifecycle",
+   "snapshot_date": "2026-09-18",
+   "territory": "services_mnc",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "TopGenAIJobs",
+   "source_url": "https://www.topgenaijobs.com/jobs/ai-ml-engineer-at-accenture-in-pune-n11v0i",
+   "company": "Accenture",
+   "company_tier": "services_mnc",
+   "title": "AI / ML Engineer",
+   "years_min": 3,
+   "years_max": 4,
+   "location": "Pune",
+   "work_mode": "onsite",
+   "salary_lpa": "22",
+   "languages": [],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [
+    "Large Language Models",
+    "Gen AI"
+   ],
+   "cloud": [
+    "Cloud AI"
+   ],
+   "data": [
+    "AI Pipelines"
+   ],
+   "ops_deploy": [
+    "Production-quality AI pipelines",
+    "On-premises AI deployment"
+   ],
+   "ml_deep": [
+    "Deep learning",
+    "Neural network architectures",
+    "Chatbot development",
+    "Image Processing"
+   ],
+   "soft_asks": [
+    "documentation",
+    "mentoring"
+   ],
+   "deliverables": "AI applications on cloud AI services with end-to-end pipelines",
+   "excerpt": "Minimum 3 years of experience in Large Language Models. Manage end-to-end development pipelines",
+   "snapshot_date": "2026-09-18",
+   "territory": "services_mnc",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "TopGenAIJobs",
+   "source_url": "https://www.topgenaijobs.com/jobs/python-genai-engineer-at-capgemini-in-bengaluru-pfka50",
+   "company": "Capgemini",
+   "company_tier": "services_mnc",
+   "title": "Python GenAI Engineer",
+   "years_min": 3,
+   "years_max": 5,
+   "location": "Bengaluru",
+   "work_mode": "hybrid",
+   "salary_lpa": "17-26",
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "REST APIs"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "Embeddings",
+    "Vector Database",
+    "retrieval architectures",
+    "vector search",
+    "semantic search",
+    "Hybrid search"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LlamaIndex",
+    "Agentic AI",
+    "LangGraph"
+   ],
+   "llm_providers": [
+    "LLM",
+    "Hugging Face",
+    "Gen AI"
+   ],
+   "cloud": [
+    "Azure",
+    "AWS",
+    "GCP"
+   ],
+   "data": [],
+   "ops_deploy": [
+    "Docker",
+    "Git",
+    "CI/CD",
+    "testing",
+    "debugging",
+    "containerized environments",
+    "monitoring"
+   ],
+   "ml_deep": [
+    "LoRA",
+    "QLoRA",
+    "fine-tune",
+    "Prompt Engineering",
+    "PyTorch",
+    "TensorFlow",
+    "Keras"
+   ],
+   "soft_asks": [
+    "code_review",
+    "documentation"
+   ],
+   "deliverables": "GenAI applications with RAG pipelines and vector search exposed as REST APIs",
+   "excerpt": "Build and optimize RAG pipelines, vector search and AI-powered workflows. Fine-tune models using LoRA and QLoRA",
+   "snapshot_date": "2026-09-18",
+   "territory": "services_mnc",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "TopGenAIJobs",
+   "source_url": "https://www.topgenaijobs.com/jobs/python-genai-engineer-at-capgemini-sogeti-in-bengaluru-5dxfb4",
+   "company": "Capgemini Sogeti",
+   "company_tier": "services_mnc",
+   "title": "Python GenAI Engineer",
+   "years_min": 3,
+   "years_max": 5,
+   "location": "Bengaluru",
+   "work_mode": "hybrid",
+   "salary_lpa": "17-26",
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "REST APIs"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "Embeddings",
+    "Vector Database",
+    "vector search",
+    "semantic search",
+    "hybrid search"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LlamaIndex",
+    "Agentic AI",
+    "LangGraph"
+   ],
+   "llm_providers": [
+    "LLM",
+    "Hugging Face"
+   ],
+   "cloud": [
+    "Azure",
+    "AWS",
+    "GCP"
+   ],
+   "data": [],
+   "ops_deploy": [
+    "Docker",
+    "Git",
+    "CI/CD",
+    "testing",
+    "monitoring",
+    "containerized environments"
+   ],
+   "ml_deep": [
+    "LoRA",
+    "QLoRA",
+    "fine-tune",
+    "Prompt Engineering",
+    "PyTorch",
+    "TensorFlow"
+   ],
+   "soft_asks": [
+    "code_review",
+    "documentation"
+   ],
+   "deliverables": "LLM apps, RAG pipelines, vector search and REST API integration",
+   "excerpt": "Develop and enhance Generative AI applications using LLMs and AI frameworks. Follow Responsible AI, security and data practices",
+   "snapshot_date": "2026-09-18",
+   "territory": "services_mnc",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "TopGenAIJobs",
+   "source_url": "https://www.topgenaijobs.com/jobs/ai-engineer-at-zensar-technologies-in-india-pan-india-8ao04z",
+   "company": "Zensar Technologies",
+   "company_tier": "services_mnc",
+   "title": "AI Engineer",
+   "years_min": 3,
+   "years_max": 5,
+   "location": "Pan India",
+   "work_mode": "onsite",
+   "salary_lpa": "21-32",
+   "languages": [],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [
+    "Large Language Models",
+    "Generative AI"
+   ],
+   "cloud": [
+    "Cloud-based AI platforms"
+   ],
+   "data": [],
+   "ops_deploy": [],
+   "ml_deep": [
+    "Machine Learning",
+    "Natural Language Processing"
+   ],
+   "soft_asks": [],
+   "deliverables": "Design, develop, deploy and optimize AI and Generative AI solutions",
+   "excerpt": "AI Engineer to design, develop, deploy and optimize AI and Generative AI solutions",
+   "snapshot_date": "2026-09-18",
+   "territory": "services_mnc",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "TopGenAIJobs",
+   "source_url": "https://www.topgenaijobs.com/jobs/gen-ai-engineer-at-zensar-in-pune-7te8yd",
+   "company": "Zensar",
+   "company_tier": "services_mnc",
+   "title": "Gen AI Engineer - Microsoft Copilot Studio",
+   "years_min": 4,
+   "years_max": 6,
+   "location": "Pune",
+   "work_mode": "onsite",
+   "salary_lpa": "27-39",
+   "languages": [
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [
+    "AI agents",
+    "Microsoft Copilot Studio",
+    "workflow orchestration"
+   ],
+   "llm_providers": [
+    "Gen AI",
+    "Microsoft Copilot"
+   ],
+   "cloud": [
+    "Azure",
+    "Microsoft 365",
+    "Power Platform"
+   ],
+   "data": [
+    "enterprise data"
+   ],
+   "ops_deploy": [
+    "Monitor evaluate and fine-tune AI models"
+   ],
+   "ml_deep": [
+    "fine-tune"
+   ],
+   "soft_asks": [
+    "client_facing",
+    "stakeholder_management",
+    "requirements_gathering"
+   ],
+   "deliverables": "Copilot agents and conversational automation for client service requests and escalations",
+   "excerpt": "Understand client business processes to identify and define AI opportunities. Gather pain points from business and technical stakeholders",
+   "snapshot_date": "2026-09-18",
+   "territory": "services_mnc",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "freehire",
+   "source_url": "https://freehire.me/jobs/aes-de-generative-ai-application-developers-zensar-tcay7lqw",
+   "company": "Zensar",
+   "company_tier": "services_mnc",
+   "title": "Generative AI Application Developer",
+   "years_min": 4,
+   "years_max": null,
+   "location": "Pune",
+   "work_mode": null,
+   "salary_lpa": "15-30",
+   "languages": [
+    "Python",
+    "TypeScript"
+   ],
+   "backend": [
+    "FastAPI",
+    "Node.js",
+    "REST/gRPC API design",
+    "cloud-native microservices",
+    "async programming"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "chunking",
+    "embeddings",
+    "vector stores"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LlamaIndex",
+    "LangGraph",
+    "AutoGen",
+    "CrewAI",
+    "MCP server/client",
+    "function calling",
+    "agent loops"
+   ],
+   "llm_providers": [
+    "OpenAI",
+    "Anthropic",
+    "Azure OpenAI",
+    "open-source models"
+   ],
+   "cloud": [
+    "Azure",
+    "AWS",
+    "GCP"
+   ],
+   "data": [
+    "Kafka",
+    "SQL",
+    "NoSQL"
+   ],
+   "ops_deploy": [
+    "Docker",
+    "Kubernetes",
+    "Helm",
+    "GitHub Actions",
+    "FluxCD",
+    "GitOps",
+    "Ragas",
+    "DeepEval",
+    "promptfoo",
+    "LangSmith",
+    "LangFuse",
+    "OpenTelemetry",
+    "guardrails"
+   ],
+   "ml_deep": [
+    "Prompt engineering",
+    "structured output",
+    "Pydantic"
+   ],
+   "soft_asks": [],
+   "deliverables": "Generative AI applications as cloud-native microservices with LLM APIs and agentic frameworks",
+   "excerpt": "RAG pipeline implementation with chunking, embeddings, vector stores. Eval frameworks (Ragas, DeepEval, promptfoo, LangSmith)",
+   "snapshot_date": "2026-09-18",
+   "territory": "services_mnc",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Wipro Careers",
+   "source_url": "https://careers.wipro.com/job/Generative-AI-Engineer/187523-en_US",
+   "company": "Wipro",
+   "company_tier": "services_mnc",
+   "title": "Generative AI Engineer",
+   "years_min": 4,
+   "years_max": 7,
+   "location": "Bengaluru, Pune, Chennai",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python",
+    "TypeScript"
+   ],
+   "backend": [
+    "APIs"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "production RAG pipelines"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LangGraph",
+    "LlamaIndex",
+    "Agentic AI",
+    "multi-agent workflows",
+    "Model Context Protocols",
+    "A2A protocols",
+    "Agent Developer Kits"
+   ],
+   "llm_providers": [
+    "LLM"
+   ],
+   "cloud": [
+    "AWS",
+    "Azure",
+    "GCP"
+   ],
+   "data": [
+    "pandas"
+   ],
+   "ops_deploy": [
+    "Docker",
+    "Kubernetes",
+    "CI/CD",
+    "GitHub Actions",
+    "MLOps",
+    "LLM evaluation",
+    "guardrails",
+    "latency/prompt optimizations"
+   ],
+   "ml_deep": [
+    "scikit-learn",
+    "PyTorch",
+    "prompting",
+    "fine-tuning",
+    "model drift"
+   ],
+   "soft_asks": [
+    "poc_prototype",
+    "client_facing"
+   ],
+   "deliverables": "Bespoke Agentic AI solutions and multi-agent workflows from prototype to production in client environments",
+   "excerpt": "2+ years building production RAG pipelines using LangChain, LangGraph or LlamaIndex. Own complete technical lifecycle from prototype to production",
+   "snapshot_date": "2026-09-18",
+   "territory": "services_mnc",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "foundit.in",
+   "source_url": "https://www.foundit.in/job/gen-ai-engineer-ltimindtree-bengaluru-54100770",
+   "company": "LTIMindtree",
+   "company_tier": "services_mnc",
+   "title": "Gen AI Engineer",
+   "years_min": 0,
+   "years_max": 1,
+   "location": "Bengaluru",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python",
+    "C#",
+    "PowerShell"
+   ],
+   "backend": [
+    "API-based microservices"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "retrieval-augmented generation"
+   ],
+   "agent_frameworks": [
+    "Copilot"
+   ],
+   "llm_providers": [
+    "OpenAI",
+    "Azure AI services"
+   ],
+   "cloud": [
+    "Azure",
+    "Azure DevOps"
+   ],
+   "data": [
+    "data ingestion pipelines",
+    "telemetry",
+    "logs"
+   ],
+   "ops_deploy": [
+    "Azure DevOps pipelines",
+    "anomaly detection",
+    "log analytics",
+    "evaluation",
+    "safety practices"
+   ],
+   "ml_deep": [
+    "prompt engineering",
+    "fine-tuning/evaluation",
+    "PyTorch"
+   ],
+   "soft_asks": [
+    "system_design"
+   ],
+   "deliverables": "AI validation assistant, log analytics platform and bug automation engine on Azure DevOps",
+   "excerpt": "LLM engineering including prompt engineering, RAG, fine-tuning/evaluation and safety practices. Scalable AI system design with API-based microservices",
+   "snapshot_date": "2026-09-18",
+   "territory": "services_mnc",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "foundit.in",
+   "source_url": "https://www.foundit.in/job/mlops-engineer-tech-mahindra-38584499",
+   "company": "Tech Mahindra",
+   "company_tier": "services_mnc",
+   "title": "MLOps Engineer",
+   "years_min": 1,
+   "years_max": 6,
+   "location": "Hyderabad, Bengaluru, Pune",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [
+    "Generative AI model deployment"
+   ],
+   "cloud": [
+    "Azure",
+    "ECS",
+    "EKS"
+   ],
+   "data": [
+    "data ingestion",
+    "DVC",
+    "data governance"
+   ],
+   "ops_deploy": [
+    "CI/CD",
+    "Docker",
+    "Terraform",
+    "ML metadata tracking",
+    "logging and alerting",
+    "monitoring",
+    "model validation",
+    "versioning"
+   ],
+   "ml_deep": [
+    "ML model lifecycle"
+   ],
+   "soft_asks": [
+    "documentation"
+   ],
+   "deliverables": "Automated pipelines for data ingestion and model deployment with CI/CD on Azure",
+   "excerpt": "Design, develop and maintain automated pipelines for input data ingestion and output model deployment",
+   "snapshot_date": "2026-09-18",
+   "territory": "services_mnc",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "freehire",
+   "source_url": "https://freehire.me/jobs/gen-ai-developer-specialist-hexaware-technologies-3gsu74ik",
+   "company": "Hexaware Technologies",
+   "company_tier": "services_mnc",
+   "title": "Gen AI Developer Specialist",
+   "years_min": 2,
+   "years_max": 7,
+   "location": "India",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "FastAPI",
+    "REST API development"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "embeddings",
+    "vector databases",
+    "semantic search"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LangGraph",
+    "LlamaIndex",
+    "AI agents",
+    "tool calling",
+    "planning",
+    "reasoning",
+    "memory",
+    "multi-agent workflows",
+    "Agentic AI"
+   ],
+   "llm_providers": [
+    "GPT",
+    "Azure Open AI",
+    "LLMs"
+   ],
+   "cloud": [],
+   "data": [],
+   "ops_deploy": [
+    "review validate optimize and secure AI-generated code"
+   ],
+   "ml_deep": [
+    "Transformer architectures",
+    "PyTorch",
+    "TensorFlow",
+    "Scikit-learn",
+    "Prompt engineering"
+   ],
+   "soft_asks": [
+    "agile",
+    "code_review"
+   ],
+   "deliverables": "GenAI and agentic applications with RAG, vector search and FastAPI services",
+   "excerpt": "Agentic AI concepts including AI agents, tool calling, planning, reasoning, memory and multi-agent workflows",
+   "snapshot_date": "2026-09-18",
+   "territory": "services_mnc",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "freehire",
+   "source_url": "https://freehire.me/jobs/sr-python-developer-genai-llm-ust-lcgdbb3l",
+   "company": "UST",
+   "company_tier": "services_mnc",
+   "title": "Sr. Python Developer (GenAI / LLM)",
+   "years_min": null,
+   "years_max": null,
+   "location": "Bangalore",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "REST APIs",
+    "asynchronous Python"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "Chroma",
+    "FAISS",
+    "Pinecone",
+    "vector databases"
+   ],
+   "agent_frameworks": [
+    "LangGraph",
+    "LangChain",
+    "multi-agent workflows",
+    "agentic frameworks"
+   ],
+   "llm_providers": [
+    "LLMs"
+   ],
+   "cloud": [
+    "AWS",
+    "Lambda",
+    "S3",
+    "DynamoDB",
+    "CloudWatch"
+   ],
+   "data": [
+    "DynamoDB",
+    "S3"
+   ],
+   "ops_deploy": [
+    "Kubernetes",
+    "CloudWatch",
+    "performance monitoring"
+   ],
+   "ml_deep": [
+    "prompt engineering"
+   ],
+   "soft_asks": [],
+   "deliverables": "AI-powered Python applications with RAG and LangGraph multi-agent workflows on AWS",
+   "excerpt": "Design and implement RAG architectures. Build multi-agent workflows using LangGraph and agentic frameworks",
+   "snapshot_date": "2026-09-18",
+   "territory": "services_mnc",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "TopGenAIJobs",
+   "source_url": "https://www.topgenaijobs.com/jobs/opening-for-genai-python-at-cognizant-in-chennai-ssok2d",
+   "company": "Cognizant",
+   "company_tier": "services_mnc",
+   "title": "GenAI - Python",
+   "years_min": 5,
+   "years_max": 10,
+   "location": "Chennai / Pan India",
+   "work_mode": "hybrid",
+   "salary_lpa": "15-24",
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "APIs"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "embeddings",
+    "vector search",
+    "RAG"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "orchestration platforms"
+   ],
+   "llm_providers": [
+    "LLM",
+    "Azure OpenAI",
+    "Hugging Face",
+    "OpenAI"
+   ],
+   "cloud": [
+    "Azure",
+    "AWS",
+    "GCP",
+    "Azure Machine Learning",
+    "Cognitive Services",
+    "AWS SageMaker"
+   ],
+   "data": [
+    "Snowflake",
+    "enterprise data platforms"
+   ],
+   "ops_deploy": [
+    "model deployment",
+    "evaluation techniques",
+    "training pipelines"
+   ],
+   "ml_deep": [
+    "fine tune LLMs",
+    "Machine Learning",
+    "tokenization",
+    "model optimization",
+    "Prompt Engineering"
+   ],
+   "soft_asks": [],
+   "deliverables": "GenAI applications for chatbots, summarization and intelligent automation",
+   "excerpt": "Build GenAI applications using Python for chatbots, summarization and intelligent automation. Design solutions using embeddings, vector search and RAG",
+   "snapshot_date": "2026-09-18",
+   "territory": "services_mnc",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Instahyre",
+   "source_url": "https://www.instahyre.com/job-380009-python-and-gen-ai-developer-at-coforge-hyderabad/",
+   "company": "Coforge",
+   "company_tier": "services_mnc",
+   "title": "Python and GenAI Developer",
+   "years_min": 3,
+   "years_max": 8,
+   "location": "Hyderabad",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [
+    "React.js",
+    "Angular"
+   ],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [
+    "Generative AI"
+   ],
+   "cloud": [],
+   "data": [],
+   "ops_deploy": [],
+   "ml_deep": [],
+   "soft_asks": [],
+   "deliverables": "Full-stack Python plus Generative AI development, skills line only",
+   "excerpt": "TAGS: Python; Generative AI; React.js; Angular",
+   "snapshot_date": "2026-09-18",
+   "territory": "services_mnc",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Deloitte USI Careers",
+   "source_url": "https://usijobs.deloitte.com/en_US/careersUSI/JobDetail/317564",
+   "company": "Deloitte",
+   "company_tier": "consultancy",
+   "title": "Agentic AI Developer, Consultant",
+   "years_min": 3,
+   "years_max": 6,
+   "location": "Bengaluru / Hyderabad",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "REST/gRPC APIs",
+    "microservice architecture"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "FAISS",
+    "Pinecone",
+    "Weaviate",
+    "Milvus",
+    "Chroma",
+    "semantic search",
+    "embedding models"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "Llama Index",
+    "AutoGPT",
+    "CrewAI",
+    "Langgraph",
+    "ReAct",
+    "Agno"
+   ],
+   "llm_providers": [
+    "OpenAI GPT",
+    "Claude",
+    "Llama",
+    "Mistral",
+    "Hugging Face"
+   ],
+   "cloud": [
+    "Azure",
+    "AWS",
+    "GCP"
+   ],
+   "data": [],
+   "ops_deploy": [
+    "Docker",
+    "Kubernetes"
+   ],
+   "ml_deep": [
+    "PyTorch",
+    "TensorFlow",
+    "classical ML",
+    "computer vision",
+    "NLP",
+    "Quantization",
+    "PEFT-LoRA",
+    "QLoRA"
+   ],
+   "soft_asks": [
+    "stakeholder_management",
+    "mentoring",
+    "agile"
+   ],
+   "deliverables": "Agentic AI with multi-agent orchestration and semantic search over vector stores as containerized microservices",
+   "excerpt": "FAISS, Pinecone, Weaviate, Milvus or Chroma for semantic search. Agent frameworks LangChain, AutoGPT, CrewAI, Langgraph, ReAct, Agno",
+   "snapshot_date": "2026-09-18",
+   "territory": "consultancy_bigfour",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Deloitte USI Careers",
+   "source_url": "https://usijobs.deloitte.com/en_US/careersUSI/JobDetail/303628",
+   "company": "Deloitte",
+   "company_tier": "consultancy",
+   "title": "Consultant, AI & Engineering",
+   "years_min": 3,
+   "years_max": 6,
+   "location": "Bengaluru / Hyderabad / Pune / Chennai",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python",
+    "CUDA",
+    "SQL"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG"
+   ],
+   "agent_frameworks": [
+    "Agentic workflows"
+   ],
+   "llm_providers": [
+    "OpenAI GPT",
+    "Google Gemini",
+    "AWS Bedrock",
+    "LLaMA 3.0",
+    "Mistral",
+    "Copilot",
+    "Vertex AI"
+   ],
+   "cloud": [
+    "NVIDIA",
+    "AWS",
+    "Azure",
+    "GCP",
+    "Oracle"
+   ],
+   "data": [],
+   "ops_deploy": [],
+   "ml_deep": [
+    "TensorFlow",
+    "PyTorch",
+    "Keras",
+    "Deep Learning",
+    "NLP",
+    "GANs",
+    "Transformer architecture",
+    "Diffusion models"
+   ],
+   "soft_asks": [
+    "client_facing",
+    "requirements_gathering",
+    "code_review",
+    "mentoring",
+    "stakeholder_management",
+    "agile"
+   ],
+   "deliverables": "GenAI and deep-learning solutions against client problem statements in agile sprints",
+   "excerpt": "Liaison with on-site and client teams to understand various business problem statements. Conduct peer and team reviews",
+   "snapshot_date": "2026-09-18",
+   "territory": "consultancy_bigfour",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Deloitte USI Careers",
+   "source_url": "https://usijobs.deloitte.com/en_US/careersUSI/JobDetail/321609",
+   "company": "Deloitte",
+   "company_tier": "consultancy",
+   "title": "Gen AI Full Stack - Consultant",
+   "years_min": 2,
+   "years_max": 4,
+   "location": "Hyderabad / Bengaluru / Gurgaon",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python",
+    "SQL"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [
+    "Retrieval-Augmented Generation",
+    "RAG pipelines"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LlamaIndex",
+    "LangGraph",
+    "AutoGen",
+    "Model Context Protocol",
+    "agentic AI frameworks"
+   ],
+   "llm_providers": [
+    "GPT",
+    "Gemini",
+    "Claude"
+   ],
+   "cloud": [
+    "AWS",
+    "Azure",
+    "GCP"
+   ],
+   "data": [
+    "data pipelines"
+   ],
+   "ops_deploy": [
+    "evaluating LLM performance"
+   ],
+   "ml_deep": [
+    "NLP",
+    "generative AI models"
+   ],
+   "soft_asks": [
+    "client_facing"
+   ],
+   "deliverables": "Full-stack GenAI applications for audit with RAG pipelines and agent frameworks",
+   "excerpt": "Familiarity with agentic AI frameworks and concepts - LangChain, LangGraph, AutoGen, Model Context Protocol",
+   "snapshot_date": "2026-09-18",
+   "territory": "consultancy_bigfour",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Foundit",
+   "source_url": "https://www.foundit.in/job/ai-engineer-llmops-fractal-analytics-34735309",
+   "company": "Fractal Analytics",
+   "company_tier": "consultancy",
+   "title": "AI Engineer - LLMOps",
+   "years_min": 3,
+   "years_max": 5,
+   "location": "Noida / Mumbai / Pune",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [
+    "Streamlit",
+    "Chainlit"
+   ],
+   "retrieval_vector": [
+    "RAG"
+   ],
+   "agent_frameworks": [
+    "Langchain",
+    "CrewAI",
+    "Taskweaver",
+    "AutoGen",
+    "AgentOps"
+   ],
+   "llm_providers": [],
+   "cloud": [
+    "AWS",
+    "GCP",
+    "Azure"
+   ],
+   "data": [
+    "Data Engineering",
+    "data pipelines"
+   ],
+   "ops_deploy": [
+    "Langtrace",
+    "Langfuse",
+    "RAGAS",
+    "guardrails",
+    "evaluation",
+    "observability",
+    "Kubernetes",
+    "CI/CD",
+    "GitHub"
+   ],
+   "ml_deep": [
+    "NLP",
+    "fine-tuning",
+    "model distillation"
+   ],
+   "soft_asks": [
+    "requirements_gathering",
+    "stakeholder_management"
+   ],
+   "deliverables": "End-to-end LLM production lifecycle: fine-tuning, RAG, guardrails, evaluation and observability",
+   "excerpt": "3-5 years on ML projects including business requirement gathering, model development, deployment at scale and monitoring",
+   "snapshot_date": "2026-09-18",
+   "territory": "consultancy_bigfour",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Weekday",
+   "source_url": "https://jobs.weekday.works/zs-associates-junior-ai-engineer-india",
+   "company": "ZS Associates",
+   "company_tier": "consultancy",
+   "title": "Junior AI Engineer",
+   "years_min": 1,
+   "years_max": 2,
+   "location": "Bangalore / Pune / NCR",
+   "work_mode": "hybrid",
+   "salary_lpa": "12-24",
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "FastAPI",
+    "Flask"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "embeddings",
+    "vector databases"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LangGraph",
+    "agents"
+   ],
+   "llm_providers": [
+    "LLMs"
+   ],
+   "cloud": [
+    "AWS",
+    "Azure"
+   ],
+   "data": [],
+   "ops_deploy": [
+    "Git",
+    "CI/CD pipelines",
+    "Docker"
+   ],
+   "ml_deep": [],
+   "soft_asks": [],
+   "deliverables": "Entry-level GenAI application work: Python APIs, prompt engineering and simple RAG",
+   "excerpt": "GenAI Basics: Exposure to LLMs, prompt engineering and simple RAG use cases. API Development: FastAPI, Flask",
+   "snapshot_date": "2026-09-18",
+   "territory": "consultancy_bigfour",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Built In",
+   "source_url": "https://builtin.com/job/business-technology-solutions-consultant-ai-engineering/10960328",
+   "company": "ZS Associates",
+   "company_tier": "consultancy",
+   "title": "Business Technology Solutions Consultant - AI Engineering",
+   "years_min": 5,
+   "years_max": 7,
+   "location": "Pune",
+   "work_mode": "hybrid",
+   "salary_lpa": null,
+   "languages": [
+    "PySpark",
+    "Python",
+    "Java",
+    "Scala"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG-based pipelines"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LlamaIndex"
+   ],
+   "llm_providers": [
+    "GenAI"
+   ],
+   "cloud": [
+    "AWS",
+    "Azure",
+    "GCP"
+   ],
+   "data": [
+    "Hive",
+    "Spark",
+    "Hadoop",
+    "data pipelines"
+   ],
+   "ops_deploy": [
+    "SageMaker",
+    "MLflow",
+    "Kubeflow",
+    "CI/CD",
+    "application monitoring"
+   ],
+   "ml_deep": [
+    "ML models"
+   ],
+   "soft_asks": [
+    "client_facing"
+   ],
+   "deliverables": "Scaled GenAI applications: answering engines, extraction components, content authoring",
+   "excerpt": "Strong knowledge of RAG-based pipelines using frameworks such as LangChain and LlamaIndex. Client-first mentality",
+   "snapshot_date": "2026-09-18",
+   "territory": "consultancy_bigfour",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "TopGenAIJobs",
+   "source_url": "https://www.topgenaijobs.com/jobs/ai-engineer-data-and-ai-at-tiger-analytics-in-chennai-mbm887",
+   "company": "Tiger Analytics",
+   "company_tier": "consultancy",
+   "title": "AI Engineer - Data and AI",
+   "years_min": 4,
+   "years_max": 6,
+   "location": "Chennai / Hyderabad / Bengaluru",
+   "work_mode": "onsite",
+   "salary_lpa": "28-39",
+   "languages": [
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [
+    "Retrieval Augmented Generation"
+   ],
+   "agent_frameworks": [],
+   "llm_providers": [
+    "Large Language Model"
+   ],
+   "cloud": [],
+   "data": [],
+   "ops_deploy": [
+    "Deployment"
+   ],
+   "ml_deep": [
+    "Machine Learning",
+    "Natural Language Processing",
+    "Generative AI"
+   ],
+   "soft_asks": [
+    "client_facing",
+    "system_design",
+    "code_review"
+   ],
+   "deliverables": "AI-driven solutions using LLMs and GenAI for client enterprise platforms",
+   "excerpt": "Machine Learning, Python, Deployment, NLP, Retrieval Augmented Generation, Generative AI, Large Language Model",
+   "snapshot_date": "2026-09-18",
+   "territory": "consultancy_bigfour",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Talent.com",
+   "source_url": "https://in.talent.com/view?id=607336315805700242",
+   "company": "Publicis Sapient",
+   "company_tier": "consultancy",
+   "title": "Senior Python/Generative AI Engineer",
+   "years_min": 5,
+   "years_max": 10,
+   "location": "Gurgaon / Bangalore",
+   "work_mode": "hybrid",
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "APIs",
+    "async processing"
+   ],
+   "frontend": [
+    "AI frontend integration"
+   ],
+   "retrieval_vector": [
+    "RAG architectures",
+    "embeddings",
+    "Pinecone",
+    "Weaviate",
+    "Milvus",
+    "FAISS",
+    "knowledge graphs",
+    "semantic search"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LlamaIndex",
+    "orchestration tools"
+   ],
+   "llm_providers": [
+    "OpenAI",
+    "open-source models"
+   ],
+   "cloud": [
+    "AWS",
+    "Azure",
+    "GCP"
+   ],
+   "data": [
+    "streaming pipelines"
+   ],
+   "ops_deploy": [
+    "containerized deployments",
+    "evaluation",
+    "hallucination handling",
+    "model monitoring frameworks"
+   ],
+   "ml_deep": [
+    "fine-tuning",
+    "LoRA",
+    "PEFT"
+   ],
+   "soft_asks": [
+    "system_design"
+   ],
+   "deliverables": "Production LLM applications with RAG architectures from prototype to production",
+   "excerpt": "Experience with RAG architectures and embeddings. Familiarity with LangChain / LlamaIndex orchestration tools",
+   "snapshot_date": "2026-09-18",
+   "territory": "consultancy_bigfour",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "EY Careers",
+   "source_url": "https://careers.ey.com/ey/job/Chennai-EY-GDS-Consulting-AIA-AI-Engineer-Senior/1430772233/",
+   "company": "EY",
+   "company_tier": "consultancy",
+   "title": "GDS Consulting - AI Engineer - Senior",
+   "years_min": 4,
+   "years_max": 8,
+   "location": "Chennai / Pan India",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python",
+    "SQL",
+    "TypeScript"
+   ],
+   "backend": [
+    "FastAPI",
+    "REST",
+    "microservices",
+    "asynchronous workflows",
+    "event-driven architecture"
+   ],
+   "frontend": [
+    "React",
+    "TypeScript",
+    "Next.js",
+    "WebSockets",
+    "Server-Sent Events",
+    "token-level LLM streaming"
+   ],
+   "retrieval_vector": [
+    "RAG",
+    "embeddings",
+    "semantic and hybrid search",
+    "vector databases"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LangGraph",
+    "AutoGen",
+    "CrewAI",
+    "Microsoft Agent Framework",
+    "Google Agent SDK",
+    "MCP"
+   ],
+   "llm_providers": [
+    "Azure AI Foundry",
+    "Azure OpenAI",
+    "AWS Bedrock",
+    "GCP Vertex AI",
+    "Gemini"
+   ],
+   "cloud": [
+    "Azure",
+    "AWS",
+    "GCP"
+   ],
+   "data": [
+    "relational databases",
+    "MongoDB",
+    "Redis",
+    "ClickHouse"
+   ],
+   "ops_deploy": [
+    "Docker",
+    "Kubernetes",
+    "OpenShift",
+    "Git",
+    "GitHub Actions",
+    "GitLab CI",
+    "automated testing",
+    "CI/CD",
+    "logging",
+    "monitoring",
+    "tracing",
+    "AI observability",
+    "LLMOps",
+    "MLOps"
+   ],
+   "ml_deep": [],
+   "soft_asks": [
+    "stakeholder_management"
+   ],
+   "deliverables": "Full-stack agentic AI: streaming React/Next.js over FastAPI, agent orchestration, hybrid retrieval, LLMOps",
+   "excerpt": "LangChain, LangGraph, AutoGen, CrewAI, Microsoft Agent Framework or Google Agent SDK. Familiarity with MCP is preferred",
+   "snapshot_date": "2026-09-18",
+   "territory": "consultancy_bigfour",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Karkidi",
+   "source_url": "https://www.karkidi.com/job-details/81966-ai-engineer-india-bcg-x-job",
+   "company": "BCG X",
+   "company_tier": "consultancy",
+   "title": "AI Engineer, India",
+   "years_min": 2,
+   "years_max": 4,
+   "location": "Mumbai / Gurgaon",
+   "work_mode": null,
+   "salary_lpa": "6-18",
+   "languages": [
+    "Python",
+    "R",
+    "Java"
+   ],
+   "backend": [
+    "Django",
+    "Flask"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "vector databases",
+    "Pinecone",
+    "Chroma"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "orchestration stack"
+   ],
+   "llm_providers": [
+    "Large Language Models",
+    "Foundation Models"
+   ],
+   "cloud": [
+    "AWS",
+    "Azure",
+    "GCP"
+   ],
+   "data": [
+    "Databricks",
+    "Apache Airflow",
+    "data pipelines"
+   ],
+   "ops_deploy": [
+    "production deployment",
+    "API layer for integration"
+   ],
+   "ml_deep": [
+    "deep learning models",
+    "generative AI"
+   ],
+   "soft_asks": [],
+   "deliverables": "Full AI/ML technology stack from concept to production including data pipelines and API layer",
+   "excerpt": "Build technology stack for AI/ML use cases from concept to production deployment",
+   "snapshot_date": "2026-09-18",
+   "territory": "consultancy_bigfour",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Freehire",
+   "source_url": "https://freehire.me/jobs/in-associate-genai-and-agentic-ai-engineer-pwc-ae4xadm7",
+   "company": "PwC",
+   "company_tier": "consultancy",
+   "title": "Associate - GenAI and Agentic AI Engineer",
+   "years_min": 4,
+   "years_max": 7,
+   "location": "Noida",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "API development",
+    "async programming"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "vector databases",
+    "embedding models",
+    "RAG pipelines",
+    "knowledge retrieval systems",
+    "semantic search"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "autonomous agents",
+    "agent orchestration",
+    "workflow management"
+   ],
+   "llm_providers": [
+    "OpenAI",
+    "Anthropic",
+    "LLMs"
+   ],
+   "cloud": [],
+   "data": [],
+   "ops_deploy": [
+    "Git",
+    "CI/CD",
+    "testing",
+    "Docker",
+    "Kubernetes"
+   ],
+   "ml_deep": [
+    "NLP"
+   ],
+   "soft_asks": [
+    "client_facing"
+   ],
+   "deliverables": "Autonomous agents and RAG knowledge-retrieval systems for advisory clients",
+   "excerpt": "Advanced Python programming with expertise in async programming and API development. Experience with vector databases and embedding models",
+   "snapshot_date": "2026-09-18",
+   "territory": "consultancy_bigfour",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Freehire",
+   "source_url": "https://freehire.me/jobs/in-senior-associate-genai-and-agentic-ai-engineer-pwc-wabp4cdg",
+   "company": "PwC",
+   "company_tier": "consultancy",
+   "title": "Senior Associate - GenAI and Agentic AI Engineer",
+   "years_min": 4,
+   "years_max": 7,
+   "location": "Noida",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "API development",
+    "async programming"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "vector databases",
+    "embedding models",
+    "RAG pipelines",
+    "knowledge retrieval systems"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "autonomous agents",
+    "RAG systems"
+   ],
+   "llm_providers": [
+    "Large Language Models and their APIs"
+   ],
+   "cloud": [],
+   "data": [],
+   "ops_deploy": [
+    "Git",
+    "CI/CD",
+    "testing"
+   ],
+   "ml_deep": [],
+   "soft_asks": [
+    "client_facing"
+   ],
+   "deliverables": "Enterprise-grade agentic GenAI solutions for financial-services advisory clients",
+   "excerpt": "Proficiency in implementing RAG pipelines and knowledge retrieval systems",
+   "snapshot_date": "2026-09-18",
+   "territory": "consultancy_bigfour",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Dreamwork",
+   "source_url": "https://www.dreamworkhq.com/job/84e8c84c-cc56-4513-bcd8-501956117e8d",
+   "company": "KPMG India",
+   "company_tier": "consultancy",
+   "title": "Senior AI Engineer - Consultant",
+   "years_min": 4,
+   "years_max": null,
+   "location": "Bengaluru / Pune / Gurgaon",
+   "work_mode": null,
+   "salary_lpa": "28-45",
+   "languages": [
+    "Python",
+    "SQL"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [
+    "Retriever-Augmented Generation"
+   ],
+   "agent_frameworks": [],
+   "llm_providers": [
+    "LLM-based solutions",
+    "Generative AI frameworks"
+   ],
+   "cloud": [
+    "Azure"
+   ],
+   "data": [],
+   "ops_deploy": [
+    "MLOps pipelines",
+    "cloud-native architectures"
+   ],
+   "ml_deep": [
+    "NLP",
+    "transformer architectures",
+    "model optimization",
+    "regression",
+    "classification",
+    "clustering",
+    "time-series analysis"
+   ],
+   "soft_asks": [
+    "mentoring",
+    "system_design",
+    "agile",
+    "stakeholder_management"
+   ],
+   "deliverables": "LLM and GenAI solutions on Azure across finance, healthcare, automotive, retail sectors",
+   "excerpt": "Mandatory: Expertise in Prompt Engineering and Retriever-Augmented Generation. Strong stakeholder management",
+   "snapshot_date": "2026-09-18",
+   "territory": "consultancy_bigfour",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Dreamwork",
+   "source_url": "https://www.dreamworkhq.com/job/413f24d2-ea44-4d7e-9cf5-6db328886200",
+   "company": "KPMG India",
+   "company_tier": "consultancy",
+   "title": "Consultant - Gen AI",
+   "years_min": null,
+   "years_max": null,
+   "location": "Bengaluru",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "API-driven design",
+    "microservices",
+    "event-driven architectures"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "embeddings",
+    "semantic search",
+    "RAG",
+    "FAISS",
+    "Pinecone",
+    "Weaviate",
+    "knowledge graphs"
+   ],
+   "agent_frameworks": [
+    "LangChain"
+   ],
+   "llm_providers": [
+    "Hugging Face",
+    "LLMs"
+   ],
+   "cloud": [
+    "Azure",
+    "AWS",
+    "GCP"
+   ],
+   "data": [
+    "Spark",
+    "Airflow",
+    "SQL/NoSQL"
+   ],
+   "ops_deploy": [
+    "DevOps/MLOps",
+    "Docker",
+    "Kubernetes"
+   ],
+   "ml_deep": [
+    "PyTorch",
+    "TensorFlow",
+    "NLP",
+    "transformers"
+   ],
+   "soft_asks": [
+    "mentoring",
+    "client_facing",
+    "stakeholder_management"
+   ],
+   "deliverables": "Cloud-native GenAI combining RAG, vector DBs and knowledge graphs with Responsible AI guardrails",
+   "excerpt": "Expertise in NLP and LLMs: embeddings, transformers, semantic search, RAG, prompt engineering",
+   "snapshot_date": "2026-09-18",
+   "territory": "consultancy_bigfour",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "TopGenAIJobs",
+   "source_url": "https://www.topgenaijobs.com/jobs/senior-machine-learning-engineer-at-quantiphi-in-mumbai-n4onir",
+   "company": "Quantiphi",
+   "company_tier": "consultancy",
+   "title": "Senior Machine Learning Engineer",
+   "years_min": 3,
+   "years_max": 6,
+   "location": "Mumbai",
+   "work_mode": "onsite",
+   "salary_lpa": "21-33",
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "API design"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "Embeddings",
+    "Vector Database",
+    "Intelligent retrieval",
+    "Context optimization",
+    "Knowledge graph",
+    "Semantic search",
+    "Keyword search"
+   ],
+   "agent_frameworks": [
+    "Agentic AI",
+    "Multi-agent architectures",
+    "Orchestration frameworks",
+    "Multi-agent orchestration"
+   ],
+   "llm_providers": [
+    "LLM",
+    "Vertex AI",
+    "Gen AI"
+   ],
+   "cloud": [
+    "Google Cloud Platform",
+    "Vertex AI",
+    "BigQuery",
+    "Cloud Run"
+   ],
+   "data": [
+    "BigQuery"
+   ],
+   "ops_deploy": [
+    "MLOps",
+    "CI/CD",
+    "Containerization",
+    "Testing",
+    "Evaluation frameworks",
+    "model drift monitoring"
+   ],
+   "ml_deep": [
+    "Machine learning",
+    "Computer vision"
+   ],
+   "soft_asks": [
+    "client_facing",
+    "system_design"
+   ],
+   "deliverables": "Production GenAI on GCP: RAG, agentic systems, knowledge graphs, presented to enterprise clients",
+   "excerpt": "Present technical solutions to clients translating engineering decisions into business outcomes",
+   "snapshot_date": "2026-09-18",
+   "territory": "consultancy_bigfour",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Gnani.ai careers",
+   "source_url": "https://careers.gnani.ai/apply/AI-Ben-2026-08-07-118",
+   "company": "Gnani.ai",
+   "company_tier": "ai_startup",
+   "title": "AI Solutions Engineer",
+   "years_min": 1,
+   "years_max": 4,
+   "location": "Bengaluru",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "FastAPI"
+   ],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [
+    "AgenticAI VoiceAI Agents"
+   ],
+   "llm_providers": [],
+   "cloud": [],
+   "data": [],
+   "ops_deploy": [
+    "voice:ASR",
+    "voice:TTS",
+    "voice:streaming and batch ASR",
+    "voice:real-time audio integration",
+    "voice:WER / CER",
+    "voice:MOS",
+    "voice:RTF",
+    "voice:telephony audio",
+    "voice:WebSocket",
+    "voice:gRPC",
+    "voice:Agora",
+    "containers",
+    "evaluation harnesses"
+   ],
+   "ml_deep": [
+    "AI/ML Annotation"
+   ],
+   "soft_asks": [
+    "client_facing",
+    "documentation",
+    "poc_prototype",
+    "requirements_gathering"
+   ],
+   "deliverables": "Owns enterprise customers technical journey on ASR/TTS speech APIs: onboarding, custom pipelines, accuracy benchmarks",
+   "excerpt": "Comfortable reading and writing integration code. Python plus at least one of REST / gRPC / WebSocket clients",
+   "snapshot_date": "2026-09-18",
+   "territory": "ai_native_startups",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Gnani.ai careers",
+   "source_url": "https://careers.gnani.ai/apply/Bac-Ben-2026-08-27-131",
+   "company": "Gnani.ai",
+   "company_tier": "ai_startup",
+   "title": "Backend Developer",
+   "years_min": 2,
+   "years_max": 4,
+   "location": "Bengaluru",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python",
+    "Go"
+   ],
+   "backend": [
+    "FastAPI",
+    "RESTful APIs",
+    "microservices"
+   ],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [],
+   "cloud": [],
+   "data": [
+    "Redis",
+    "distributed caching"
+   ],
+   "ops_deploy": [
+    "Docker",
+    "Kubernetes",
+    "CI/CD",
+    "monitoring",
+    "logging",
+    "tracing",
+    "voice:Real-time Streaming"
+   ],
+   "ml_deep": [],
+   "soft_asks": [
+    "code_review",
+    "system_design"
+   ],
+   "deliverables": "Scalable backend services behind AI/LLM products including APIs for model inference",
+   "excerpt": "Deep expertise in Python and Go, extensive experience with FastAPI, containerised deployments",
+   "snapshot_date": "2026-09-18",
+   "territory": "ai_native_startups",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Gnani.ai careers",
+   "source_url": "https://careers.gnani.ai/apply/Ful-Pro-2026-08-13-122",
+   "company": "Gnani.ai",
+   "company_tier": "ai_startup",
+   "title": "Full-Stack + AI Engineer",
+   "years_min": 2,
+   "years_max": 4,
+   "location": "India",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "TypeScript",
+    "Python"
+   ],
+   "backend": [
+    "FastAPI"
+   ],
+   "frontend": [
+    "React",
+    "Next.js"
+   ],
+   "retrieval_vector": [],
+   "agent_frameworks": [
+    "LangChain",
+    "LangGraph",
+    "Pydantic AI",
+    "AI agent workflows"
+   ],
+   "llm_providers": [],
+   "cloud": [
+    "AWS",
+    "GCP"
+   ],
+   "data": [
+    "PostgreSQL",
+    "MongoDB"
+   ],
+   "ops_deploy": [
+    "voice:LiveKit Agents",
+    "voice:Pipecat",
+    "voice:Vapi",
+    "voice:Retell"
+   ],
+   "ml_deep": [
+    "PyTorch",
+    "TensorFlow"
+   ],
+   "soft_asks": [
+    "mentoring",
+    "system_design",
+    "poc_prototype"
+   ],
+   "deliverables": "0-to-1 consumer AI mobile apps and voice agents built to scale to millions",
+   "excerpt": "Hands-on experience with at least one AI agent framework (LangChain, LangGraph, Pydantic AI or equivalent)",
+   "snapshot_date": "2026-09-18",
+   "territory": "ai_native_startups",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Gnani.ai careers",
+   "source_url": "https://careers.gnani.ai/apply/LLM-Ben-2026-09-08-135",
+   "company": "Gnani.ai",
+   "company_tier": "ai_startup",
+   "title": "LLMOps Engineer - Inference & Model Optimization",
+   "years_min": 3,
+   "years_max": 6,
+   "location": "Bengaluru",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "Vector Databases"
+   ],
+   "agent_frameworks": [
+    "Agentic Systems"
+   ],
+   "llm_providers": [
+    "self-hosted foundational models"
+   ],
+   "cloud": [],
+   "data": [],
+   "ops_deploy": [
+    "vLLM",
+    "SGLang",
+    "NVIDIA Dynamo",
+    "TensorRT-LLM",
+    "Kubernetes",
+    "autoscaling",
+    "canary releases",
+    "continuous batching",
+    "KV caching",
+    "voice:time-to-first-token",
+    "voice:real-time latency budgets"
+   ],
+   "ml_deep": [
+    "quantization",
+    "distillation",
+    "speculative decoding",
+    "pruning",
+    "CUDA/Triton kernels",
+    "Mixture-of-Experts"
+   ],
+   "soft_asks": [],
+   "deliverables": "Production LLM serving stack on GPU clusters under real-time voice latency budgets",
+   "excerpt": "Work spans serving engine (vLLM, SGLang, NVIDIA Dynamo), the model (quantization, distillation, speculative decoding) and kernels",
+   "snapshot_date": "2026-09-18",
+   "territory": "ai_native_startups",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Gnani.ai careers",
+   "source_url": "https://careers.gnani.ai/apply/Sen-Del-Kol-2026-05-25-85",
+   "company": "Gnani.ai",
+   "company_tier": "ai_startup",
+   "title": "Senior Forward Deployed Engineer",
+   "years_min": 3,
+   "years_max": 5,
+   "location": "Mumbai / Bengaluru",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "Flask",
+    "FastAPI",
+    "Django",
+    "REST APIs"
+   ],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [
+    "LLMs",
+    "Generative AI models"
+   ],
+   "cloud": [],
+   "data": [
+    "MongoDB",
+    "Redis"
+   ],
+   "ops_deploy": [
+    "testing"
+   ],
+   "ml_deep": [],
+   "soft_asks": [
+    "documentation",
+    "client_facing"
+   ],
+   "deliverables": "Backend systems and integrations for LLM-powered GenAI applications",
+   "excerpt": "Familiarity with backend frameworks such as Flask, FastAPI, Django. Basic understanding of Generative AI and working with LLMs",
+   "snapshot_date": "2026-09-18",
+   "territory": "ai_native_startups",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Gnani.ai careers",
+   "source_url": "https://careers.gnani.ai/apply/Dat--2026-09-08-137",
+   "company": "Gnani.ai",
+   "company_tier": "ai_startup",
+   "title": "Data Engineer (Speech/Language Data)",
+   "years_min": 3,
+   "years_max": 5,
+   "location": "Bengaluru",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [],
+   "cloud": [
+    "Azure"
+   ],
+   "data": [
+    "data pipelines",
+    "data cataloguing",
+    "data versioning"
+   ],
+   "ops_deploy": [
+    "voice:ASR",
+    "voice:TTS",
+    "voice:ASR/STT APIs",
+    "voice:Azure TTS",
+    "voice:segmentation and alignment",
+    "voice:frozen evaluation sets"
+   ],
+   "ml_deep": [
+    "NLP/STT",
+    "annotation",
+    "benchmark design"
+   ],
+   "soft_asks": [
+    "documentation",
+    "stakeholder_management"
+   ],
+   "deliverables": "Speech and text corpus across 22+ Indian languages with annotation quality and frozen eval sets",
+   "excerpt": "Build the cleaning, segmentation, alignment and validation pipelines that turn raw audio into trainable hours",
+   "snapshot_date": "2026-09-18",
+   "territory": "ai_native_startups",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Ashby",
+   "source_url": "https://jobs.ashbyhq.com/composio/a4046674-59ee-41fd-9045-2a7058a467e1",
+   "company": "Composio",
+   "company_tier": "ai_startup",
+   "title": "MTS - Applied AI Engineer",
+   "years_min": 2,
+   "years_max": 4,
+   "location": "Bengaluru",
+   "work_mode": "onsite",
+   "salary_lpa": null,
+   "languages": [
+    "TypeScript",
+    "Python"
+   ],
+   "backend": [
+    "webhooks",
+    "OAuth 2.0"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "retrieval"
+   ],
+   "agent_frameworks": [
+    "AI agents",
+    "tool calling",
+    "agent memory",
+    "multi-step workflows",
+    "copilots"
+   ],
+   "llm_providers": [
+    "frontier models"
+   ],
+   "cloud": [
+    "cloud observability"
+   ],
+   "data": [
+    "Postgres",
+    "queues"
+   ],
+   "ops_deploy": [
+    "evals",
+    "traces",
+    "guardrails",
+    "failure analysis",
+    "eval infrastructure",
+    "observability"
+   ],
+   "ml_deep": [],
+   "soft_asks": [
+    "client_facing",
+    "documentation",
+    "system_design",
+    "requirements_gathering"
+   ],
+   "deliverables": "Agentic systems taking over customer-support functions end to end with evals and guardrails",
+   "excerpt": "You have built production systems with language models, tool calling, retrieval, structured outputs, multi-step workflows or agent memory",
+   "snapshot_date": "2026-09-18",
+   "territory": "ai_native_startups",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Ashby",
+   "source_url": "https://jobs.ashbyhq.com/composio/74cf1b48-86e9-4454-8c4e-cb2038ed0049",
+   "company": "Composio",
+   "company_tier": "ai_startup",
+   "title": "MTS - Enterprise Platform",
+   "years_min": null,
+   "years_max": null,
+   "location": "Bengaluru",
+   "work_mode": "onsite",
+   "salary_lpa": null,
+   "languages": [
+    "Typescript",
+    "Go"
+   ],
+   "backend": [
+    "control planes",
+    "routing",
+    "multi-tenancy",
+    "auth"
+   ],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [
+    "agents",
+    "MCP",
+    "tool use"
+   ],
+   "llm_providers": [
+    "language models"
+   ],
+   "cloud": [],
+   "data": [],
+   "ops_deploy": [
+    "observability",
+    "auditability"
+   ],
+   "ml_deep": [],
+   "soft_asks": [
+    "client_facing",
+    "documentation",
+    "system_design"
+   ],
+   "deliverables": "Platform primitives enterprise agents run on: governance, permissions, routing, control planes",
+   "excerpt": "You have built with language models; you have opinions about agents, MCP, tool use and where current systems fail",
+   "snapshot_date": "2026-09-18",
+   "territory": "ai_native_startups",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Ashby",
+   "source_url": "https://jobs.ashbyhq.com/sarvam/36f89b00-2010-4d23-aae3-17a2f53d9eaa",
+   "company": "Sarvam AI",
+   "company_tier": "ai_startup",
+   "title": "Agent Engineer",
+   "years_min": 3,
+   "years_max": null,
+   "location": "Bengaluru",
+   "work_mode": "onsite",
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "Backend services",
+    "APIs"
+   ],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [
+    "agentic frameworks",
+    "context engineering",
+    "tool use",
+    "structured outputs",
+    "memory"
+   ],
+   "llm_providers": [
+    "open and closed source models"
+   ],
+   "cloud": [
+    "cloud infrastructure"
+   ],
+   "data": [
+    "data pipelines"
+   ],
+   "ops_deploy": [
+    "evals",
+    "instrumentation",
+    "regression suite",
+    "versioning",
+    "reproducibility",
+    "monitoring"
+   ],
+   "ml_deep": [],
+   "soft_asks": [
+    "client_facing",
+    "code_review",
+    "system_design",
+    "mentoring"
+   ],
+   "deliverables": "Production AI agents for India's largest banks, insurers and government departments",
+   "excerpt": "Context engineering, tool use, structured outputs, memory and the failure modes that only show up at scale",
+   "snapshot_date": "2026-09-18",
+   "territory": "ai_native_startups",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Ashby",
+   "source_url": "https://jobs.ashbyhq.com/sarvam/86ae80f8-b7eb-43a4-afde-fef58e77e23e",
+   "company": "Sarvam AI",
+   "company_tier": "ai_startup",
+   "title": "Backend Engineer, Chanakya",
+   "years_min": 3,
+   "years_max": 6,
+   "location": "Bengaluru",
+   "work_mode": "onsite",
+   "salary_lpa": null,
+   "languages": [
+    "Python",
+    "Go",
+    "Rust"
+   ],
+   "backend": [
+    "FastAPI",
+    "asyncio",
+    "Pydantic",
+    "RESTful",
+    "GraphQL",
+    "gRPC"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "Qdrant",
+    "Chroma",
+    "Weaviate",
+    "vector databases"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LlamaIndex",
+    "MCP servers",
+    "agentic pipelines"
+   ],
+   "llm_providers": [
+    "LLM APIs"
+   ],
+   "cloud": [],
+   "data": [
+    "PostgreSQL",
+    "Redis",
+    "document ingestion pipelines",
+    "job queues"
+   ],
+   "ops_deploy": [
+    "Docker",
+    "Kubernetes",
+    "K3s",
+    "testing",
+    "air-gapped deployment"
+   ],
+   "ml_deep": [],
+   "soft_asks": [
+    "documentation",
+    "system_design",
+    "code_review"
+   ],
+   "deliverables": "Core backend: MCP servers, document ingestion, agentic backends, on-prem deployment tooling",
+   "excerpt": "Database experience: PostgreSQL, Redis and vector databases (Qdrant, Chroma, Weaviate)",
+   "snapshot_date": "2026-09-18",
+   "territory": "ai_native_startups",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Ashby",
+   "source_url": "https://jobs.ashbyhq.com/sarvam/87d5a5af-ea7d-4b94-a0fa-81dc64e54907",
+   "company": "Sarvam AI",
+   "company_tier": "ai_startup",
+   "title": "Strategic Deployment Engineer, Chanakya",
+   "years_min": 3,
+   "years_max": 6,
+   "location": "Delhi",
+   "work_mode": "onsite",
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "REST APIs"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG architectures",
+    "vector stores"
+   ],
+   "agent_frameworks": [
+    "MCP server",
+    "agentic frameworks"
+   ],
+   "llm_providers": [],
+   "cloud": [],
+   "data": [],
+   "ops_deploy": [
+    "Docker",
+    "Linux administration",
+    "CI/CD",
+    "vLLM",
+    "TGI",
+    "Ollama",
+    "model serving",
+    "deployment pipelines"
+   ],
+   "ml_deep": [
+    "model drift"
+   ],
+   "soft_asks": [
+    "client_facing",
+    "documentation",
+    "poc_prototype",
+    "stakeholder_management",
+    "requirements_gathering"
+   ],
+   "deliverables": "End-to-end deployment of full AI stack inside client environments including air-gapped infrastructure",
+   "excerpt": "Hands-on experience with LLM inference stacks - vLLM, TGI, Ollama - and RAG architectures and vector stores",
+   "snapshot_date": "2026-09-18",
+   "territory": "ai_native_startups",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Ashby",
+   "source_url": "https://jobs.ashbyhq.com/sarvam/e7f783e8-6378-4158-97d5-48a397a91698",
+   "company": "Sarvam AI",
+   "company_tier": "ai_startup",
+   "title": "ML Ops Engineer, Chanakya",
+   "years_min": 3,
+   "years_max": 5,
+   "location": "Delhi",
+   "work_mode": "onsite",
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [],
+   "cloud": [
+    "on-prem and cloud deployments"
+   ],
+   "data": [
+    "data pipelines"
+   ],
+   "ops_deploy": [
+    "vLLM",
+    "TGI",
+    "Triton Inference Server",
+    "Docker",
+    "Kubernetes",
+    "Prometheus",
+    "Grafana",
+    "GitHub Actions",
+    "ArgoCD",
+    "DVC",
+    "CI/CD",
+    "monitoring",
+    "A/B testing",
+    "eval dashboards"
+   ],
+   "ml_deep": [
+    "fine-tuning",
+    "GGUF",
+    "AWQ",
+    "GPTQ",
+    "model evaluation frameworks",
+    "accuracy drift"
+   ],
+   "soft_asks": [
+    "documentation"
+   ],
+   "deliverables": "Model lifecycle across defence deployments: serving infra, eval-gated CI/CD, drift monitoring",
+   "excerpt": "Deep expertise in model serving: vLLM, TGI, Triton Inference Server. Experience with quantised model formats",
+   "snapshot_date": "2026-09-18",
+   "territory": "ai_native_startups",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Greenhouse",
+   "source_url": "https://job-boards.greenhouse.io/emergentlabsinc/jobs/4335496009",
+   "company": "Emergent Labs",
+   "company_tier": "ai_startup",
+   "title": "Forward Deployed Engineer",
+   "years_min": null,
+   "years_max": null,
+   "location": "Bangalore",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [],
+   "backend": [
+    "APIs"
+   ],
+   "frontend": [
+    "web applications"
+   ],
+   "retrieval_vector": [],
+   "agent_frameworks": [
+    "autonomous coding agents"
+   ],
+   "llm_providers": [
+    "AI/LLM-based tools"
+   ],
+   "cloud": [],
+   "data": [
+    "databases"
+   ],
+   "ops_deploy": [
+    "debugging",
+    "integrations"
+   ],
+   "ml_deep": [],
+   "soft_asks": [
+    "client_facing",
+    "poc_prototype",
+    "requirements_gathering"
+   ],
+   "deliverables": "Builds and deploys production applications on AI coding-agent platform for US/EU customers",
+   "excerpt": "Comfortable working with APIs, databases, debugging and integrations. Experience with AI/LLM-based tools is a plus",
+   "snapshot_date": "2026-09-18",
+   "territory": "ai_native_startups",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Greenhouse",
+   "source_url": "https://app.careerpuck.com/job-board/truefoundry/job/5250738008",
+   "company": "TrueFoundry",
+   "company_tier": "ai_startup",
+   "title": "Solution Architect",
+   "years_min": 3,
+   "years_max": 7,
+   "location": "Bengaluru",
+   "work_mode": "hybrid",
+   "salary_lpa": null,
+   "languages": [
+    "Python",
+    "Go",
+    "TypeScript"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [
+    "LangChain",
+    "agents",
+    "agent workflows",
+    "MCP"
+   ],
+   "llm_providers": [
+    "OpenAI",
+    "Anthropic",
+    "Google",
+    "self-hosted models"
+   ],
+   "cloud": [
+    "AWS",
+    "Azure",
+    "GCP"
+   ],
+   "data": [],
+   "ops_deploy": [
+    "Kubernetes",
+    "vLLM",
+    "SGLang",
+    "Triton",
+    "model serving",
+    "evals",
+    "eval pipelines",
+    "guardrails",
+    "observability"
+   ],
+   "ml_deep": [
+    "ML pipelines"
+   ],
+   "soft_asks": [
+    "client_facing",
+    "system_design",
+    "stakeholder_management",
+    "poc_prototype"
+   ],
+   "deliverables": "Owns technical arc of enterprise deals: architecture, POCs, integration glue, agent workflows, eval pipelines",
+   "excerpt": "You have worked with LLMs, agents, evals or ML pipelines in production. Familiarity with vLLM, SGLang, LangChain, Triton",
+   "snapshot_date": "2026-09-18",
+   "territory": "ai_native_startups",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Greenhouse",
+   "source_url": "https://app.careerpuck.com/job-board/truefoundry/job/5373665008",
+   "company": "TrueFoundry",
+   "company_tier": "ai_startup",
+   "title": "Founding Support Engineer",
+   "years_min": null,
+   "years_max": null,
+   "location": "Bangalore",
+   "work_mode": "hybrid",
+   "salary_lpa": null,
+   "languages": [],
+   "backend": [
+    "RBAC",
+    "SSO"
+   ],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [
+    "MCP proxy",
+    "agents"
+   ],
+   "llm_providers": [
+    "LLMs"
+   ],
+   "cloud": [
+    "at least one major cloud"
+   ],
+   "data": [],
+   "ops_deploy": [
+    "Kubernetes",
+    "guardrails",
+    "logs",
+    "distributed systems debugging",
+    "incident response",
+    "runbooks"
+   ],
+   "ml_deep": [
+    "ML pipelines"
+   ],
+   "soft_asks": [
+    "client_facing",
+    "documentation"
+   ],
+   "deliverables": "First response when enterprise customers production AI stack breaks",
+   "excerpt": "Comfortable with Kubernetes and at least one major cloud. Exposure to LLMs, agents or ML pipelines in production a strong plus",
+   "snapshot_date": "2026-09-18",
+   "territory": "ai_native_startups",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Keka",
+   "source_url": "https://nurix.keka.com/careers/jobdetails/40634",
+   "company": "Nurix AI",
+   "company_tier": "ai_startup",
+   "title": "Machine Learning Engineer",
+   "years_min": 4,
+   "years_max": null,
+   "location": "Bangalore",
+   "work_mode": "onsite",
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [
+    "Agentic RAG pipelines"
+   ],
+   "agent_frameworks": [
+    "LLM orchestration",
+    "voice agents"
+   ],
+   "llm_providers": [],
+   "cloud": [],
+   "data": [],
+   "ops_deploy": [
+    "MLOps",
+    "voice:ASR",
+    "voice:TTS",
+    "voice:Voice-to-Voice systems",
+    "voice:low-latency real-time production",
+    "voice:interruptions and natural pauses"
+   ],
+   "ml_deep": [
+    "PyTorch",
+    "TensorFlow",
+    "JAX",
+    "ASR",
+    "TTS",
+    "NLP",
+    "LLM fine-tuning",
+    "dialogue systems",
+    "multilingual Indian-context ASR/TTS"
+   ],
+   "soft_asks": [
+    "stakeholder_management"
+   ],
+   "deliverables": "Custom ASR/TTS models and agentic RAG pipelines for conversational voice agents",
+   "excerpt": "4+ years of hands-on ML engineering experience with a focus on speech/NLP systems",
+   "snapshot_date": "2026-09-18",
+   "territory": "ai_native_startups",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Greenhouse",
+   "source_url": "https://www.observe.ai/position?gh_jid=5254531008",
+   "company": "Observe.AI",
+   "company_tier": "ai_startup",
+   "title": "AI Agent Engineer, Client Facing",
+   "years_min": 3,
+   "years_max": null,
+   "location": "Redwood City (not India)",
+   "work_mode": "hybrid",
+   "salary_lpa": null,
+   "languages": [
+    "Python",
+    "JavaScript"
+   ],
+   "backend": [
+    "API integration"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "retrieval-augmented generation",
+    "vector DBs"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LlamaIndex",
+    "orchestration frameworks",
+    "AI Agents"
+   ],
+   "llm_providers": [
+    "GPT",
+    "Claude",
+    "Gemini"
+   ],
+   "cloud": [
+    "Amazon Connect"
+   ],
+   "data": [
+    "knowledge bases",
+    "CRMs"
+   ],
+   "ops_deploy": [
+    "evaluation frameworks",
+    "voice:SIP",
+    "voice:Twilio",
+    "voice:CCaaS",
+    "voice:PSTN",
+    "voice:telephony integration",
+    "n8n",
+    "Zapier"
+   ],
+   "ml_deep": [],
+   "soft_asks": [
+    "client_facing",
+    "stakeholder_management",
+    "poc_prototype",
+    "requirements_gathering"
+   ],
+   "deliverables": "End-to-end lifecycle of enterprise Voice and Chat AI agents: prompt design, telephony, integrations",
+   "excerpt": "Familiarity with LLMs (GPT, Claude, Gemini), vector DBs and orchestration frameworks (LangChain, LlamaIndex)",
+   "snapshot_date": "2026-09-18",
+   "territory": "ai_native_startups",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Greenhouse",
+   "source_url": "https://job-boards.greenhouse.io/devrev/jobs/5668939004",
+   "company": "DevRev",
+   "company_tier": "ai_startup",
+   "title": "Forward Deployed Engineer",
+   "years_min": 5,
+   "years_max": null,
+   "location": "Bangalore / Chennai",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "TypeScript",
+    "JavaScript",
+    "Python",
+    "Go"
+   ],
+   "backend": [
+    "REST",
+    "GraphQL",
+    "webhooks",
+    "event-driven/pub-sub"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "semantic search"
+   ],
+   "agent_frameworks": [
+    "AI agents",
+    "function calling",
+    "Model Context Programming"
+   ],
+   "llm_providers": [
+    "large language models"
+   ],
+   "cloud": [
+    "AWS Lambda",
+    "Google Cloud Functions",
+    "serverless",
+    "edge platforms"
+   ],
+   "data": [
+    "SQL",
+    "graph data structures",
+    "data modeling"
+   ],
+   "ops_deploy": [
+    "CI/CD",
+    "containers",
+    "observability",
+    "evals",
+    "telemetry",
+    "logging"
+   ],
+   "ml_deep": [],
+   "soft_asks": [
+    "client_facing",
+    "stakeholder_management",
+    "documentation",
+    "poc_prototype"
+   ],
+   "deliverables": "AI agents, integrations and automations connecting DevRev to customer stacks; 70-80% coding, 30% customer",
+   "excerpt": "Familiarity with LLMs, prompt engineering, frameworks like RAG and function calling, and building evals",
+   "snapshot_date": "2026-09-18",
+   "territory": "ai_native_startups",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Indeed India",
+   "source_url": "https://in.indeed.com/viewjob?jk=e858d1eeda7b9e64",
+   "company": "TechLantern Solutions",
+   "company_tier": "other",
+   "title": "AI/ML Engineer",
+   "years_min": 2,
+   "years_max": 8,
+   "location": "Pune",
+   "work_mode": "hybrid",
+   "salary_lpa": "4-20",
+   "languages": [
+    "Python",
+    "SQL"
+   ],
+   "backend": [
+    "FastAPI"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "Pinecone",
+    "Weaviate",
+    "ChromaDB",
+    "FAISS",
+    "Milvus"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LangGraph",
+    "LlamaIndex",
+    "CrewAI",
+    "AutoGen",
+    "MCP",
+    "AI Agents",
+    "Multi-Agent Systems",
+    "Agentic Workflows"
+   ],
+   "llm_providers": [
+    "OpenAI",
+    "Anthropic Claude",
+    "Google Gemini",
+    "Hugging Face"
+   ],
+   "cloud": [
+    "AWS",
+    "Azure",
+    "GCP"
+   ],
+   "data": [
+    "SQL"
+   ],
+   "ops_deploy": [
+    "Docker",
+    "Kubernetes",
+    "LLMOps",
+    "LangSmith",
+    "LangFuse",
+    "model evaluation",
+    "monitoring",
+    "deployment pipelines",
+    "red-teaming"
+   ],
+   "ml_deep": [
+    "Machine Learning",
+    "Deep Learning",
+    "Transformer architectures",
+    "Fine-tuning",
+    "LoRA",
+    "QLoRA",
+    "Prompt Engineering"
+   ],
+   "soft_asks": [],
+   "deliverables": "LLM and agentic applications with RAG, fine-tuning and LLMOps evaluation pipelines",
+   "excerpt": "Agents: AI Agents, Multi-Agent Systems, Agentic Workflows, MCP. Frameworks: LangChain, LangGraph, LlamaIndex, CrewAI, AutoGen",
+   "snapshot_date": "2026-09-18",
+   "territory": "staffing_volume",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Indeed India",
+   "source_url": "https://in.indeed.com/viewjob?jk=986599ab153b8464",
+   "company": "Jobbycart Technologies",
+   "company_tier": "other",
+   "title": "AI Engineer",
+   "years_min": 4,
+   "years_max": 6,
+   "location": "Karnataka",
+   "work_mode": "onsite",
+   "salary_lpa": "7-10",
+   "languages": [
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "Qdrant",
+    "Milvus",
+    "Elasticsearch",
+    "semantic search",
+    "embeddings",
+    "reranking",
+    "chunking",
+    "hybrid search",
+    "indexing"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LlamaIndex",
+    "MCP",
+    "Agentic AI"
+   ],
+   "llm_providers": [
+    "Hugging Face",
+    "multimodal LLMs"
+   ],
+   "cloud": [
+    "AWS",
+    "Azure",
+    "GCP"
+   ],
+   "data": [],
+   "ops_deploy": [
+    "containers",
+    "CI/CD",
+    "monitoring",
+    "evaluation"
+   ],
+   "ml_deep": [
+    "OCR",
+    "prompt engineering",
+    "document/layout parsing"
+   ],
+   "soft_asks": [
+    "client_facing",
+    "stakeholder_management"
+   ],
+   "deliverables": "Production LLM conversational agents and RAG pipelines over documents for pharma clients",
+   "excerpt": "Semantic search, embeddings, reranking and chunking strategies; evaluate for grounding, hallucination, latency and cost",
+   "snapshot_date": "2026-09-18",
+   "territory": "staffing_volume",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Indeed India",
+   "source_url": "https://in.indeed.com/viewjob?jk=9418727070d00399",
+   "company": "Techlicious Design & Development",
+   "company_tier": "other",
+   "title": "AI Engineer",
+   "years_min": 2,
+   "years_max": 5,
+   "location": "Thane",
+   "work_mode": "onsite",
+   "salary_lpa": "6-18",
+   "languages": [
+    "C#",
+    "Python"
+   ],
+   "backend": [
+    ".NET Core",
+    "Entity Framework Core"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "embeddings",
+    "vector search",
+    "Azure AI Search",
+    "Qdrant",
+    "Pinecone",
+    "Milvus"
+   ],
+   "agent_frameworks": [
+    "Microsoft Semantic Kernel",
+    "LangChain",
+    "agentic workflows"
+   ],
+   "llm_providers": [
+    "OpenAI APIs",
+    "Azure OpenAI Service"
+   ],
+   "cloud": [
+    "Microsoft Azure",
+    "App Services",
+    "Key Vault",
+    "Cognitive Services"
+   ],
+   "data": [
+    "MS SQL Server",
+    "PostgreSQL",
+    "NoSQL"
+   ],
+   "ops_deploy": [
+    "Docker",
+    "Git/GitHub Actions"
+   ],
+   "ml_deep": [
+    "prompt engineering",
+    "LLM optimization"
+   ],
+   "soft_asks": [
+    "documentation"
+   ],
+   "deliverables": "AI-driven features, RAG pipelines and agentic workflows on .NET/Azure stack",
+   "excerpt": "Hands-on experience with Microsoft Semantic Kernel, LangChain, OpenAI APIs, Azure OpenAI Service",
+   "snapshot_date": "2026-09-18",
+   "territory": "staffing_volume",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Indeed India",
+   "source_url": "https://in.indeed.com/viewjob?jk=21f50d483c39f44e",
+   "company": "Kasmoprav",
+   "company_tier": "staffing",
+   "title": "AI Engineer - LLM / RAG / Agentic AI",
+   "years_min": 3,
+   "years_max": null,
+   "location": "Remote India",
+   "work_mode": "remote",
+   "salary_lpa": "7.2-8.4",
+   "languages": [
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "Qdrant",
+    "Milvus",
+    "Elasticsearch",
+    "chunking",
+    "embedding selection",
+    "hybrid search",
+    "reranking"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LlamaIndex",
+    "MCP",
+    "agentic AI"
+   ],
+   "llm_providers": [],
+   "cloud": [
+    "AWS",
+    "Azure",
+    "GCP"
+   ],
+   "data": [],
+   "ops_deploy": [
+    "observability",
+    "AI evaluation",
+    "LLM evaluation frameworks",
+    "guardrails"
+   ],
+   "ml_deep": [
+    "prompt engineering",
+    "OCR",
+    "multimodal understanding"
+   ],
+   "soft_asks": [],
+   "deliverables": "RAG and agentic document-processing pipelines on 12-month contract",
+   "excerpt": "Chunking, embedding selection, hybrid search, reranking. MCP protocols for external tools",
+   "snapshot_date": "2026-09-18",
+   "territory": "staffing_volume",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Indeed India",
+   "source_url": "https://in.indeed.com/viewjob?jk=9ce3fd9c7ee0b563",
+   "company": "S.S.Rana & Co.",
+   "company_tier": "other",
+   "title": "AI Engineer",
+   "years_min": 1,
+   "years_max": 2,
+   "location": "New Delhi",
+   "work_mode": "onsite",
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "FastAPI",
+    "REST APIs",
+    ".NET MVC"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "Chroma DB",
+    "Qdrant",
+    "FAISS",
+    "vector databases"
+   ],
+   "agent_frameworks": [
+    "Lang Graph",
+    "Claude Agent SDK",
+    "LLAMA Index"
+   ],
+   "llm_providers": [
+    "LLAMA",
+    "Claude",
+    "ChatGPT"
+   ],
+   "cloud": [],
+   "data": [
+    "SQL"
+   ],
+   "ops_deploy": [
+    "Copilot",
+    "Cursor AI"
+   ],
+   "ml_deep": [
+    "prompt engineering",
+    "LLM fine-tuning"
+   ],
+   "soft_asks": [],
+   "deliverables": "AI applications and RAG pipelines over enterprise SQL data for a law firm",
+   "excerpt": "Develop AI applications using LLMs, Lang Graph, Claude Agent SDK and LLAMA Index",
+   "snapshot_date": "2026-09-18",
+   "territory": "staffing_volume",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Indeed India",
+   "source_url": "https://in.indeed.com/viewjob?jk=aa3fb428ed54ffef",
+   "company": "Quantum School of AI",
+   "company_tier": "other",
+   "title": "AI Developer - 1 to 2 Years",
+   "years_min": 1,
+   "years_max": 2,
+   "location": "Hyderabad",
+   "work_mode": "onsite",
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [
+    "Pinecone",
+    "FAISS",
+    "Chroma",
+    "vector databases"
+   ],
+   "agent_frameworks": [
+    "LangGraph",
+    "agent/orchestration frameworks"
+   ],
+   "llm_providers": [
+    "Bedrock",
+    "LLM APIs"
+   ],
+   "cloud": [
+    "AWS",
+    "EC2",
+    "S3",
+    "Lambda",
+    "SageMaker",
+    "Bedrock",
+    "GCP",
+    "Azure"
+   ],
+   "data": [],
+   "ops_deploy": [
+    "Git",
+    "MLOps",
+    "model deployment pipelines"
+   ],
+   "ml_deep": [
+    "PyTorch",
+    "TensorFlow",
+    "scikit-learn",
+    "NLP",
+    "computer vision",
+    "prompt engineering"
+   ],
+   "soft_asks": [
+    "mentoring"
+   ],
+   "deliverables": "AI/ML development with LangGraph orchestration on AWS",
+   "excerpt": "Experience with LangGraph (or similar agent/orchestration frameworks). Hands-on experience with AWS",
+   "snapshot_date": "2026-09-18",
+   "territory": "staffing_volume",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Indeed India",
+   "source_url": "https://in.indeed.com/viewjob?jk=60074cc1eaee5f1d",
+   "company": "Techila Global Services",
+   "company_tier": "staffing",
+   "title": "AI Engineer",
+   "years_min": 4,
+   "years_max": 15,
+   "location": "Pune",
+   "work_mode": "hybrid",
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [
+    "Agentic AI",
+    "Multi-Agent Systems"
+   ],
+   "llm_providers": [
+    "LLMs"
+   ],
+   "cloud": [
+    "AWS",
+    "GCP",
+    "Azure"
+   ],
+   "data": [],
+   "ops_deploy": [
+    "Docker",
+    "Kubernetes",
+    "MLOps",
+    "AI/ML Model Deployment"
+   ],
+   "ml_deep": [
+    "Deep Learning",
+    "TensorFlow",
+    "PyTorch",
+    "JAX",
+    "Reinforcement Learning"
+   ],
+   "soft_asks": [],
+   "deliverables": "Not described - bare stack list with Immediate Joiners Only note",
+   "excerpt": "TAGS: AI/ML, Machine Learning, AI Engineer. Bare list: Python / Deep Learning / TensorFlow / PyTorch / JAX / GenAI / Agentic AI / MLOps",
+   "snapshot_date": "2026-09-18",
+   "territory": "staffing_volume",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Indeed India",
+   "source_url": "https://in.indeed.com/viewjob?jk=e76f5cca6e2ce40d",
+   "company": "Begig",
+   "company_tier": "staffing",
+   "title": "AI/ML Engineer",
+   "years_min": null,
+   "years_max": null,
+   "location": "Mumbai",
+   "work_mode": "hybrid",
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [
+    "Anthropic Claude"
+   ],
+   "cloud": [],
+   "data": [
+    "pandas"
+   ],
+   "ops_deploy": [
+    "pytest",
+    "DeepEval",
+    "Promptfoo",
+    "LLM evaluation frameworks",
+    "Git",
+    "automated testing"
+   ],
+   "ml_deep": [
+    "LLM prompt engineering",
+    "OLS regression",
+    "statsmodels",
+    "scipy"
+   ],
+   "soft_asks": [],
+   "deliverables": "Structured-output LLM pipelines with statistical modelling on 12-month contract",
+   "excerpt": "LLM prompt engineering with Anthropic Claude. JSON Schema and Pydantic for structured outputs. Automated testing using pytest and LLM evaluation frameworks",
+   "snapshot_date": "2026-09-18",
+   "territory": "staffing_volume",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Indeed India",
+   "source_url": "https://in.indeed.com/viewjob?jk=0f85b1a2adee8582",
+   "company": "Cloudseed Technologies",
+   "company_tier": "other",
+   "title": "Generative AI Engineer",
+   "years_min": 0,
+   "years_max": 1,
+   "location": "Coimbatore",
+   "work_mode": "hybrid",
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [
+    "LangChain",
+    "LlamaIndex"
+   ],
+   "llm_providers": [
+    "Hugging Face"
+   ],
+   "cloud": [],
+   "data": [],
+   "ops_deploy": [],
+   "ml_deep": [
+    "ML/DL concepts",
+    "spaCy",
+    "NLTK",
+    "Transformers",
+    "NLP",
+    "prompt engineering",
+    "LLM fine-tuning"
+   ],
+   "soft_asks": [
+    "poc_prototype"
+   ],
+   "deliverables": "Assist in building GenAI applications, prompt engineering and model output evaluation",
+   "excerpt": "Proficiency in Python and basic understanding of ML/DL. 2023/2024 graduates welcome",
+   "snapshot_date": "2026-09-18",
+   "territory": "staffing_volume",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Indeed India",
+   "source_url": "https://in.indeed.com/viewjob?jk=734d03461147193e",
+   "company": "Inno Valley Works",
+   "company_tier": "other",
+   "title": "AI Engineer",
+   "years_min": 3,
+   "years_max": 5,
+   "location": "Coimbatore",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "backend APIs"
+   ],
+   "frontend": [
+    "frontend"
+   ],
+   "retrieval_vector": [
+    "RAG"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LangGraph",
+    "LlamaIndex",
+    "multi-agentic"
+   ],
+   "llm_providers": [
+    "LLM"
+   ],
+   "cloud": [
+    "AWS",
+    "Azure",
+    "GCP"
+   ],
+   "data": [
+    "ETL",
+    "data warehouses"
+   ],
+   "ops_deploy": [
+    "containerization",
+    "CI-CD"
+   ],
+   "ml_deep": [],
+   "soft_asks": [
+    "requirements_gathering",
+    "poc_prototype",
+    "system_design"
+   ],
+   "deliverables": "Single and multi-agent GenAI applications with RAG pipelines, full-stack",
+   "excerpt": "Strong Python proficiency - production code, not just scripts. Translate business requirements into GenAI solutions",
+   "snapshot_date": "2026-09-18",
+   "territory": "staffing_volume",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Indeed India",
+   "source_url": "https://in.indeed.com/viewjob?jk=603788480a0ab2ea",
+   "company": "V support Solutions",
+   "company_tier": "staffing",
+   "title": "AI-Machine Learning Engineer",
+   "years_min": 3,
+   "years_max": 5,
+   "location": "Coimbatore",
+   "work_mode": "onsite",
+   "salary_lpa": "4.8-7.2",
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "FastAPI",
+    "RESTful API"
+   ],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [],
+   "cloud": [
+    "AWS",
+    "SageMaker",
+    "Kinesis"
+   ],
+   "data": [
+    "SQL",
+    "NoSQL",
+    "data pipelines"
+   ],
+   "ops_deploy": [
+    "Git/Bitbucket",
+    "Ubuntu"
+   ],
+   "ml_deep": [
+    "Scikit-Learn",
+    "OpenCV",
+    "TensorFlow",
+    "Keras",
+    "PyTorch",
+    "computer vision",
+    "GPU model training"
+   ],
+   "soft_asks": [],
+   "deliverables": "Computer-vision and ML models over video, text and sensor data with FastAPI serving",
+   "excerpt": "In depth knowledge of Python and its data analysis and ML packages (Scikit-Learn, OpenCV, TensorFlow, Keras, PyTorch)",
+   "snapshot_date": "2026-09-18",
+   "territory": "staffing_volume",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Indeed India",
+   "source_url": "https://in.indeed.com/viewjob?jk=2b76c9f0a43642df",
+   "company": "PCDS Infotech",
+   "company_tier": "other",
+   "title": "AI / Generative AI Engineer",
+   "years_min": 1,
+   "years_max": 8,
+   "location": "Mumbai",
+   "work_mode": "hybrid",
+   "salary_lpa": "6-35",
+   "languages": [
+    "Python",
+    "Node.js"
+   ],
+   "backend": [
+    "APIs"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "Vector DB",
+    "RAG"
+   ],
+   "agent_frameworks": [
+    "AI assistants"
+   ],
+   "llm_providers": [
+    "LLM basics"
+   ],
+   "cloud": [
+    "Cloud basics"
+   ],
+   "data": [],
+   "ops_deploy": [],
+   "ml_deep": [
+    "Prompt Engineering"
+   ],
+   "soft_asks": [],
+   "deliverables": "AI-enabled features, prompt workflows, RAG-based search and AI assistants",
+   "excerpt": "TAGS only. Entire stack section: Python or Node.js | LLM basics | Prompt Engineering | Vector DB / RAG | APIs | Cloud basics",
+   "snapshot_date": "2026-09-18",
+   "territory": "staffing_volume",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Indeed India",
+   "source_url": "https://in.indeed.com/viewjob?jk=033ae380b4d89c19",
+   "company": "Infosys Limited",
+   "company_tier": "services_mnc",
+   "title": "Python Developer - Agentic AI / LLM / RAG",
+   "years_min": 1,
+   "years_max": 6,
+   "location": "Bengaluru",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "FastAPI",
+    "Flask",
+    "Django",
+    "REST APIs"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "Pinecone",
+    "ChromaDB",
+    "Weaviate",
+    "FAISS",
+    "Azure AI Search",
+    "embeddings",
+    "semantic search"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LangGraph",
+    "CrewAI",
+    "AutoGen",
+    "Agentic AI",
+    "Multi-agent architectures"
+   ],
+   "llm_providers": [
+    "LLMs"
+   ],
+   "cloud": [
+    "Azure AI Search"
+   ],
+   "data": [],
+   "ops_deploy": [
+    "Git",
+    "CI/CD",
+    "MLOps",
+    "Docker",
+    "Kubernetes",
+    "model evaluation",
+    "AgentOps",
+    "LLMOps"
+   ],
+   "ml_deep": [
+    "NLP",
+    "prompt engineering"
+   ],
+   "soft_asks": [],
+   "deliverables": "Agentic AI, LLM and RAG systems in Python with enterprise AI governance",
+   "excerpt": "TAGS: AgentOps, LLMOps, Generative AI chains, Responsible AI, Python",
+   "snapshot_date": "2026-09-18",
+   "territory": "staffing_volume",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Indeed India",
+   "source_url": "https://in.indeed.com/viewjob?jk=a4fa4258e074aba4",
+   "company": "TechXLNS",
+   "company_tier": "other",
+   "title": "Mid-Level AI Engineer (Full stack)",
+   "years_min": 2,
+   "years_max": 4,
+   "location": "Vadavalli, Coimbatore",
+   "work_mode": "onsite",
+   "salary_lpa": "6-10",
+   "languages": [
+    "Python",
+    "TypeScript"
+   ],
+   "backend": [
+    "FastAPI",
+    "Flask",
+    "Node.js",
+    "Express",
+    "NestJS"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "Pinecone",
+    "Qdrant",
+    "Milvus",
+    "Pgvector",
+    "semantic discovery",
+    "AI-enabled search"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LlamaIndex",
+    "Agentic AI workflows",
+    "LLM orchestration"
+   ],
+   "llm_providers": [
+    "Llama Guard"
+   ],
+   "cloud": [],
+   "data": [],
+   "ops_deploy": [
+    "Ragas",
+    "TruLens",
+    "DeepEval",
+    "LLM evaluation pipelines",
+    "NeMo Guardrails",
+    "Guardrails AI",
+    "inference optimization"
+   ],
+   "ml_deep": [
+    "Machine Learning",
+    "NLP",
+    "LLM application engineering"
+   ],
+   "soft_asks": [],
+   "deliverables": "AI-enabled semantic search, chat-based data insight tools and agentic workflows with guardrails",
+   "excerpt": "Guardrail frameworks: NeMo Guardrails, Guardrails AI, Llama Guard. Evaluation suites: Ragas, TruLens, DeepEval",
+   "snapshot_date": "2026-09-18",
+   "territory": "staffing_volume",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Indeed India",
+   "source_url": "https://in.indeed.com/viewjob?jk=db5fb2dd0a500473",
+   "company": "Tech Arch Softwares",
+   "company_tier": "other",
+   "title": "AI Developer",
+   "years_min": 3,
+   "years_max": null,
+   "location": "Remote India",
+   "work_mode": "remote",
+   "salary_lpa": "12-18",
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "REST APIs",
+    "Webhooks"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "Embeddings",
+    "Vector Databases"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LangGraph",
+    "n8n",
+    "agentic AI workflows"
+   ],
+   "llm_providers": [
+    "LLMs",
+    "open-source LLM"
+   ],
+   "cloud": [
+    "AWS",
+    "Azure",
+    "GCP"
+   ],
+   "data": [
+    "MySQL",
+    "PostgreSQL",
+    "MongoDB",
+    "Redis"
+   ],
+   "ops_deploy": [
+    "Docker",
+    "Git"
+   ],
+   "ml_deep": [
+    "Machine Learning",
+    "Deep Learning",
+    "NLP",
+    "Computer Vision",
+    "Voice AI"
+   ],
+   "soft_asks": [],
+   "deliverables": "End-to-end agentic AI workflows and AI SaaS connected to business platforms and CRMs",
+   "excerpt": "Build AI solutions independently from scratch. Design and implement agentic AI workflows. Not prompt-only developers",
+   "snapshot_date": "2026-09-18",
+   "territory": "staffing_volume",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Indeed India",
+   "source_url": "https://in.indeed.com/viewjob?jk=74bb7f086ea4feea",
+   "company": "Invoidea Technologies",
+   "company_tier": "other",
+   "title": "AI/ML Developer",
+   "years_min": null,
+   "years_max": null,
+   "location": "India",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "REST APIs"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "Retrieval-Augmented Generation systems"
+   ],
+   "agent_frameworks": [
+    "AI Frameworks"
+   ],
+   "llm_providers": [
+    "OpenAI API",
+    "Large Language Models"
+   ],
+   "cloud": [
+    "AWS",
+    "GCP",
+    "Microsoft Azure"
+   ],
+   "data": [
+    "Pandas",
+    "NumPy",
+    "SQL",
+    "NoSQL"
+   ],
+   "ops_deploy": [
+    "Git",
+    "Docker",
+    "Kubernetes",
+    "CI/CD",
+    "model evaluation"
+   ],
+   "ml_deep": [
+    "NLP",
+    "Computer Vision",
+    "Reinforcement Learning",
+    "deep learning"
+   ],
+   "soft_asks": [],
+   "deliverables": "Not described beyond a generic ML/GenAI stack list",
+   "excerpt": "TAGS: Python, OpenAI API, AWS/Azure/GCP, SQL, NoSQL, REST APIs, Generative AI and LLMs, AI Frameworks, NLP",
+   "snapshot_date": "2026-09-18",
+   "territory": "staffing_volume",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Indeed India",
+   "source_url": "https://in.indeed.com/viewjob?jk=a19ca53ae6bc2c4a",
+   "company": "MyAdvice",
+   "company_tier": "other",
+   "title": "AI Engineer I (Generative AI)",
+   "years_min": 1,
+   "years_max": 3,
+   "location": "Remote India",
+   "work_mode": "remote",
+   "salary_lpa": "12-15",
+   "languages": [
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "vector database"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LlamaIndex",
+    "AI agents"
+   ],
+   "llm_providers": [
+    "HuggingFace",
+    "GPT",
+    "LLaMA",
+    "Claude",
+    "Gemini"
+   ],
+   "cloud": [
+    "AWS",
+    "GCP"
+   ],
+   "data": [],
+   "ops_deploy": [
+    "Docker",
+    "Kubernetes",
+    "MLOps",
+    "guardrails"
+   ],
+   "ml_deep": [
+    "transformer-based LLMs",
+    "fine-tune large language models",
+    "prompt engineering"
+   ],
+   "soft_asks": [],
+   "deliverables": "Generative AI applications including chatbots and AI agents with RAG and fine-tuning",
+   "excerpt": "Strong proficiency in Python. Expertise with transformer-based LLMs and frameworks like LangChain, LlamaIndex, HuggingFace",
+   "snapshot_date": "2026-09-18",
+   "territory": "staffing_volume",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Indeed India",
+   "source_url": "https://in.indeed.com/viewjob?jk=9fe48c9393312b11",
+   "company": "QuantumLoopAI",
+   "company_tier": "ai_startup",
+   "title": "AI/ML & Prompt Engineer LLM, RAG & Voice Agent",
+   "years_min": null,
+   "years_max": null,
+   "location": "Remote India (UK hours)",
+   "work_mode": "remote",
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "NestJS",
+    "APIs",
+    "Microservices"
+   ],
+   "frontend": [
+    "Next.js",
+    "React"
+   ],
+   "retrieval_vector": [
+    "RAG frameworks"
+   ],
+   "agent_frameworks": [
+    "voice-agent",
+    "dialogue-system design"
+   ],
+   "llm_providers": [
+    "GPT",
+    "LLaMA",
+    "Mistral",
+    "open-source LLM"
+   ],
+   "cloud": [
+    "Azure",
+    "App Services",
+    "Functions",
+    "Cognitive Services"
+   ],
+   "data": [
+    "MySQL"
+   ],
+   "ops_deploy": [
+    "Docker",
+    "MLOps pipelines",
+    "model monitoring"
+   ],
+   "ml_deep": [
+    "prompt engineering",
+    "LLMs",
+    "speech-to-text",
+    "text-to-speech"
+   ],
+   "soft_asks": [
+    "system_design",
+    "stakeholder_management"
+   ],
+   "deliverables": "LLM and RAG systems for AI healthcare reception platform used by GP surgeries",
+   "excerpt": "Hands-on experience with prompt engineering, LLMs, RAG frameworks and voice-agent or dialogue-system design",
+   "snapshot_date": "2026-09-18",
+   "territory": "staffing_volume",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Indeed India",
+   "source_url": "https://in.indeed.com/viewjob?jk=fb652987005ced37",
+   "company": "Altimetrik Corp",
+   "company_tier": "services_mnc",
+   "title": "Engineer - AI",
+   "years_min": 2,
+   "years_max": 5,
+   "location": "Bengaluru",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [],
+   "cloud": [],
+   "data": [
+    "Data Engineering"
+   ],
+   "ops_deploy": [],
+   "ml_deep": [],
+   "soft_asks": [],
+   "deliverables": "Not described - two-line requisition noting internal candidate identified",
+   "excerpt": "TAGS: GenAI Engineer, Data Engineering. Body reads: Gen AI - Engineer. Internal candidate has been identified",
+   "snapshot_date": "2026-09-18",
+   "territory": "staffing_volume",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Foundit",
+   "source_url": "https://www.foundit.in/job/generative-ai-engineer-huntingcube-hyderabad-67596711",
+   "company": "HuntingCube",
+   "company_tier": "staffing",
+   "title": "Generative AI Engineer",
+   "years_min": 0,
+   "years_max": 1,
+   "location": "Hyderabad",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "RESTful APIs"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "Retrieval-Augmented Generation",
+    "Vector databases"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LlamaIndex",
+    "AI orchestration framework"
+   ],
+   "llm_providers": [
+    "Hugging Face Transformers",
+    "Large Language Models"
+   ],
+   "cloud": [
+    "Google Cloud Platform",
+    "Microsoft Azure",
+    "AWS"
+   ],
+   "data": [],
+   "ops_deploy": [
+    "Docker",
+    "Kubernetes"
+   ],
+   "ml_deep": [
+    "Prompt engineering"
+   ],
+   "soft_asks": [],
+   "deliverables": "Not described - requirement list only",
+   "excerpt": "TAGS: LangChain, Hugging Face Transformers, Vector databases, Prompt engineering, RAG, LlamaIndex, LLMs, GCP, Docker, Azure, RESTful APIs, Python, AWS",
+   "snapshot_date": "2026-09-18",
+   "territory": "staffing_volume",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Foundit",
+   "source_url": "https://www.foundit.in/job/generative-ai-engineer-solytics-partners-pune-66795130",
+   "company": "Solytics Partners",
+   "company_tier": "consultancy",
+   "title": "Generative AI Engineer",
+   "years_min": 0,
+   "years_max": 1,
+   "location": "Pune",
+   "work_mode": null,
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "FastAPI",
+    "Flask"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG systems",
+    "Vector Databases",
+    "semantic search"
+   ],
+   "agent_frameworks": [
+    "AI Agents/Agentic AI"
+   ],
+   "llm_providers": [
+    "LLM-based applications"
+   ],
+   "cloud": [
+    "AWS",
+    "Azure"
+   ],
+   "data": [
+    "structured and unstructured data"
+   ],
+   "ops_deploy": [
+    "Docker",
+    "containerized deployments",
+    "CI/CD",
+    "MLOps"
+   ],
+   "ml_deep": [
+    "Prompt Engineering",
+    "Machine Learning",
+    "Data Science fundamentals"
+   ],
+   "soft_asks": [
+    "system_design"
+   ],
+   "deliverables": "End-to-end production GenAI applications with RAG and agentic components",
+   "excerpt": "TAGS: Generative AI, LLMs, AI Agents, CI/CD, Vector Databases, RAG, Prompt Engineering, MLOps, Docker, Flask, FastAPI, Python",
+   "snapshot_date": "2026-09-18",
+   "territory": "staffing_volume",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "We Work Remotely",
+   "source_url": "https://weworkremotely.com/remote-jobs/toptal-ai-platform-engineer-aws-bedrock-agentcore",
+   "company": "Toptal",
+   "company_tier": "staffing",
+   "title": "AI/Platform Engineer - AWS Bedrock Agentcore",
+   "years_min": null,
+   "years_max": null,
+   "location": "India geolocked, remote",
+   "work_mode": "remote",
+   "salary_lpa": "USD 30-50/hr",
+   "languages": [
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "OpenSearch vector search"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LangGraph",
+    "LlamaIndex",
+    "AgentCore",
+    "MCP servers",
+    "AI agents"
+   ],
+   "llm_providers": [
+    "AWS Bedrock",
+    "Azure OpenAI"
+   ],
+   "cloud": [
+    "AWS",
+    "Azure",
+    "Lambda",
+    "API Gateway",
+    "IAM",
+    "SageMaker"
+   ],
+   "data": [
+    "DynamoDB",
+    "OpenSearch",
+    "Apache Spark",
+    "PySpark"
+   ],
+   "ops_deploy": [
+    "CDK",
+    "CloudFormation",
+    "infrastructure-as-code"
+   ],
+   "ml_deep": [],
+   "soft_asks": [
+    "system_design"
+   ],
+   "deliverables": "Conversational AI systems and AI agent platform infrastructure on AWS Bedrock",
+   "excerpt": "Experience with at least one of: agent orchestration frameworks (LangChain, LangGraph, LlamaIndex), RAG system design or AWS production infrastructure",
+   "snapshot_date": "2026-09-18",
+   "territory": "remote_global",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "We Work Remotely",
+   "source_url": "https://weworkremotely.com/remote-jobs/toptal-ai-engineers",
+   "company": "Toptal",
+   "company_tier": "staffing",
+   "title": "AI Engineers",
+   "years_min": null,
+   "years_max": null,
+   "location": "Anywhere in the World",
+   "work_mode": "remote",
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "modern backend systems"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG pipelines",
+    "embeddings",
+    "vector databases",
+    "retrieval strategies"
+   ],
+   "agent_frameworks": [
+    "LangGraph",
+    "LangChain",
+    "LlamaIndex",
+    "Semantic Kernel",
+    "AI agents"
+   ],
+   "llm_providers": [
+    "LLMs"
+   ],
+   "cloud": [],
+   "data": [
+    "databases",
+    "APIs"
+   ],
+   "ops_deploy": [
+    "evaluate AI system quality, latency, cost and reliability"
+   ],
+   "ml_deep": [
+    "prompt engineering"
+   ],
+   "soft_asks": [
+    "system_design"
+   ],
+   "deliverables": "AI agents and LLM-powered workflows, RAG systems, LLM integration with tools and APIs",
+   "excerpt": "Hands-on experience building AI agents, RAG pipelines or LLM-based applications. Experience with LangGraph, LangChain, LlamaIndex, Semantic Kernel",
+   "snapshot_date": "2026-09-18",
+   "territory": "remote_global",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Y Combinator jobs",
+   "source_url": "https://www.ycombinator.com/companies/peakflo/jobs/vIrPzMj-forward-deployed-engineer-fde-india-remote",
+   "company": "Peakflo",
+   "company_tier": "ai_startup",
+   "title": "Forward Deployed Engineer (FDE)",
+   "years_min": 0.5,
+   "years_max": 2,
+   "location": "India / Remote",
+   "work_mode": "remote",
+   "salary_lpa": "10-13",
+   "languages": [
+    "Python",
+    "SQL"
+   ],
+   "backend": [
+    "back-end development"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LlamaIndex",
+    "hierarchical finance agents",
+    "agentic architecture"
+   ],
+   "llm_providers": [
+    "Gemini",
+    "GPT",
+    "Claude"
+   ],
+   "cloud": [
+    "Google Cloud"
+   ],
+   "data": [
+    "SQL",
+    "knowledge bases",
+    "financial APIs"
+   ],
+   "ops_deploy": [
+    "A/B testing pipelines",
+    "monitoring dashboards",
+    "deploying ML models in production",
+    "Git"
+   ],
+   "ml_deep": [
+    "Machine Learning",
+    "NLP",
+    "LLM fine-tuning",
+    "prompt engineering"
+   ],
+   "soft_asks": [
+    "documentation"
+   ],
+   "deliverables": "Voice AI conversational flows and hierarchical finance agents with RAG over financial APIs",
+   "excerpt": "Experience with multiple LLM platforms and orchestration frameworks (LangChain, LlamaIndex). Familiarity with advanced NLP techniques",
+   "snapshot_date": "2026-09-18",
+   "territory": "remote_global",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "agentic-engineering-jobs.com",
+   "source_url": "https://agentic-engineering-jobs.com/jobs/pulsora-forward-deployed-engineer-Tnl4pX",
+   "company": "Pulsora",
+   "company_tier": "ai_startup",
+   "title": "Forward Deployed Engineer",
+   "years_min": 3,
+   "years_max": 7,
+   "location": "India (Remote)",
+   "work_mode": "remote",
+   "salary_lpa": null,
+   "languages": [
+    "Python",
+    "JavaScript",
+    "TypeScript",
+    "SQL"
+   ],
+   "backend": [
+    "REST APIs"
+   ],
+   "frontend": [
+    "Vercel AI SDK"
+   ],
+   "retrieval_vector": [
+    "RAG"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LangGraph",
+    "AI agents",
+    "workflow orchestration"
+   ],
+   "llm_providers": [
+    "OpenAI API"
+   ],
+   "cloud": [],
+   "data": [
+    "SQL",
+    "analytics platforms"
+   ],
+   "ops_deploy": [
+    "evaluation"
+   ],
+   "ml_deep": [
+    "prompt engineering"
+   ],
+   "soft_asks": [
+    "client_facing",
+    "stakeholder_management",
+    "poc_prototype",
+    "requirements_gathering"
+   ],
+   "deliverables": "AI-enabled ESG reporting solutions, POCs, internal tools, integrations and dashboards for enterprise clients",
+   "excerpt": "Experience with LLM application development including prompt engineering, RAG, AI agents, workflow orchestration and evaluation",
+   "snapshot_date": "2026-09-18",
+   "territory": "remote_global",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "agentic-engineering-jobs.com",
+   "source_url": "https://agentic-engineering-jobs.com/jobs/pulsora-ai-engineer-bkPxiE",
+   "company": "Pulsora",
+   "company_tier": "ai_startup",
+   "title": "AI Engineer",
+   "years_min": 5,
+   "years_max": null,
+   "location": "India (Remote)",
+   "work_mode": "remote",
+   "salary_lpa": null,
+   "languages": [
+    "Python",
+    "Java"
+   ],
+   "backend": [
+    "Java backends",
+    "Python AI services"
+   ],
+   "frontend": [
+    "React"
+   ],
+   "retrieval_vector": [
+    "RAG",
+    "embeddings",
+    "reranking"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "LangGraph",
+    "multi-step agentic workflows"
+   ],
+   "llm_providers": [
+    "OpenAI",
+    "Anthropic",
+    "Gemini",
+    "Ollama"
+   ],
+   "cloud": [],
+   "data": [
+    "Pandas",
+    "NumPy"
+   ],
+   "ops_deploy": [
+    "Cursor",
+    "Claude Code",
+    "GitHub Copilot"
+   ],
+   "ml_deep": [
+    "fine-tuning",
+    "LoRA",
+    "QLoRA",
+    "prompt engineering",
+    "Scikit-learn"
+   ],
+   "soft_asks": [],
+   "deliverables": "Production-grade LLM applications with multi-step agentic workflows and fine-tuned domain models",
+   "excerpt": "5+ years professional software development with minimum 2 years on AI/ML, particularly LLMs",
+   "snapshot_date": "2026-09-18",
+   "territory": "remote_global",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Remote Rocketship",
+   "source_url": "https://www.remoterocketship.com/company/techtorch-io/jobs/ai-developer-india-remote/",
+   "company": "TechTorch",
+   "company_tier": "ai_startup",
+   "title": "AI Developer",
+   "years_min": 3,
+   "years_max": null,
+   "location": "India Remote",
+   "work_mode": "remote",
+   "salary_lpa": null,
+   "languages": [
+    "Python",
+    "JavaScript",
+    "TypeScript"
+   ],
+   "backend": [
+    "Node.js",
+    "FastAPI"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "embeddings",
+    "RAG",
+    "chunking",
+    "indexing"
+   ],
+   "agent_frameworks": [
+    "LangGraph",
+    "LangChain",
+    "AI agents",
+    "n8n",
+    "Airflow",
+    "Prefect",
+    "Temporal"
+   ],
+   "llm_providers": [
+    "OpenAI",
+    "Gemini",
+    "Claude",
+    "Bedrock"
+   ],
+   "cloud": [
+    "AWS"
+   ],
+   "data": [
+    "Supabase",
+    "Airflow"
+   ],
+   "ops_deploy": [
+    "Git",
+    "CI/CD",
+    "Docker",
+    "Langfuse",
+    "Weights & Biases",
+    "OpenTelemetry",
+    "observability",
+    "testing"
+   ],
+   "ml_deep": [],
+   "soft_asks": [],
+   "deliverables": "AI agents and complex automations for quote-to-cash, CRM modernization and billing workflows",
+   "excerpt": "3+ years hands-on experience building and shipping AI agents or complex automations. Strong Python including async, testing and packaging",
+   "snapshot_date": "2026-09-18",
+   "territory": "remote_global",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "agentic-engineering-jobs.com",
+   "source_url": "https://agentic-engineering-jobs.com/jobs/neuron7-ai-solutions-engineer-fl7LzY",
+   "company": "Neuron7",
+   "company_tier": "ai_startup",
+   "title": "AI Solutions Engineer",
+   "years_min": 2,
+   "years_max": 5,
+   "location": "Bengaluru",
+   "work_mode": "hybrid",
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "FastAPI",
+    "Pydantic v2",
+    "SQLAlchemy 2.0",
+    "asyncio"
+   ],
+   "frontend": [
+    "Vercel AI SDK"
+   ],
+   "retrieval_vector": [
+    "pgvector",
+    "OpenSearch"
+   ],
+   "agent_frameworks": [
+    "LangGraph",
+    "LangChain",
+    "CrewAI",
+    "AutoGen",
+    "Agno",
+    "LLM-powered agent pipelines"
+   ],
+   "llm_providers": [
+    "LLM"
+   ],
+   "cloud": [
+    "AWS"
+   ],
+   "data": [
+    "PostgreSQL",
+    "JSONB",
+    "Kafka",
+    "Kinesis",
+    "Fluentd"
+   ],
+   "ops_deploy": [
+    "Docker"
+   ],
+   "ml_deep": [],
+   "soft_asks": [
+    "system_design"
+   ],
+   "deliverables": "Service Resolution Intelligence: AI agents doing root-cause analysis over streaming logs",
+   "excerpt": "2+ years of production Python. Comfortable with asyncio, FastAPI, Pydantic v2 and SQLAlchemy 2.0. Hands-on building LLM-powered agent pipelines",
+   "snapshot_date": "2026-09-18",
+   "territory": "remote_global",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "TopGenAIJobs",
+   "source_url": "https://www.topgenaijobs.com/jobs/gen-ai-developer-at-scalex-in-remote-38d18c",
+   "company": "Scalex",
+   "company_tier": "consultancy",
+   "title": "Gen AI Developer",
+   "years_min": 2,
+   "years_max": 5,
+   "location": "Remote Global",
+   "work_mode": "remote",
+   "salary_lpa": "16-26",
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "APIs",
+    "microservices"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "vector storages"
+   ],
+   "agent_frameworks": [
+    "LangChain"
+   ],
+   "llm_providers": [
+    "LLM"
+   ],
+   "cloud": [],
+   "data": [
+    "data storages",
+    "data pipelines"
+   ],
+   "ops_deploy": [
+    "Docker",
+    "Kubernetes",
+    "LLM testing",
+    "debugging"
+   ],
+   "ml_deep": [
+    "NLP",
+    "Machine Learning",
+    "Deep Learning",
+    "TensorFlow",
+    "PyTorch",
+    "fine-tuning"
+   ],
+   "soft_asks": [
+    "requirements_gathering",
+    "stakeholder_management"
+   ],
+   "deliverables": "Gen AI applications with vector storage, APIs and microservices integrated into existing systems",
+   "excerpt": "Implement the data storages and vector storages required for models. Perform LLM testing, fine-tuning and optimizations",
+   "snapshot_date": "2026-09-18",
+   "territory": "remote_global",
+   "in_band_for_1plus_yrs": true
+  },
+  {
+   "source": "Remote Rocketship",
+   "source_url": "https://www.remoterocketship.com/company/lingaro/jobs/ml-ai-engineer-india-remote/",
+   "company": "Lingaro",
+   "company_tier": "services_mnc",
+   "title": "ML/AI Engineer",
+   "years_min": null,
+   "years_max": null,
+   "location": "India Remote",
+   "work_mode": "remote",
+   "salary_lpa": null,
+   "languages": [],
+   "backend": [
+    "Power Automate"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "knowledge grounding",
+    "Azure AI Search",
+    "Generative Answers"
+   ],
+   "agent_frameworks": [
+    "Microsoft Copilot Studio",
+    "enterprise AI agents",
+    "routing",
+    "fallback handling"
+   ],
+   "llm_providers": [
+    "Azure OpenAI",
+    "Azure AI Foundry"
+   ],
+   "cloud": [
+    "Azure",
+    "Azure AI Foundry"
+   ],
+   "data": [
+    "SharePoint",
+    "Dataverse"
+   ],
+   "ops_deploy": [],
+   "ml_deep": [],
+   "soft_asks": [],
+   "deliverables": "Enterprise AI agents in Microsoft Copilot Studio grounded on SharePoint/Dataverse with RAG",
+   "excerpt": "Hands-on experience building enterprise AI agents. Strong knowledge of Topics, triggers, routing, fallback handling, Generative Answers, RAG",
+   "snapshot_date": "2026-09-18",
+   "territory": "remote_global",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Remote Rocketship",
+   "source_url": "https://www.remoterocketship.com/company/newrocket/jobs/servicenow-ai-developer-india-remote/",
+   "company": "NewRocket",
+   "company_tier": "consultancy",
+   "title": "ServiceNow AI Developer",
+   "years_min": 3,
+   "years_max": null,
+   "location": "India Remote",
+   "work_mode": "remote",
+   "salary_lpa": null,
+   "languages": [],
+   "backend": [
+    "REST",
+    "SOAP",
+    "Web Services Integration"
+   ],
+   "frontend": [],
+   "retrieval_vector": [],
+   "agent_frameworks": [
+    "Virtual Agent",
+    "Now Assist"
+   ],
+   "llm_providers": [],
+   "cloud": [
+    "Cloud",
+    "cloud-to-cloud integrations"
+   ],
+   "data": [
+    "ETL",
+    "JDBC",
+    "ODBC"
+   ],
+   "ops_deploy": [],
+   "ml_deep": [
+    "Predictive Intelligence",
+    "machine learning",
+    "NLP",
+    "predictive analytics"
+   ],
+   "soft_asks": [],
+   "deliverables": "AI-driven applications and workflows on ServiceNow across ITSM, ITOM, CSM and HRSD",
+   "excerpt": "Strong experience with ServiceNow AI and automation capabilities including Virtual Agent, Predictive Intelligence, Now Assist",
+   "snapshot_date": "2026-09-18",
+   "territory": "remote_global",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Built In",
+   "source_url": "https://builtin.com/job/applied-ai-engineer-agentic-workflows-india/6248258",
+   "company": "Built In listing",
+   "company_tier": "global_product",
+   "title": "Applied AI Engineer (Agentic Workflows)",
+   "years_min": 4,
+   "years_max": null,
+   "location": "India",
+   "work_mode": "remote",
+   "salary_lpa": null,
+   "languages": [
+    "Python",
+    "SQL"
+   ],
+   "backend": [
+    "APIs"
+   ],
+   "frontend": [
+    "conversational UIs"
+   ],
+   "retrieval_vector": [
+    "vector databases",
+    "RAG"
+   ],
+   "agent_frameworks": [
+    "langchain",
+    "tool use orchestration",
+    "agent memory design",
+    "agentic systems"
+   ],
+   "llm_providers": [
+    "LLM APIs",
+    "OpenAI",
+    "Anthropic",
+    "transformers"
+   ],
+   "cloud": [],
+   "data": [
+    "SQL",
+    "structured/semi-structured data"
+   ],
+   "ops_deploy": [
+    "AI monitoring systems"
+   ],
+   "ml_deep": [
+    "natural language processing",
+    "reinforcement learning"
+   ],
+   "soft_asks": [
+    "stakeholder_management"
+   ],
+   "deliverables": "Agentic systems that interpret user intent, plan tasks and execute through conversational interfaces",
+   "excerpt": "Deep experience with Python, LLM APIs and libraries like transformers, langchain, OpenAI. Familiarity with vector databases, tool use orchestration and agent memory design",
+   "snapshot_date": "2026-09-18",
+   "territory": "remote_global",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Built In",
+   "source_url": "https://builtin.com/job/ai-engineer/6775575",
+   "company": "Databricks",
+   "company_tier": "global_product",
+   "title": "AI Engineer - FDE",
+   "years_min": null,
+   "years_max": null,
+   "location": "Remote India",
+   "work_mode": "remote",
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG"
+   ],
+   "agent_frameworks": [
+    "LangChain",
+    "DSPy",
+    "multi-agent systems"
+   ],
+   "llm_providers": [
+    "HuggingFace",
+    "GenAI"
+   ],
+   "cloud": [
+    "AWS",
+    "Azure",
+    "GCP",
+    "Databricks Intelligence Platform"
+   ],
+   "data": [
+    "pandas",
+    "Apache Spark",
+    "Text2SQL"
+   ],
+   "ops_deploy": [
+    "production-grade deployments",
+    "evaluation",
+    "optimizations"
+   ],
+   "ml_deep": [
+    "fine-tuning",
+    "PyTorch",
+    "scikit-learn"
+   ],
+   "soft_asks": [
+    "client_facing",
+    "stakeholder_management",
+    "mentoring"
+   ],
+   "deliverables": "Professional services engagements building and productionizing first-of-its-kind GenAI applications",
+   "excerpt": "Experience building GenAI applications including RAG, multi-agent systems, Text2SQL, fine-tuning. Expertise in deploying production-grade GenAI including evaluation",
+   "snapshot_date": "2026-09-18",
+   "territory": "remote_global",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "We Work Remotely",
+   "source_url": "https://weworkremotely.com/remote-jobs/gitlab-ai-engineer",
+   "company": "GitLab",
+   "company_tier": "global_product",
+   "title": "AI Engineer",
+   "years_min": null,
+   "years_max": null,
+   "location": "Anywhere in the World",
+   "work_mode": "remote",
+   "salary_lpa": "USD 108-130k US only",
+   "languages": [
+    "Python",
+    "JavaScript",
+    "TypeScript"
+   ],
+   "backend": [
+    "REST APIs",
+    "GraphQL"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG"
+   ],
+   "agent_frameworks": [
+    "agentic architecture patterns",
+    "tool use",
+    "multi-agent orchestration",
+    "human-in-the-loop",
+    "n8n",
+    "Make",
+    "Workato"
+   ],
+   "llm_providers": [
+    "Anthropic",
+    "OpenAI",
+    "open-source alternatives"
+   ],
+   "cloud": [],
+   "data": [
+    "Salesforce",
+    "Marketo",
+    "Zendesk"
+   ],
+   "ops_deploy": [
+    "guardrails",
+    "evaluation frameworks",
+    "CI/CD"
+   ],
+   "ml_deep": [
+    "prompt engineering",
+    "context windows",
+    "model selection"
+   ],
+   "soft_asks": [
+    "system_design",
+    "poc_prototype",
+    "client_facing",
+    "requirements_gathering"
+   ],
+   "deliverables": "Internal AI-powered solutions for Sales, Marketing and Support integrated with CRM",
+   "excerpt": "Agentic architecture patterns: tool use, multi-agent orchestration, human-in-the-loop designs, guardrails, evaluation frameworks",
+   "snapshot_date": "2026-09-18",
+   "territory": "remote_global",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Remote Rocketship",
+   "source_url": "https://www.remoterocketship.com/company/smartworking-io/jobs/applied-ai-engineer-india-remote/",
+   "company": "Smart Working",
+   "company_tier": "staffing",
+   "title": "Applied AI Engineer",
+   "years_min": null,
+   "years_max": null,
+   "location": "India Remote",
+   "work_mode": "remote",
+   "salary_lpa": null,
+   "languages": [
+    "Python",
+    "SQL"
+   ],
+   "backend": [
+    "APIs"
+   ],
+   "frontend": [],
+   "retrieval_vector": [
+    "RAG",
+    "document-based AI systems"
+   ],
+   "agent_frameworks": [
+    "AI workflows"
+   ],
+   "llm_providers": [
+    "LLMs"
+   ],
+   "cloud": [
+    "AWS",
+    "Azure"
+   ],
+   "data": [
+    "SQL Server",
+    "data pipelines",
+    "unstructured data",
+    "PDFs"
+   ],
+   "ops_deploy": [],
+   "ml_deep": [],
+   "soft_asks": [
+    "poc_prototype"
+   ],
+   "deliverables": "Document understanding and automated report generation with RAG wired into legacy backends",
+   "excerpt": "Proven experience building real-world AI applications using LLMs, particularly RAG or document-based AI systems",
+   "snapshot_date": "2026-09-18",
+   "territory": "remote_global",
+   "in_band_for_1plus_yrs": false
+  },
+  {
+   "source": "Remote Rocketship",
+   "source_url": "https://www.remoterocketship.com/company/attainsolutions/jobs/ai-engineer-india-remote/",
+   "company": "Attain",
+   "company_tier": "ai_startup",
+   "title": "AI Engineer",
+   "years_min": null,
+   "years_max": null,
+   "location": "India Remote",
+   "work_mode": "remote",
+   "salary_lpa": null,
+   "languages": [
+    "Python"
+   ],
+   "backend": [
+    "APIs"
+   ],
+   "frontend": [
+    "React Native",
+    "Expo",
+    "React"
+   ],
+   "retrieval_vector": [],
+   "agent_frameworks": [],
+   "llm_providers": [
+    "LLMs"
+   ],
+   "cloud": [],
+   "data": [
+    "SQLite"
+   ],
+   "ops_deploy": [
+    "evaluation cycles",
+    "debugging system failures"
+   ],
+   "ml_deep": [
+    "prompt engineering",
+    "dataset building"
+   ],
+   "soft_asks": [
+    "documentation"
+   ],
+   "deliverables": "AI systems powering an AI mobile communication app: prompt design, dataset building, evaluation",
+   "excerpt": "Experience or formal training with LLMs and prompt engineering",
+   "snapshot_date": "2026-09-18",
+   "territory": "remote_global",
+   "in_band_for_1plus_yrs": false
+  }
+ ]
+}
