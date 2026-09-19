@@ -1,0 +1,74 @@
+import re
+import unicodedata
+from datetime import date, datetime
+
+from clause.htmltext import visible_text
+from clause.models import Document, ManifestEntry
+
+MIN_TEXT_CHARS = 500
+
+HEADER = re.compile(
+    r"(?P<circular_no>RBI/\d{4}-\d{2}/\d+)\s+"
+    r"(?P<dept_ref>[A-Z]{2,}(?:\.[A-Z0-9]+)+[A-Z0-9./-]*)\s+"
+    r"(?P<published>[A-Z][a-z]+ \d{1,2}, \d{4})"
+)
+
+_WS = re.compile(r"[ \t\xa0]+")
+
+
+class ExtractionError(Exception):
+    """The response parsed, but is not a usable document."""
+
+
+def canonical_text(html: str) -> str:
+    """Produce the one immutable string every character offset indexes into.
+
+    Called exactly once per document. Nothing downstream re-normalises: both
+    chunkers slice this string and never transform it, which is what makes the
+    citation round-trip hold by construction.
+    """
+    text = visible_text(html)
+    text = unicodedata.normalize("NFC", text)
+    text = text.replace("\xa0", " ")
+    text = _WS.sub(" ", text)
+    return text.strip()
+
+
+def parse_header(text: str) -> tuple[str, str, date]:
+    match = HEADER.search(text)
+    if match is None:
+        raise ExtractionError("no RBI header line (circular no / dept ref / date) found")
+    published = datetime.strptime(match.group("published"), "%B %d, %Y").date()
+    return match.group("circular_no"), match.group("dept_ref"), published
+
+
+def _classify(title: str, text: str) -> str:
+    haystack = f"{title} {text[:400]}".lower()
+    if "master direction" in haystack:
+        return "master_direction"
+    if "circular" in haystack:
+        return "circular"
+    return "notification"
+
+
+def extract_document(entry: ManifestEntry, raw: bytes, *, fetched_at: datetime) -> Document:
+    text = canonical_text(raw.decode("utf-8", errors="replace"))
+    if len(text) < MIN_TEXT_CHARS:
+        raise ExtractionError(f"extracted text too short: {len(text)} chars")
+
+    circular_no, dept_ref, published = parse_header(text)
+
+    return Document(
+        doc_id=entry.doc_id,
+        rbi_id=entry.rbi_id,
+        url=entry.url,
+        circular_no=circular_no,
+        dept_ref=dept_ref,
+        title=entry.title,
+        doc_type=_classify(entry.title, text),
+        published_date=published,
+        effective_date=None,
+        sha256=entry.sha256,
+        fetched_at=fetched_at,
+        text=text,
+    )
