@@ -281,14 +281,17 @@ document.
 **Corrected, 2026-09-20 (see section 9).** The original row here read: "sha256
 differs from manifest -> Hard failure naming the document and both hashes. RBI
 revises circulars in place; this is what detects it." That assumed a stable
-whole-document hash exists against this source. It does not. The corrected table:
+whole-document hash exists against this source. It does not. A second correction,
+also 2026-09-20: an intermediate revision of this table applied that check strictly
+on a cache read and tolerantly on a live fetch. That asymmetry was itself wrong (see
+section 9) — the same check now applies identically to both. The corrected table:
 
 | Condition | Behaviour |
 |---|---|
-| Live fetch: `content_sha256` matches manifest | Accept. |
-| Live fetch: `content_sha256` differs, but header identity (`circular_no`, `dept_ref`, `published_date`) still matches manifest | Accept, logging a warning naming the document to stderr. Treated as page-chrome noise (a WAF token, a volatile widget), not a revision - see section 9. |
-| Live fetch: `content_sha256` differs AND header identity also differs, or the header no longer parses | Hard failure naming the document, both hashes, and what header field(s) differed. RBI has changed this document's identity. The manifest is never auto-healed. |
-| Warm cache: cached file's `content_sha256` differs from manifest | Hard failure, no tolerance. These bytes are ours, not the network's, so a mismatch here means disk corruption or tampering, not WAF/page-chrome noise - see section 9. |
+| `content_sha256` matches manifest | Accept. Applies identically whether the bytes came from a live fetch or the on-disk cache. |
+| `content_sha256` differs, but header identity (`circular_no`, `dept_ref`, `published_date`) still matches manifest | Accept, logging a warning naming the document to stderr. Treated as page-chrome noise (a WAF token, a volatile widget), not a revision - see section 9. Applies identically on both paths. |
+| `content_sha256` differs AND header identity also differs, or the header no longer parses | Hard failure naming the document, both hashes, and what header field(s) differed. RBI has changed this document's identity. The manifest is never auto-healed. Applies identically on both paths. |
+| Cached file fails content validation (section 7.1) - truncated, a block page, no circular reference | Hard failure, before the hash check even runs. A cached file is validated exactly as a live fetch is; caching is not a bypass of section 7.1. |
 | 4xx, 5xx, timeout | Bounded retry, exponential backoff with jitter. On exhaustion, record the failure, continue with remaining documents, and exit non-zero with a summary. |
 | Extraction yields empty or short text | Hard failure |
 | Re-run of `make ingest` | Idempotent. Chunks for `(doc_id, strategy)` are replaced transactionally; a failed document leaves no partial rows. |
@@ -341,15 +344,28 @@ spirit, and just as bluntly:
 
 **The fix.** `ManifestEntry`'s hash field is renamed `sha256` -> `content_sha256` and
 now holds the sha256 of `canonical_text(raw_html)`, not of raw response bytes
-(section 5.1). `Fetcher` verification becomes two-tier (section 7.2): a live fetch
-whose `content_sha256` differs from the manifest is not immediately fatal - if the
+(section 5.1). `Fetcher` verification becomes two-tier (section 7.2): a fetch whose
+`content_sha256` differs from the manifest is not immediately fatal - if the
 document's header identity (`circular_no`, `dept_ref`, `published_date`) still
 matches, the difference is logged as page-chrome noise and accepted; only a
 `content_sha256` mismatch *combined with* a header identity mismatch (or a header that
-no longer parses) is treated as a real revision. The warm-cache path keeps a strict,
-untolerant check, because bytes already on disk are ours, not the network's, and do
-not carry WAF/page-chrome volatility - a mismatch there is corruption or tampering,
-not noise, and deserves to fail hard.
+no longer parses) is treated as a real revision.
+
+**Corrected again, same day.** An intermediate version of this fix applied the
+two-tier check only to a live fetch and kept the warm-cache path strict, reasoning
+that cached bytes are "ours" and therefore free of WAF/page-chrome noise. That
+reasoning was wrong: the bytes sitting in the cache may themselves have been
+accepted through the tolerant branch when they were first fetched, in which case
+they were never expected to match `content_sha256` exactly. A strict re-check would
+then reject a perfectly good, already-accepted document on *every subsequent read*
+forever - `make ingest` would succeed once and then fail on every later run, for
+documents that are entirely fine, which reads as corruption when none occurred. The
+same two-tier check now applies identically on both paths (`Fetcher._verify`,
+parameterised only by which failure message to print). To compensate for removing
+the cache path's strictness, a cached file is now also run through the section 7.1
+content-validation gate before the hash check - the same gate a live fetch already
+passes through - which still catches gross on-disk corruption (truncation, a block
+page, a lost circular reference) without needing byte-exact hashing to do it.
 
 **What Phase 1 therefore actually guarantees, stated honestly.** Fetch-time
 verification detects **identity drift**: RBI renumbering a circular, re-dating it, or
@@ -358,7 +374,12 @@ parsed header, which is checked independently of the content hash. It does **not
 detect an **in-place body revision that leaves the header intact**, because no
 whole-page hash - raw or canonical - is reproducible enough against this source to
 serve as that signal, and no header-independent content hash was designed to survive
-page-chrome noise.
+page-chrome noise. Nor does it detect **cache corruption that happens to preserve
+header identity and still passes the content-validation gate** - a narrow case (the
+corrupted bytes would need to remain a plausible, sufficiently long circular with an
+intact header) but a real gap, accepted rather than closed, because closing it needs
+exactly the excluded-furniture content hash described below, not more special-casing
+of the cache path.
 
 A stronger guarantee - a content hash computed over the document body with page
 furniture (widgets, WAF chrome) deliberately excluded - is **Phase 2 work**, not
@@ -376,9 +397,11 @@ path. Every unit in section 5 is in that path except `cli`.
 | `test_offsets_roundtrip` | For every chunk of every ingested document, read back from Postgres: `documents.text[char_start:char_end] == chunks.text`. This is Phase 1's definition of done. |
 | `test_chunkers_slice_only` | Both strategies, over real fixtures and adversarial generated text (Unicode, whitespace runs, nested numbering): slice identity holds, spans ordered, no characters dropped |
 | `test_waf_page_is_rejected` | The captured block page, committed as a fixture, raises rather than parsing |
-| `test_chrome_only_mismatch_is_accepted_when_header_matches` | A `content_sha256` divergence with intact header identity is accepted, with a warning, not a failure (section 9) |
-| `test_header_identity_mismatch_is_fatal` | A `content_sha256` divergence *and* a header identity divergence fails loudly |
-| `test_corrupted_cache_file_is_fatal` | A cached file whose bytes no longer match `content_sha256` fails loudly - no header-identity tolerance on the warm-cache path (section 9) |
+| `test_chrome_only_mismatch_is_accepted_when_header_matches` | A live fetch's `content_sha256` divergence with intact header identity is accepted, with a warning, not a failure (section 9) |
+| `test_header_identity_mismatch_is_fatal` | A live fetch's `content_sha256` divergence *and* a header identity divergence fails loudly |
+| `test_cached_chrome_only_mismatch_is_accepted_when_header_matches` | The same tolerance applies on the warm-cache path - the regression test for the strict-cache trap (section 9) |
+| `test_cached_header_identity_mismatch_is_fatal` | A cached file's header identity divergence fails loudly, same as a live fetch |
+| `test_cached_file_failing_content_gate_is_rejected` | A cached file that fails section 7.1 content validation (truncated, a block marker) is rejected before the hash check runs |
 | `test_extract_metadata` | Circular number, department reference and date parse from the real header line |
 | `test_ingest_is_idempotent` | Two runs produce identical rows and the second performs zero network calls |
 | `test_fetcher_rate_limit` | Minimum interval honoured, against a local stub server with a controlled clock |

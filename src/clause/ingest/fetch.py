@@ -26,11 +26,15 @@ class HashMismatchError(FetchError):
     neither a raw-byte hash nor a whole-page canonical-text hash is reproducible
     against www.rbi.org.in on every fetch (the site's WAF injects a per-response
     token, and page furniture such as a PDF-size widget has been observed to vary
-    between fetches of an unchanged document). A `content_sha256` mismatch on a live
-    fetch is therefore tolerated when the document's header identity (circular_no,
-    dept_ref, published_date) still matches the manifest; this error is raised only
-    when header identity has also changed or no longer parses — the case it actually
-    exists to catch: RBI revising, renumbering or replacing a circular.
+    between fetches of an unchanged document). A `content_sha256` mismatch is
+    therefore tolerated when the document's header identity (circular_no, dept_ref,
+    published_date) still matches the manifest; this error is raised only when
+    header identity has also changed or no longer parses — the case it actually
+    exists to catch: RBI revising, renumbering or replacing a circular. The same
+    check applies whether the bytes came from a live fetch or the on-disk cache
+    (`Fetcher._verify`) — a cache entry is not held to a stricter standard than the
+    fetch that produced it, since it may itself have been accepted through this
+    same tolerant branch.
     """
 
 
@@ -82,14 +86,24 @@ class Fetcher:
     def fetch(self, entry: ManifestEntry) -> bytes:
         """Return raw bytes for this document, using the cache when warm.
 
-        Raises ValidationError if the response is not a real circular, and
-        HashMismatchError if it differs from the manifest in a way that cannot be
-        explained by RBI's page-chrome noise (see `HashMismatchError`).
+        Raises ValidationError if the content (live or cached) is not a real
+        circular, and HashMismatchError if it differs from the manifest in a way
+        that cannot be explained by RBI's page-chrome noise (see
+        `HashMismatchError`). Both checks run on the cache-hit path too, not only
+        on a live fetch: a cached file is not assumed trustworthy just because it
+        is ours, since it may have been corrupted on disk, or may itself have been
+        accepted through `_verify`'s tolerant branch when it was first written.
         """
         path = self._cache_path(entry)
         if path.exists():
             cached = path.read_bytes()
-            self._verify_cached(entry, cached)
+            validate_response(
+                status_code=HTTP_OK,
+                content_type="text/html",
+                body=cached.decode("utf-8", errors="replace"),
+                min_chars=self._s.min_document_chars,
+            )
+            self._verify(entry, cached, source="cache")
             return cached
 
         response = self._get_with_retries(entry)
@@ -101,25 +115,38 @@ class Fetcher:
             body=body.decode("utf-8", errors="replace"),
             min_chars=self._s.min_document_chars,
         )
-        self._verify_live(entry, body)
+        self._verify(entry, body, source="fetch")
 
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(body)
         return body
 
-    def _verify_live(self, entry: ManifestEntry, body: bytes) -> None:
-        """Two-tier check, tolerant of WAF/page-chrome noise, for a live network fetch.
+    def _verify(self, entry: ManifestEntry, body: bytes, *, source: str) -> None:
+        """Two-tier check, tolerant of WAF/page-chrome noise, applied identically
+        whether `body` came from a live fetch or the on-disk cache.
 
         Fast path: if `content_sha256` (sha256 of `canonical_text`) matches the
         manifest exactly, accept immediately.
 
         Otherwise, fall back to header identity: reparse `circular_no`, `dept_ref`
-        and `published_date` from the fetched text. If they still match the
-        manifest, the content difference is page-chrome noise (a WAF token, a
-        volatile widget) rather than a real revision — log a warning naming the
-        document and accept. Only when header identity has also changed, or the
-        header no longer parses, is this a hard failure: that combination is what
-        actually indicates RBI revised, renumbered or replaced the circular.
+        and `published_date` from the text. If they still match the manifest, the
+        content difference is page-chrome noise (a WAF token, a volatile widget)
+        rather than a real revision — log a warning naming the document and
+        accept. Only when header identity has also changed, or the header no
+        longer parses, is this a hard failure: that combination is what actually
+        indicates RBI revised, renumbered or replaced the circular.
+
+        `source` is used only in the warning/error text ("fetch" or "cache"); the
+        logic is identical on both paths. It is deliberately identical: an earlier
+        version of this method held the cache path to a stricter, non-tolerant
+        standard on the reasoning that cached bytes are "ours" and therefore free
+        of network noise. That reasoning missed that the bytes sitting in the
+        cache may themselves have been accepted through this same tolerant branch
+        when they were first fetched — in which case they were never expected to
+        match `content_sha256` exactly, and a strict re-check would reject them
+        forever, on every subsequent read, for a document that was never actually
+        wrong. See docs/superpowers/specs/2026-09-19-ingestion-and-storage-design.md
+        section 9.
         """
         text = canonical_text(body.decode("utf-8", errors="replace"))
         actual_content = hashlib.sha256(text.encode("utf-8")).hexdigest()
@@ -131,9 +158,9 @@ class Fetcher:
         except ExtractionError as exc:
             raise HashMismatchError(
                 f"{entry.doc_id}: manifest content_sha256 {entry.content_sha256} but "
-                f"fetched content hashes to {actual_content}, and its header no longer "
-                f"parses ({exc}). Not page-chrome noise — re-run discovery and review "
-                "this document by hand rather than editing the manifest."
+                f"{source} content hashes to {actual_content}, and its header no "
+                f"longer parses ({exc}). Not page-chrome noise — re-run discovery "
+                "and review this document by hand rather than editing the manifest."
             ) from exc
 
         if (circular_no, dept_ref, published) == (
@@ -143,45 +170,24 @@ class Fetcher:
         ):
             print(
                 f"WARNING: {entry.doc_id}: content_sha256 mismatch (manifest "
-                f"{entry.content_sha256}, fetched {actual_content}) but header identity "
-                "(circular_no/dept_ref/published_date) is unchanged — treating as RBI "
-                "page-chrome noise (a WAF token or a volatile widget), not a revision. "
-                "Accepting.",
+                f"{entry.content_sha256}, {source} {actual_content}) but header "
+                "identity (circular_no/dept_ref/published_date) is unchanged — "
+                "treating as RBI page-chrome noise (a WAF token or a volatile "
+                "widget), not a revision. Accepting.",
                 file=sys.stderr,
             )
             return
 
         raise HashMismatchError(
-            f"{entry.doc_id}: manifest content_sha256 {entry.content_sha256} but fetched "
-            f"content hashes to {actual_content}, AND header identity changed (manifest "
-            f"circular_no={entry.circular_no!r} dept_ref={entry.dept_ref!r} "
-            f"published_date={entry.published_date} vs fetched "
-            f"circular_no={circular_no!r} dept_ref={dept_ref!r} published_date={published}"
-            "). RBI appears to have revised this circular in place; re-run discovery and "
-            "review the diff rather than editing the manifest."
+            f"{entry.doc_id}: manifest content_sha256 {entry.content_sha256} but "
+            f"{source} content hashes to {actual_content}, AND header identity "
+            f"changed (manifest circular_no={entry.circular_no!r} "
+            f"dept_ref={entry.dept_ref!r} published_date={entry.published_date} vs "
+            f"{source} circular_no={circular_no!r} dept_ref={dept_ref!r} "
+            f"published_date={published}). RBI appears to have revised this "
+            "circular in place; re-run discovery and review the diff rather than "
+            "editing the manifest."
         )
-
-    def _verify_cached(self, entry: ManifestEntry, body: bytes) -> None:
-        """Strict check against a file already sitting in the on-disk cache.
-
-        No header-identity fallback here, unlike `_verify_live`: these bytes are
-        ours, written by this process after `_verify_live` already accepted them —
-        not a fresh network response, so they carry none of the WAF/page-chrome
-        volatility a live fetch does. A mismatch here means the cached file was
-        corrupted or modified on disk after caching, which is exactly the failure
-        mode byte-level hashing still has real value catching. The asymmetry with
-        `_verify_live` is deliberate: tolerance belongs at the network boundary
-        where the noise originates, not at the disk-read boundary where it does not.
-        """
-        text = canonical_text(body.decode("utf-8", errors="replace"))
-        actual_content = hashlib.sha256(text.encode("utf-8")).hexdigest()
-        if actual_content != entry.content_sha256:
-            raise HashMismatchError(
-                f"{entry.doc_id}: cached file content_sha256 mismatch (manifest "
-                f"{entry.content_sha256}, cached file hashes to {actual_content}). The "
-                "cached copy on disk appears corrupted or modified after caching; delete "
-                "it and re-fetch rather than trusting it."
-            )
 
     def _get_with_retries(self, entry: ManifestEntry) -> httpx.Response:
         """Return the response itself, not just its bytes.

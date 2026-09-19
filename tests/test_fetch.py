@@ -119,29 +119,82 @@ def test_header_identity_mismatch_is_fatal(tmp_path: Path) -> None:
         f.fetch(entry)
 
 
-def test_corrupted_cache_file_is_fatal(tmp_path: Path) -> None:
-    """The warm-cache path keeps a strict check: no header-identity tolerance.
+def _cached(tmp_path: Path, content: bytes) -> tuple[Settings, Path]:
+    """Pre-populate the cache directly, bypassing fetch(), and return (settings, path).
 
-    Once bytes are on disk under our control, a mismatch means the file was
-    corrupted or tampered with, not WAF/page-chrome noise, so it must fail hard
-    every time, unlike a live fetch.
+    Used to test the cache-hit path in isolation, including cases the network
+    would never actually put on disk (a corrupted file, a file that only ever
+    got there via the tolerant branch) without needing a live fetch first.
     """
-
-    def handler(request: httpx.Request) -> httpx.Response:
-        return httpx.Response(200, content=CIRCULAR, headers={"content-type": "text/html"})
-
     s = _settings(tmp_path)
-    f = Fetcher(s, _client(handler), RateLimiter(0.0))
-    entry = _entry(_content_sha256(CIRCULAR))
+    s.raw_cache_dir.mkdir(parents=True, exist_ok=True)
+    path = s.raw_cache_dir / "rbi-13704.html"
+    path.write_bytes(content)
+    return s, path
+
+
+def _no_network_handler(request: httpx.Request) -> httpx.Response:
+    raise AssertionError(
+        "the cache-hit path must not make a network request: reaching this "
+        "handler means path.exists() was not honoured"
+    )
+
+
+def test_cached_chrome_only_mismatch_is_accepted_when_header_matches(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The cache-hit path applies the same tolerant check as a live fetch.
+
+    A bug fixed in this round: an earlier version held the cache path to a
+    *strict* standard, reasoning that cached bytes are "ours" and therefore
+    free of WAF/page-chrome noise. That reasoning missed that the bytes on disk
+    may themselves have been accepted through the tolerant branch when first
+    fetched, in which case a strict re-check would reject a perfectly good
+    document on every subsequent read, forever. This is the regression test
+    for that trap.
+    """
+    s, _ = _cached(tmp_path, CIRCULAR)
+    f = Fetcher(s, _client(_no_network_handler), RateLimiter(0.0))
+    # Deliberately wrong content_sha256, but header fields (the defaults) match
+    # the real content of CIRCULAR exactly.
+    entry = _entry("b" * 64)
 
     assert f.fetch(entry) == CIRCULAR
-    cache_path = s.raw_cache_dir / "rbi-13704.html"
-    assert cache_path.exists()
 
-    # Corrupt the cached file after it was accepted and written.
-    cache_path.write_bytes(BLOCK)
+    err = capsys.readouterr().err
+    assert "WARNING" in err
+    assert entry.doc_id in err
+
+
+def test_cached_header_identity_mismatch_is_fatal(tmp_path: Path) -> None:
+    """A cached file whose header identity no longer matches is a real revision.
+
+    Not a corruption-specific scenario: the manifest itself could be stale, or
+    the file could have been swapped - either way, header identity diverging
+    from the manifest is never page-chrome noise, cached or not.
+    """
+    s, _ = _cached(tmp_path, CIRCULAR)
+    f = Fetcher(s, _client(_no_network_handler), RateLimiter(0.0))
+    entry = _entry("b" * 64, circular_no="RBI/2020-21/999")
 
     with pytest.raises(HashMismatchError):
+        f.fetch(entry)
+
+
+def test_cached_file_failing_content_gate_is_rejected(tmp_path: Path) -> None:
+    """A cached file that fails validate_response is rejected before any hash check.
+
+    Covers gross corruption the hash comparison alone would not name usefully:
+    a block page that somehow ended up on disk, well below min_document_chars,
+    or missing a circular reference entirely. `content_sha256` is irrelevant
+    here - the entry's value does not matter because the content gate fires
+    first, exactly as it does on a live fetch.
+    """
+    s, _ = _cached(tmp_path, BLOCK)
+    f = Fetcher(s, _client(_no_network_handler), RateLimiter(0.0))
+    entry = _entry(_content_sha256(BLOCK))
+
+    with pytest.raises(ValidationError):
         f.fetch(entry)
 
 
