@@ -1,4 +1,4 @@
-.PHONY: install lint test ingest eval serve up down
+.PHONY: install lint test migrate ingest eval serve up down
 
 install:
 	uv sync
@@ -10,7 +10,10 @@ lint:
 test:
 	uv run pytest
 
-ingest:
+migrate:
+	uv run alembic upgrade head
+
+ingest: migrate
 	uv run python -m clause.cli ingest --manifest data/corpus/kyc.manifest.jsonl
 
 up:
