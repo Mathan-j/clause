@@ -84,12 +84,14 @@ def extract_document(entry: ManifestEntry, raw: bytes, *, fetched_at: datetime) 
 
     circular_no, dept_ref, published = parse_header(text)
 
-    header_at = text.find(circular_no)
-    window = (
-        text[header_at : header_at + CLASSIFY_WINDOW_CHARS]
-        if header_at >= 0
-        else text[:CLASSIFY_WINDOW_CHARS]
-    )
+    # Anchor on the header regex's own match position, not the first occurrence
+    # of circular_no in the text: a breadcrumb or nav link repeating the
+    # circular number ahead of the real header would otherwise re-anchor the
+    # window on chrome again. parse_header has already succeeded against this
+    # same text, so this search is expected to match; the `if` is belt-and-braces.
+    header_match = HEADER.search(text)
+    header_at = header_match.start() if header_match else 0
+    window = text[header_at : header_at + CLASSIFY_WINDOW_CHARS]
 
     return Document(
         doc_id=entry.doc_id,

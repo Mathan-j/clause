@@ -1,3 +1,4 @@
+import dataclasses
 import unicodedata
 from datetime import UTC, date, datetime
 from pathlib import Path
@@ -63,15 +64,21 @@ def test_parse_header_raises_extraction_error_on_unknown_month() -> None:
         )
 
 
-def test_classify_reads_the_document_body_not_page_chrome() -> None:
-    text = canonical_text(RAW.decode("utf-8", errors="replace"))
-    circular_no, _, _ = parse_header(text)
-    header_at = text.find(circular_no)
-    assert header_at > 0, "the real fixture has page chrome before the document body"
-    window = text[header_at : header_at + 600]
-    # This is the window _classify actually scans: real document content, not nav.
-    assert circular_no in window
-    assert "skip to main content" not in window.lower()
+def test_classify_uses_the_document_body_not_leading_chrome() -> None:
+    """Leading chrome says 'Master Circular'; the document itself says 'Master Direction'.
+
+    Classifying from the head of the page picks up the chrome and gets this wrong.
+    """
+    chrome = "<p>" + ("Master Circular navigation menu " * 20) + "</p>"
+    body = (
+        "<p>RBI/2026-27/262 DOR.AML.REC.1/14.01.005/2026-27 September 18, 2026 "
+        "Master Direction on Know Your Customer " + ("regulatory text " * 40) + "</p>"
+    )
+    entry = dataclasses.replace(ENTRY, title="")  # empty title so only the body decides
+    doc = extract_document(
+        entry, (chrome + body).encode("utf-8"), fetched_at=datetime(2026, 9, 19, tzinfo=UTC)
+    )
+    assert doc.doc_type == "master_direction"
 
 
 def test_extract_document_populates_the_document() -> None:
