@@ -3,3 +3,12 @@
 # Shell scripts must keep LF. A CRLF checkout makes bash fail with
 # "$'\r': command not found", which would break the Stop hook on Windows.
 *.sh text eol=lf
+
+# uv reads this file literally; a trailing CR would corrupt the version string.
+.python-version text eol=lf
+
+# The market dataset is evidence, and plans/market_table.py pins its sha256.
+# Any line-ending conversion changes that hash, so these files are stored
+# byte-for-byte and never normalised. Without this the hash check passes on
+# Windows and fails on Linux CI.
+plans/data/** -text
