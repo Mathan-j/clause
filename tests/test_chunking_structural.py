@@ -58,10 +58,16 @@ def test_invariant_holds_on_adversarial_input(text: str) -> None:
     assert_slices(doc, CHUNKER.chunk(doc))
 
 
-def test_no_chunk_exceeds_the_maximum_by_more_than_one_sentence() -> None:
+def test_no_chunk_exceeds_the_configured_maximum() -> None:
+    # SENTENCE_END matches exactly one whitespace character, and
+    # finditer(text, cursor, window_end) never returns a match ending past
+    # window_end, so cut = breaks[-1] or window_end is always
+    # <= cursor + max_chunk_chars. Every span _split_large emits, and every
+    # span it leaves untouched, is therefore bounded by max_chunk_chars
+    # exactly -- there is no legitimate overshoot to allow slack for.
     doc = _doc("Sentence here. " * 400)
     for c in CHUNKER.chunk(doc):
-        assert len(c.text) <= 300 * 2
+        assert len(c.text) <= 300
 
 
 def test_covers_every_character() -> None:
@@ -76,3 +82,22 @@ def test_covers_every_character() -> None:
 def test_strategy_name_is_recorded() -> None:
     doc = _doc(REAL_TEXT)
     assert {c.strategy for c in CHUNKER.chunk(doc)} == {"structural"}
+
+
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        {"min_chunk_chars": 0, "max_chunk_chars": 300},
+        {"min_chunk_chars": -1, "max_chunk_chars": 0},
+        {"min_chunk_chars": 300, "max_chunk_chars": 300},
+        {"min_chunk_chars": 300, "max_chunk_chars": 50},
+    ],
+)
+def test_rejects_non_positive_or_inverted_bounds(kwargs: dict[str, int]) -> None:
+    # Constructor-only: min_chunk_chars=-1, max_chunk_chars=0 used to construct
+    # fine and then hang forever in chunk() (window_end == cursor, so the
+    # cursor in _split_large never advances). Never call .chunk() on a bad
+    # config here -- if this guard ever regressed, that call would hang the
+    # whole test suite instead of failing one assertion.
+    with pytest.raises(ValueError):
+        StructuralChunker(**kwargs)

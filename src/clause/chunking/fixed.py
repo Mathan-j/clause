@@ -13,6 +13,10 @@ class FixedWindowChunker:
     name = "fixed_window"
 
     def __init__(self, window_chars: int, overlap_chars: int) -> None:
+        if window_chars <= 0:
+            raise ValueError("window_chars must be positive")
+        if overlap_chars < 0:
+            raise ValueError("overlap_chars must not be negative")
         if overlap_chars >= window_chars:
             raise ValueError("overlap_chars must be smaller than window_chars")
         self._window = window_chars

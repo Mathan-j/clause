@@ -12,16 +12,32 @@ SENTENCE_END = re.compile(r"(?<=[.;:])\s")
 
 
 class StructuralChunker:
-    """Split on RBI's own numbering, then repair sizes.
+    """Split on a regex that approximates RBI's own paragraph numbering.
 
-    Boundaries come from the document's structure rather than a character
-    count, so a chunk tends to be a complete regulatory provision -- which is
-    what a citation should point at.
+    Known ways this falls short of "a chunk is a complete provision":
+
+    - ``BOUNDARY`` also fires on things that merely look like numbering.
+      On the real fixture it cuts a sentence that ends in a year ("...Rules,
+      2005. The Directions...") and inline cross-references such as
+      "section 10(2) read with" and "Rule 9(14) of the" -- none of those are
+      paragraph markers, so some chunks begin mid-clause.
+    - ``min_chunk_chars`` is a *soft* floor, not a guarantee. ``_merge_small``
+      runs before ``_split_large``, so a small span can get folded into an
+      oversize neighbour and then re-cut by ``_split_large`` with no memory
+      of where the original structural seam was; the leftover remainder at
+      the end of that cut is never re-merged. On the real fixture, with
+      min_chunk_chars=400, the emitted chunk lengths include a 262-char
+      chunk -- below the configured floor.
+
+    Whether either defect actually hurts retrieval is a Phase 2 question,
+    answered by the eval harness, not assumed here.
     """
 
     name = "structural"
 
     def __init__(self, min_chunk_chars: int, max_chunk_chars: int) -> None:
+        if min_chunk_chars <= 0:
+            raise ValueError("min_chunk_chars must be positive")
         if min_chunk_chars >= max_chunk_chars:
             raise ValueError("min_chunk_chars must be smaller than max_chunk_chars")
         self._min = min_chunk_chars

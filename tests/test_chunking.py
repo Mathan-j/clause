@@ -69,3 +69,20 @@ def test_assert_slices_catches_a_transformed_chunk() -> None:
 def test_empty_document_yields_no_chunks() -> None:
     doc = _doc("")
     assert FixedWindowChunker(window_chars=200, overlap_chars=50).chunk(doc) == []
+
+
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        {"window_chars": 0, "overlap_chars": 0},
+        {"window_chars": -5, "overlap_chars": -1},
+        {"window_chars": 10, "overlap_chars": -1},
+        {"window_chars": 100, "overlap_chars": 100},
+    ],
+)
+def test_rejects_non_positive_or_inverted_bounds(kwargs: dict[str, int]) -> None:
+    # Constructor-only, never .chunk(): a non-positive window_chars would
+    # surface only as an opaque ValueError from make_chunk once chunking ran,
+    # rather than a clear rejection at construction time.
+    with pytest.raises(ValueError):
+        FixedWindowChunker(**kwargs)
