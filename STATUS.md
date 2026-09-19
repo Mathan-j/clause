@@ -1,11 +1,11 @@
 # Status
 
-**Phase:** 0 — not started
+**Phase:** 1 — complete
 
 | Phase | State | Evidence |
 |---|---|---|
-| 0 scaffold | not started | — |
-| 1 ingestion | not started | — |
+| 0 scaffold | done | CI green |
+| 1 ingestion | done | `make ingest` (61 documents, 61 ≥ 50 required) + `pytest tests/test_ingest_acceptance.py` (4 passed) |
 | 2 retrieval + eval | not started | — |
 | 3 citations + refusal | not started | — |
 | 4 service | not started | — |

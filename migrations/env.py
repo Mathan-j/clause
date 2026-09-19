@@ -21,7 +21,7 @@ from clause.db.schema import Base
 target_metadata = Base.metadata
 config.set_main_option(
     "sqlalchemy.url",
-    os.environ.get("CLAUSE_DATABASE_URL", "postgresql+psycopg://clause:clause@localhost:5432/clause"),
+    os.environ.get("CLAUSE_DATABASE_URL", "postgresql+psycopg://clause:clause@localhost:5434/clause"),
 )
 
 # other values from the config, defined by the needs of env.py,

@@ -21,7 +21,12 @@ metric here, not an afterthought.
 
 **Corpus:** public RBI circulars, master directions and notifications. These are
 government publications, freely readable. We store extracted text plus source URLs and
-never redistribute bulk PDFs. Respect robots.txt and rate-limit fetches.
+never redistribute bulk PDFs. `robots.txt` on rbi.org.in returns HTTP 418 to every client
+tried, so its policy cannot be read and compliance with it cannot be claimed. In its place
+the fetcher holds a conservative floor: single concurrency, a minimum 2-second interval,
+an identifying User-Agent with a contact address, and a cache that means each document is
+fetched exactly once. The PDF host sits behind a JavaScript challenge, so the HTML page is
+the canonical source and PDFs are not fetched at all.
 
 ## 2. Why this project, and why built this way
 

@@ -1,10 +1,12 @@
 import os
 from collections.abc import Iterator
+from pathlib import Path
 
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
+from clause.cli import ingest
 from clause.db.schema import Base
 
 DB_URL = os.environ.get(
@@ -25,3 +27,14 @@ def db_session() -> Iterator[Session]:
         yield session
     Base.metadata.drop_all(engine)
     engine.dispose()
+
+
+@pytest.fixture
+def ingested(db_session: Session) -> bool:
+    """Run the real ingest against the committed manifest and the warm cache."""
+    manifest = Path("data/corpus/kyc.manifest.jsonl")
+    if not manifest.exists():
+        pytest.skip("manifest not present")
+    ingest(manifest, session=db_session)
+    db_session.commit()
+    return True
