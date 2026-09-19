@@ -1,0 +1,5 @@
+* text=auto
+
+# Shell scripts must keep LF. A CRLF checkout makes bash fail with
+# "$'\r': command not found", which would break the Stop hook on Windows.
+*.sh text eol=lf
