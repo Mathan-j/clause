@@ -1,18 +1,61 @@
+import contextlib
 import os
 from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
-from sqlalchemy import create_engine
+from alembic import command
+from alembic.config import Config
+from sqlalchemy import create_engine, text
+from sqlalchemy.engine import make_url
 from sqlalchemy.orm import Session
 
 from clause.cli import ingest
-from clause.db.schema import Base
 from clause.sources.manifest import load_manifest
 
+REPO_ROOT = Path(__file__).resolve().parent.parent
+
+
+def _resolve_app_database_url() -> str | None:
+    """Best-effort resolution of the URL the *application* (not the tests) would use.
+
+    Mirrors Settings' own resolution order (real env var, falling back to `.env`)
+    without requiring the rest of Settings (e.g. CLAUSE_USER_AGENT) to be valid,
+    which is normal in CI where no `.env` exists at all. This exists solely so the
+    test database can be checked against it below -- see the module docstring on
+    why that check exists.
+    """
+    if "CLAUSE_DATABASE_URL" in os.environ:
+        return os.environ["CLAUSE_DATABASE_URL"]
+    env_file = REPO_ROOT / ".env"
+    if not env_file.exists():
+        return None
+    for line in env_file.read_text(encoding="utf-8").splitlines():
+        stripped = line.strip()
+        if stripped.startswith("CLAUSE_DATABASE_URL="):
+            return stripped.split("=", 1)[1].strip()
+    return None
+
+
+# A *distinct* database from the application's, on the same server, by default --
+# never the same name as CLAUSE_DATABASE_URL / .env.example's default. The test suite
+# tears down its schema on every run (see db_session below); sharing a database with
+# the app would mean running `pytest` drops the ingested corpus, which is exactly the
+# incident this default now prevents.
 DB_URL = os.environ.get(
-    "CLAUSE_TEST_DATABASE_URL", "postgresql+psycopg://clause:clause@localhost:5434/clause"
+    "CLAUSE_TEST_DATABASE_URL", "postgresql+psycopg://clause:clause@localhost:5434/clause_test"
 )
+
+_app_url = _resolve_app_database_url()
+if _app_url is not None and _app_url == DB_URL:
+    raise RuntimeError(
+        "CLAUSE_TEST_DATABASE_URL resolves to the exact same database as "
+        f"CLAUSE_DATABASE_URL ({DB_URL!r}). The test suite builds and tears down its "
+        "schema on this URL on every run (via `alembic upgrade head` / `downgrade "
+        "base`), so pointing it at the application's own database would destroy "
+        "whatever has been ingested there. Point CLAUSE_TEST_DATABASE_URL at a "
+        "separate database on the same server, e.g. `clause_test`, and re-run."
+    )
 
 # Mirrors Settings.raw_cache_dir's own default and env var name (CLAUSE_ prefix), read
 # directly rather than via get_settings() so the warm-cache check below never needs a
@@ -20,19 +63,78 @@ DB_URL = os.environ.get(
 RAW_CACHE_DIR = Path(os.environ.get("CLAUSE_RAW_CACHE_DIR", "data/raw"))
 
 
+@contextlib.contextmanager
+def _database_url_env(url: str) -> Iterator[None]:
+    """Temporarily point `migrations/env.py`'s own CLAUSE_DATABASE_URL lookup at `url`.
+
+    `migrations/env.py` reads `CLAUSE_DATABASE_URL` from the environment directly
+    (matching how `make ingest`/the real app resolve it) rather than from Alembic's
+    `Config.sqlalchemy.url`, so driving Alembic at a different database in-process
+    means overriding that env var for the duration of the call, then restoring it.
+    """
+    previous = os.environ.get("CLAUSE_DATABASE_URL")
+    os.environ["CLAUSE_DATABASE_URL"] = url
+    try:
+        yield
+    finally:
+        if previous is None:
+            os.environ.pop("CLAUSE_DATABASE_URL", None)
+        else:
+            os.environ["CLAUSE_DATABASE_URL"] = previous
+
+
+def _alembic_config() -> Config:
+    return Config(str(REPO_ROOT / "alembic.ini"))
+
+
+def _ensure_test_database_exists(url: str) -> None:
+    """Create the test database if it does not exist yet; skip with a clear message
+    if the server itself is unreachable.
+
+    Connects to the server's `postgres` maintenance database to run `CREATE DATABASE`
+    (which cannot run inside a transaction, hence AUTOCOMMIT), so a fresh clone gets a
+    working test database instead of a raw connection traceback the first time
+    `pytest` runs.
+    """
+    parsed = make_url(url)
+    dbname = parsed.database
+    admin_url = parsed.set(database="postgres")
+    try:
+        admin_engine = create_engine(admin_url, isolation_level="AUTOCOMMIT")
+        with admin_engine.connect() as conn:
+            exists = conn.execute(
+                text("SELECT 1 FROM pg_database WHERE datname = :name"), {"name": dbname}
+            ).first()
+            if exists is None:
+                conn.execute(text(f'CREATE DATABASE "{dbname}"'))
+        admin_engine.dispose()
+    except Exception as exc:
+        pytest.skip(
+            f"no Postgres server reachable to create test database {dbname!r} "
+            f"(via {admin_url}): {exc}. Start it with `docker compose up -d` or "
+            f"create {dbname!r} by hand."
+        )
+
+
 @pytest.fixture
 def db_session() -> Iterator[Session]:
+    _ensure_test_database_exists(DB_URL)
     try:
         create_engine(DB_URL).connect().close()
-    except Exception as exc:  # any connection failure means no database
+    except Exception as exc:  # any connection failure means no usable test database
         pytest.skip(f"no Postgres at {DB_URL}: {exc}")
+
+    cfg = _alembic_config()
+    with _database_url_env(DB_URL):
+        command.upgrade(cfg, "head")
+
     engine = create_engine(DB_URL)
-    Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
     with Session(engine) as session:
         yield session
-    Base.metadata.drop_all(engine)
     engine.dispose()
+
+    with _database_url_env(DB_URL):
+        command.downgrade(cfg, "base")
 
 
 @pytest.fixture
