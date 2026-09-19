@@ -260,6 +260,8 @@ gate becomes active with this commit."
 # tests/test_config.py
 from pathlib import Path
 
+import pytest
+
 from clause.config import Settings
 
 
@@ -283,8 +285,6 @@ def test_environment_overrides_defaults(monkeypatch) -> None:
 
 
 def test_overlap_must_be_smaller_than_window() -> None:
-    import pytest
-
     with pytest.raises(ValueError):
         Settings(
             database_url="postgresql+psycopg://x/y",
@@ -806,6 +806,7 @@ fidelity, not correctness."
 
 ```python
 # tests/test_fetch.py
+import hashlib
 from datetime import date
 from pathlib import Path
 
@@ -814,14 +815,12 @@ import pytest
 
 from clause.config import Settings
 from clause.ingest.fetch import Fetcher, HashMismatchError, RateLimiter
-from clause.models import ManifestEntry
 from clause.ingest.validate import ValidationError
+from clause.models import ManifestEntry
 
 FIXTURES = Path(__file__).parent / "fixtures"
 CIRCULAR = (FIXTURES / "rbi_13704.html").read_bytes()
 BLOCK = (FIXTURES / "rbi_block_page.html").read_bytes()
-
-import hashlib
 
 
 def _entry(sha: str) -> ManifestEntry:
@@ -1308,7 +1307,7 @@ put an unmeasured value inside the citation tuple."
 - Create: `src/clause/chunking/__init__.py`, `src/clause/chunking/base.py`, `src/clause/chunking/fixed.py`, `tests/test_chunking.py`
 
 **Interfaces:**
-- Consumes: `Document`, `Chunk`, `Settings`
+- Consumes: `Document`, `Chunk`
 - Produces:
   - `Chunker` Protocol: attribute `name: str`, method `chunk(self, document: Document) -> list[Chunk]`
   - `make_chunk(document: Document, strategy: str, ordinal: int, start: int, end: int) -> Chunk` — the only sanctioned way to build a `Chunk`
@@ -1319,6 +1318,7 @@ put an unmeasured value inside the citation tuple."
 
 ```python
 # tests/test_chunking.py
+import dataclasses
 from datetime import UTC, date, datetime
 
 import pytest
@@ -1377,8 +1377,6 @@ def test_ordinals_are_dense_and_ascending() -> None:
 
 
 def test_assert_slices_catches_a_transformed_chunk() -> None:
-    import dataclasses
-
     doc = _doc("hello world")
     good = make_chunk(doc, "fixed_window", 0, 0, 5)
     # dataclasses.replace, not __dict__: Chunk uses slots=True and has no __dict__.
@@ -1756,11 +1754,13 @@ services:
 # tests/conftest.py
 import os
 from collections.abc import Iterator
+from pathlib import Path
 
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
+from clause.cli import ingest
 from clause.db.schema import Base
 
 DB_URL = os.environ.get(
@@ -2083,7 +2083,8 @@ Chunk provenance columns are denormalised deliberately; see the spec."
 - Modify: `.gitignore` (ensure `data/raw/` ignored, `data/corpus/` tracked)
 
 **Interfaces:**
-- Consumes: `ManifestEntry`, `write_manifest`, `Fetcher`, `validate_response`, `canonical_text`, `parse_header`
+- Consumes: `ManifestEntry`, `write_manifest`, `validate_response`, `canonical_text`, `parse_header`
+  (deliberately **not** `Fetcher`: it verifies content against a manifest sha256, which is the very value discovery is computing)
 - Produces:
   - `KYC_TERMS: tuple[str, ...]`
   - `is_kyc_document(title: str, text: str) -> bool`
@@ -2294,7 +2295,7 @@ attributed to a code change."
 
 **Files:**
 - Create: `src/clause/cli.py`, `tests/test_ingest_acceptance.py`
-- Modify: `PROMPT.md` (§1 robots.txt correction), `STATUS.md`, `README.md`
+- Modify: `PROMPT.md` (§1 robots.txt correction), `STATUS.md`
 
 **Interfaces:**
 - Consumes: everything above
@@ -2346,10 +2347,6 @@ Add to `tests/conftest.py`:
 @pytest.fixture
 def ingested(db_session):
     """Run the real ingest against the committed manifest and the warm cache."""
-    from pathlib import Path
-
-    from clause.cli import ingest
-
     manifest = Path("data/corpus/kyc.manifest.jsonl")
     if not manifest.exists():
         pytest.skip("manifest not present")
