@@ -1320,6 +1320,7 @@ put an unmeasured value inside the citation tuple."
 # tests/test_chunking.py
 import dataclasses
 from datetime import UTC, date, datetime
+from itertools import pairwise
 
 import pytest
 
@@ -1358,7 +1359,7 @@ def test_fixed_window_covers_every_character(text: str) -> None:
     chunks = FixedWindowChunker(window_chars=200, overlap_chars=50).chunk(doc)
     assert chunks[0].char_start == 0
     assert chunks[-1].char_end == len(doc.text)
-    for prev, nxt in zip(chunks, chunks[1:], strict=True):
+    for prev, nxt in pairwise(chunks):
         assert nxt.char_start <= prev.char_end, "gap between chunks would drop characters"
 
 
@@ -1533,6 +1534,7 @@ citations."
 ```python
 # tests/test_chunking_structural.py
 from datetime import UTC, date, datetime
+from itertools import pairwise
 from pathlib import Path
 
 import pytest
@@ -1600,7 +1602,7 @@ def test_covers_every_character() -> None:
     chunks = CHUNKER.chunk(doc)
     assert chunks[0].char_start == 0
     assert chunks[-1].char_end == len(doc.text)
-    for prev, nxt in zip(chunks, chunks[1:], strict=True):
+    for prev, nxt in pairwise(chunks):
         assert nxt.char_start == prev.char_end
 
 
@@ -1621,6 +1623,7 @@ Expected: FAIL — `ModuleNotFoundError: No module named 'clause.chunking.struct
 ```python
 # src/clause/chunking/structural.py
 import re
+from itertools import pairwise
 
 from clause.chunking.base import make_chunk
 from clause.models import Chunk, Document
@@ -1665,7 +1668,7 @@ class StructuralChunker:
     def _split_on_structure(self, text: str) -> list[tuple[int, int]]:
         cuts = [0, *(m.start() for m in BOUNDARY.finditer(text)), len(text)]
         cuts = sorted(set(cuts))
-        return [(a, b) for a, b in zip(cuts, cuts[1:], strict=True) if b > a]
+        return [(a, b) for a, b in pairwise(cuts) if b > a]
 
     def _merge_small(self, spans: list[tuple[int, int]]) -> list[tuple[int, int]]:
         merged: list[tuple[int, int]] = []
