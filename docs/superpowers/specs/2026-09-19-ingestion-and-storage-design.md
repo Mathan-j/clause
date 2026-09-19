@@ -147,10 +147,25 @@ existing documents.
 
 ### 5.2 The invariant
 
-Extraction produces `document.text` exactly once: parse the notification content node,
-drop script, style and navigation, decode entities, normalise to Unicode NFC, collapse
-whitespace runs. From that moment the string is **immutable**, and every character offset
-in the system indexes into precisely it. Nothing downstream re-normalises.
+Extraction produces `document.text` exactly once: parse `tree.body` (not a narrower
+"notification content node" — nothing in the implementation locates one), drop
+`<script>`, `<style>` and `<noscript>`, decode entities, normalise to Unicode NFC,
+collapse whitespace runs. **Navigation is not dropped.** Page chrome — RBI's site
+navigation, breadcrumbs, skip links — is retained; every document's canonical text
+today begins with "Skip to main content Not Pressed Not Pressed ...", and site
+chrome is a large share of every stored document's characters. From that moment the
+string is **immutable**, and every character offset in the system indexes into
+precisely it. Nothing downstream re-normalises.
+
+**Correction, same register as section 9.** An earlier version of this section
+claimed navigation was dropped; it was not implemented, and this correction retracts
+that claim. **This is also why navigation-stripping must happen before, not after,
+Phase 2's golden set is hand-labelled.** Removing site chrome would shift every
+character offset in the corpus. If it is done after the golden set records
+ground-truth `char_start`/`char_end` spans against today's chrome-inclusive text,
+every one of those spans becomes wrong the moment chrome is stripped. Stripping
+navigation is therefore recorded here as the **first Phase 2 change**, to be done
+before any hand-labelling begins, not as a Phase 1 cleanup item.
 
 Both chunkers are therefore **slicers**. They choose boundaries; they never transform
 characters. Consequently:
@@ -315,7 +330,7 @@ The fetcher's floor, therefore:
 
 **Action required:** amend `PROMPT.md` section 1 to state that `robots.txt` is
 unreachable and that these conservative defaults stand in its place. This is a
-documentation change, not a code change, and it is listed in section 12.
+documentation change, not a code change, and it is listed in section 13.
 
 ## 9. Correction: no stable whole-document hash exists against this source
 
@@ -387,7 +402,73 @@ Phase 1: deciding what counts as "furniture" versus "content" is exactly the kin
 judgment call `CLAUDE.md`'s measurement discipline says should be evidenced, not
 assumed, and it is not needed to satisfy Phase 1's definition of done.
 
-## 10. Testing
+**Addendum, 2026-09-20 (final whole-branch review): a third, larger instability
+source, and why it changes the conclusion above.** The two sources above (the WAF
+token, the PDF-size widget) are not the only page furniture inside
+`canonical_text`. Every page's footer also carries the literal string
+`"Website last updated date: <date>"`, and that string is **inside**
+`canonical_text`, not stripped by anything upstream of it — confirmed at character
+7,980 of a cached document, reading `Sep 19, 2026`, and identical (same date
+string) across all 61 documents in the cached corpus. This is a site-wide value,
+not a per-document one, so it changes on whatever cadence RBI updates its site as a
+whole, independent of whether any individual circular changed at all.
+
+The corpus manifest was frozen the same day this date last rolled over, which is
+the only reason a cold re-fetch today mismatches `content_sha256` for just 12 of 61
+documents rather than all of them. **Once that site-wide date next rolls over, a
+cold fetch will mismatch `content_sha256` for 61 of 61 documents, permanently** —
+every document will take the tolerant, header-identity-only branch on every future
+fetch, and `content_sha256` stops functioning as a drift signal at all rather than
+being merely "best-effort" as stated above. This does not require Phase 2's
+excluded-furniture content hash to be *foreseen*; it means that hash is not a
+someday-nicer-to-have, it is what makes `content_sha256` mean anything again once
+this date turns over.
+
+Related, and worth stating plainly here rather than only in `.gitignore`: `data/raw/`
+is gitignored, so what the committed manifest actually freezes is the URL list and
+each document's header identity (`circular_no`/`dept_ref`/`published_date`) — **not**
+the text. A fresh clone that re-fetches from empty will get different raw HTML (WAF
+token, widget, footer date, at minimum) and therefore a different `documents.text`
+and different character offsets than whatever `data/raw/` currently holds. That
+matters directly for Phase 2: hand-labelled `char_start`/`char_end` ground truth is
+only valid against the exact `data/raw/` cache it was labelled from, not against "the
+manifest" in the abstract.
+
+## 10. Correction: `doc_type` classification is unreliable on the real corpus
+
+`_classify` (section 5, `clause.ingest.extract`) reads a fixed 600-character window
+of text anchored on the header match (`CLASSIFY_WINDOW_CHARS`) and returns
+`master_direction` if "master direction" appears in it, else `circular` if
+"circular" appears, else `notification`. This was written without evidence that
+the window and keyword choice actually separate the corpus's real document types,
+and re-running it over the full 61-document cached corpus on 2026-09-20 (final
+whole-branch review) shows it does not, on two independent counts:
+
+1. **Zero `circular` labels.** The real corpus classifies as 29 `master_direction`
+   and 32 `notification` — never `circular` — even though several of these
+   documents are UAPA/WMD sanctions-list circulars that merely *cite* the KYC
+   Master Direction in passing, not master directions themselves.
+2. **Near-identical documents split both ways.** `rbi-12922` and `rbi-13310` share
+   the same subject line ("Implementation of Section 51A of UAPA, 1967: Updates to
+   UNSC's ... Sanctions List") and the same document type in substance, but
+   `_classify` labels the first `master_direction` and the second `notification`,
+   purely because of whether the phrase "master direction" happened to fall inside
+   or outside the 600-character window for that particular document's layout.
+
+`doc_type` is in `CLAUDE.md`'s non-negotiable provenance tuple, is denormalised
+onto all 1,314 chunks on the stated grounds that it never changes after ingest
+(section 5.4), and is Phase 2's planned metadata filter (`PROMPT.md` section 3).
+A metadata filter this unreliable would silently exclude or include the wrong
+documents from a retrieval query. **Phase 2 must either fix or retire `_classify`
+before using `doc_type` as a retrieval filter** — this is not a Phase 1 fix,
+per `CLAUDE.md`'s rule that a retrieval-affecting change needs measured
+before/after evidence, which only Phase 2's eval harness can produce.
+`tests/test_doc_type_classification.py` pins the current, known-flawed behaviour
+(specific `doc_id -> doc_type` mappings, and the zero-`circular` fact) so a future
+change to the classifier is visible as a deliberately-updated test, not a silent
+behavior change.
+
+## 11. Testing
 
 `CLAUDE.md` requires tests before implementation for anything in the retrieval or citation
 path. Every unit in section 5 is in that path except `cli`.
@@ -413,7 +494,7 @@ redistribution.
 Postgres comes from `make up` locally and a service container in CI, so database-backed
 tests always execute rather than being skipped into irrelevance.
 
-## 11. Dependencies
+## 12. Dependencies
 
 Each gets one line in `docs/decisions.md` stating what it replaced and why, per
 `CLAUDE.md`.
@@ -430,7 +511,7 @@ Each gets one line in `docs/decisions.md` stating what it replaced and why, per
 No embedding, vector or LLM dependency enters in Phase 1. Those belong to Phase 2 and
 Phase 3 and are deliberately absent here.
 
-## 12. Explicitly out of scope
+## 13. Explicitly out of scope
 
 Not built in Phase 0 or Phase 1, and not to be added opportunistically:
 
@@ -444,7 +525,7 @@ Not built in Phase 0 or Phase 1, and not to be added opportunistically:
 One documentation change is required and is not optional: the `PROMPT.md` section 1
 amendment described in section 8.
 
-## 13. Traceability
+## 14. Traceability
 
 | `PROMPT.md` requirement | Where it is satisfied |
 |---|---|

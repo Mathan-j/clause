@@ -113,7 +113,14 @@ SALUTATION = re.compile(
 
 
 def _title_of(text: str) -> str:
-    """Return the subject line following the RBI header line (and salutation, if any).
+    """Return a fixed ~200-character window of text following the RBI header line
+    (and salutation, if any) — an approximation of the subject line, not a clean
+    extraction of it. The window is a raw character count, not a sentence or
+    paragraph boundary, so long subjects are truncated mid-word or mid-sentence
+    (e.g. "...Amendment Directions, 2026 R" or "...ISIL (Da'esh) &"); of the 61
+    titles currently committed to `data/corpus/kyc.manifest.jsonl`, none is a clean,
+    exact subject line. Titles are useful for a human skimming the manifest, not as
+    a field to match on exactly.
 
     The brief's original approach re-derived the date string with
     ``strftime("%B %-d, %Y")`` and searched for it in the text. That is
@@ -171,7 +178,7 @@ def _run_resync(manifest_path: Path, out_path: Path, *, interval: float, user_ag
     replacing a circular under a new number/date or altering its own header. It
     cannot catch a silent in-place body edit that keeps the same header — the same
     limitation `content_sha256` has once page-chrome noise is tolerated (see
-    `Fetcher._verify_live` in `clause.ingest.fetch`, which accepts a `content_sha256`
+    `Fetcher._verify` in `clause.ingest.fetch`, which accepts a `content_sha256`
     mismatch precisely when header identity still matches).
     """
     entries = load_manifest(manifest_path)
