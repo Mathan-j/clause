@@ -1,0 +1,29 @@
+# Claude Code — machine-local, never commit
+.claude/settings.local.json
+.claude/.gate-count
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Secrets
+.env
+.env.*
+!.env.example
+secrets/
+
+# Ingestion cache — raw fetched HTML/PDF is never committed
+data/raw/
+data/cache/
+
+# Local infra
+.qdrant/
+*.db
