@@ -19,7 +19,7 @@ ENTRY = ManifestEntry(
     dept_ref="DOR.AML.REC.223/14.01.005/2026-27",
     title="t",
     published_date=date(2026, 9, 18),
-    sha256="a" * 64,
+    content_sha256="a" * 64,
 )
 
 

@@ -48,6 +48,13 @@ The observed block page contains the literal strings `Unauthorised Access` and
 `Support ID:`. The observed circular header line has the shape
 `RBI/2026-27/262 DOR.AML.REC.223/14.01.005/2026-27 September 18, 2026`.
 
+**Addendum, 2026-09-20 (Task 10 discovery, fix rounds 1-2).** A fourth finding, from
+repeated live fetches rather than a single probe: **no stable whole-document hash
+exists against this source**, at either the raw-byte or the canonical-text level.
+This directly contradicts the hash-verification guarantee section 7.2 originally
+claimed. See section 9 for the evidence and the correction — the same treatment
+section 8 already gives the `robots.txt` claim.
+
 ## 3. Decisions taken
 
 | Decision | Choice | Why |
@@ -124,8 +131,16 @@ One real entry, using the document observed in section 2:
  "dept_ref": "DOR.AML.REC.223/14.01.005/2026-27",
  "title": "Reserve Bank of India (Rural Co-operative Banks - Know Your Customer) Amendment Directions, 2026",
  "published_date": "2026-09-18",
- "sha256": "<sha256 of the raw HTML at discovery time>"}
+ "content_sha256": "<sha256 of canonical_text(raw_html) at discovery time>"}
 ```
+
+**Corrected, 2026-09-20 (see section 9).** This field was originally named `sha256`
+and held the sha256 of the raw HTML response. It is renamed `content_sha256` and now
+holds the sha256 of `canonical_text(raw_html)` instead — the raw-byte value could
+never be reproduced by a later fetch of the same, unchanged document (section 9), so
+the field name and its stated content were both wrong. `content_sha256` is a
+best-effort snapshot, not a guaranteed-stable whole-document hash: see section 9 for
+why, and for what this manifest can and cannot actually detect.
 
 `doc_id` is stable and derived from the RBI id, so re-running discovery cannot renumber
 existing documents.
@@ -263,9 +278,17 @@ document.
 
 ### 7.2 The rest
 
+**Corrected, 2026-09-20 (see section 9).** The original row here read: "sha256
+differs from manifest -> Hard failure naming the document and both hashes. RBI
+revises circulars in place; this is what detects it." That assumed a stable
+whole-document hash exists against this source. It does not. The corrected table:
+
 | Condition | Behaviour |
 |---|---|
-| sha256 differs from manifest | Hard failure naming the document and both hashes. RBI revises circulars in place; this is what detects it. The manifest is never auto-healed. |
+| Live fetch: `content_sha256` matches manifest | Accept. |
+| Live fetch: `content_sha256` differs, but header identity (`circular_no`, `dept_ref`, `published_date`) still matches manifest | Accept, logging a warning naming the document to stderr. Treated as page-chrome noise (a WAF token, a volatile widget), not a revision - see section 9. |
+| Live fetch: `content_sha256` differs AND header identity also differs, or the header no longer parses | Hard failure naming the document, both hashes, and what header field(s) differed. RBI has changed this document's identity. The manifest is never auto-healed. |
+| Warm cache: cached file's `content_sha256` differs from manifest | Hard failure, no tolerance. These bytes are ours, not the network's, so a mismatch here means disk corruption or tampering, not WAF/page-chrome noise - see section 9. |
 | 4xx, 5xx, timeout | Bounded retry, exponential backoff with jitter. On exhaustion, record the failure, continue with remaining documents, and exit non-zero with a summary. |
 | Extraction yields empty or short text | Hard failure |
 | Re-run of `make ingest` | Idempotent. Chunks for `(doc_id, strategy)` are replaced transactionally; a failed document leaves no partial rows. |
@@ -289,9 +312,61 @@ The fetcher's floor, therefore:
 
 **Action required:** amend `PROMPT.md` section 1 to state that `robots.txt` is
 unreachable and that these conservative defaults stand in its place. This is a
-documentation change, not a code change, and it is listed in section 11.
+documentation change, not a code change, and it is listed in section 12.
 
-## 9. Testing
+## 9. Correction: no stable whole-document hash exists against this source
+
+Section 7.2 originally claimed that a sha256 mismatch between a live fetch and the
+manifest detects RBI revising a circular in place. That claim does not hold, on two
+independent counts, both confirmed by repeated live fetches on 2026-09-20 (Task 10,
+fix rounds 1-2) rather than the single-probe evidence in section 2. Leaving the
+original claim in place would put the same kind of unsupportable statement in this
+document that section 8 already had to correct for `robots.txt` - so, in the same
+spirit, and just as bluntly:
+
+1. **Raw response bytes are never reproducible.** `www.rbi.org.in` sits behind an F5
+   BIG-IP WAF that injects a per-response `<script id="f5_cspm">` tag carrying a
+   freshly randomised token into every response. Fetching the identical, unchanged
+   URL three times, two seconds apart, produced three different raw-byte sha256
+   values, confirmed on two independent documents. A raw-byte hash is therefore not a
+   usable "has this document changed" signal here at all - it reports drift on every
+   fetch, always, regardless of whether the document changed.
+2. **Even the canonical extracted text is not perfectly stable.** Three fetches of one
+   unchanged URL, two seconds apart, produced not one but **two** distinct
+   `canonical_text` hashes. Diffing the two canonical texts localised the entire
+   difference to page furniture: a `": "` inserted at one character offset and a
+   `"kb"`/`"KB"` case difference at another, both inside what a PDF-size widget
+   renders. The regulatory text itself was byte-identical across all three fetches;
+   only the chrome around it varied.
+
+**The fix.** `ManifestEntry`'s hash field is renamed `sha256` -> `content_sha256` and
+now holds the sha256 of `canonical_text(raw_html)`, not of raw response bytes
+(section 5.1). `Fetcher` verification becomes two-tier (section 7.2): a live fetch
+whose `content_sha256` differs from the manifest is not immediately fatal - if the
+document's header identity (`circular_no`, `dept_ref`, `published_date`) still
+matches, the difference is logged as page-chrome noise and accepted; only a
+`content_sha256` mismatch *combined with* a header identity mismatch (or a header that
+no longer parses) is treated as a real revision. The warm-cache path keeps a strict,
+untolerant check, because bytes already on disk are ours, not the network's, and do
+not carry WAF/page-chrome volatility - a mismatch there is corruption or tampering,
+not noise, and deserves to fail hard.
+
+**What Phase 1 therefore actually guarantees, stated honestly.** Fetch-time
+verification detects **identity drift**: RBI renumbering a circular, re-dating it, or
+republishing it under a different department reference, because that changes the
+parsed header, which is checked independently of the content hash. It does **not**
+detect an **in-place body revision that leaves the header intact**, because no
+whole-page hash - raw or canonical - is reproducible enough against this source to
+serve as that signal, and no header-independent content hash was designed to survive
+page-chrome noise.
+
+A stronger guarantee - a content hash computed over the document body with page
+furniture (widgets, WAF chrome) deliberately excluded - is **Phase 2 work**, not
+Phase 1: deciding what counts as "furniture" versus "content" is exactly the kind of
+judgment call `CLAUDE.md`'s measurement discipline says should be evidenced, not
+assumed, and it is not needed to satisfy Phase 1's definition of done.
+
+## 10. Testing
 
 `CLAUDE.md` requires tests before implementation for anything in the retrieval or citation
 path. Every unit in section 5 is in that path except `cli`.
@@ -301,7 +376,9 @@ path. Every unit in section 5 is in that path except `cli`.
 | `test_offsets_roundtrip` | For every chunk of every ingested document, read back from Postgres: `documents.text[char_start:char_end] == chunks.text`. This is Phase 1's definition of done. |
 | `test_chunkers_slice_only` | Both strategies, over real fixtures and adversarial generated text (Unicode, whitespace runs, nested numbering): slice identity holds, spans ordered, no characters dropped |
 | `test_waf_page_is_rejected` | The captured block page, committed as a fixture, raises rather than parsing |
-| `test_hash_mismatch_is_fatal` | A manifest/content hash divergence fails loudly |
+| `test_chrome_only_mismatch_is_accepted_when_header_matches` | A `content_sha256` divergence with intact header identity is accepted, with a warning, not a failure (section 9) |
+| `test_header_identity_mismatch_is_fatal` | A `content_sha256` divergence *and* a header identity divergence fails loudly |
+| `test_corrupted_cache_file_is_fatal` | A cached file whose bytes no longer match `content_sha256` fails loudly - no header-identity tolerance on the warm-cache path (section 9) |
 | `test_extract_metadata` | Circular number, department reference and date parse from the real header line |
 | `test_ingest_is_idempotent` | Two runs produce identical rows and the second performs zero network calls |
 | `test_fetcher_rate_limit` | Minimum interval honoured, against a local stub server with a controlled clock |
@@ -313,7 +390,7 @@ redistribution.
 Postgres comes from `make up` locally and a service container in CI, so database-backed
 tests always execute rather than being skipped into irrelevance.
 
-## 10. Dependencies
+## 11. Dependencies
 
 Each gets one line in `docs/decisions.md` stating what it replaced and why, per
 `CLAUDE.md`.
@@ -330,7 +407,7 @@ Each gets one line in `docs/decisions.md` stating what it replaced and why, per
 No embedding, vector or LLM dependency enters in Phase 1. Those belong to Phase 2 and
 Phase 3 and are deliberately absent here.
 
-## 11. Explicitly out of scope
+## 12. Explicitly out of scope
 
 Not built in Phase 0 or Phase 1, and not to be added opportunistically:
 
@@ -344,15 +421,15 @@ Not built in Phase 0 or Phase 1, and not to be added opportunistically:
 One documentation change is required and is not optional: the `PROMPT.md` section 1
 amendment described in section 8.
 
-## 12. Traceability
+## 13. Traceability
 
 | `PROMPT.md` requirement | Where it is satisfied |
 |---|---|
 | CI green on empty test suite | Section 4 |
-| Fetcher with on-disk cache and rate limiting | Sections 5.1, 7.2, 8 |
+| Fetcher with on-disk cache and rate limiting | Sections 5.1, 7.2, 8, 9 |
 | Text extraction preserving character offsets | Section 5.2 |
 | Postgres schema and migrations | Section 5.4 |
 | Two chunking strategies behind one interface | Section 5.3 |
 | 50+ real documents ingested by a documented command | Sections 5.1, 6 |
-| Chunk slice round-trips against source text | Sections 5.2, 9 |
+| Chunk slice round-trips against source text | Sections 5.2, 10 |
 | Every chunk stores the full metadata tuple | Section 5.4 |

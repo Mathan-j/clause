@@ -1,6 +1,7 @@
 import hashlib
 from pathlib import Path
 
+from clause.ingest.extract import canonical_text
 from clause.sources.discover import build_entry, is_kyc_document
 from clause.sources.manifest import load_manifest
 
@@ -19,7 +20,8 @@ def test_rejects_an_unrelated_document() -> None:
 def test_build_entry_derives_id_and_hash() -> None:
     entry = build_entry(13704, "https://example.test/d", RAW, "Know Your Customer")
     assert entry.doc_id == "rbi-13704"
-    assert entry.sha256 == hashlib.sha256(RAW).hexdigest()
+    expected_text = canonical_text(RAW.decode("utf-8", errors="replace"))
+    assert entry.content_sha256 == hashlib.sha256(expected_text.encode("utf-8")).hexdigest()
     assert entry.circular_no == "RBI/2026-27/262"
 
 
@@ -27,7 +29,7 @@ def test_committed_manifest_is_loadable_and_large_enough() -> None:
     entries = load_manifest(Path("data/corpus/kyc.manifest.jsonl"))
     assert len(entries) >= 50, "PROMPT.md Phase 1 requires at least 50 real documents"
     assert len({e.doc_id for e in entries}) == len(entries)
-    assert all(len(e.sha256) == 64 for e in entries)
+    assert all(len(e.content_sha256) == 64 for e in entries)
 
 
 ADDRESSEE_MARKERS = (

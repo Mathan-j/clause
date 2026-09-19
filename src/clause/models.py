@@ -11,7 +11,16 @@ class ManifestEntry:
     dept_ref: str
     title: str
     published_date: date
-    sha256: str
+    content_sha256: str
+    """sha256 of `canonical_text(raw_html)` at discovery time — NOT of the raw response
+    bytes. www.rbi.org.in sits behind a WAF that injects a freshly randomised token into
+    every raw response, and even the extracted canonical text has been observed to vary
+    between fetches in trailing page furniture (a PDF-size widget), so this field cannot
+    guarantee whole-document byte stability either. It is a discovery-time snapshot used
+    to detect content drift on a best-effort basis; identity fields (`circular_no`,
+    `dept_ref`, `published_date`) are the check that does not depend on page chrome. See
+    `docs/superpowers/specs/2026-09-19-ingestion-and-storage-design.md` section 9.
+    """
 
 
 @dataclass(frozen=True, slots=True)

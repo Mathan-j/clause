@@ -18,7 +18,7 @@ def write_manifest(path: Path, entries: Iterable[ManifestEntry]) -> None:
                 "dept_ref": e.dept_ref,
                 "title": e.title,
                 "published_date": e.published_date.isoformat(),
-                "sha256": e.sha256,
+                "content_sha256": e.content_sha256,
             }
             fh.write(json.dumps(row, ensure_ascii=False) + "\n")
 
@@ -38,7 +38,7 @@ def load_manifest(path: Path) -> list[ManifestEntry]:
             dept_ref=row["dept_ref"],
             title=row["title"],
             published_date=date.fromisoformat(row["published_date"]),
-            sha256=row["sha256"],
+            content_sha256=row["content_sha256"],
         )
         if entry.doc_id in seen:
             raise ValueError(f"duplicate doc_id {entry.doc_id!r} at line {lineno}")

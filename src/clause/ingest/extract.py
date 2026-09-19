@@ -103,7 +103,10 @@ def extract_document(entry: ManifestEntry, raw: bytes, *, fetched_at: datetime) 
         doc_type=_classify(entry.title, window),
         published_date=published,
         effective_date=None,
-        sha256=entry.sha256,
+        # Document.sha256 keeps its own name and meaning (raw fetched bytes, unchanged
+        # by this rename) — only ManifestEntry's field was renamed, to
+        # content_sha256, since it hashes canonical text rather than raw bytes.
+        sha256=entry.content_sha256,
         fetched_at=fetched_at,
         text=text,
     )

@@ -15,7 +15,7 @@ ENTRY = ManifestEntry(
     title="Reserve Bank of India (Rural Co-operative Banks - Know Your Customer) "
     "Amendment Directions, 2026",
     published_date=date(2026, 9, 18),
-    sha256="a" * 64,
+    content_sha256="a" * 64,
 )
 
 

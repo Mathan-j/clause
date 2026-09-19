@@ -11,13 +11,22 @@ is a plausible contributor to how few hits the first discovery pass returned, an
 noted here rather than fixed, since widening the window changes what documents are
 considered "on-topic" and that decision belongs to a reviewed change, not a quiet one.
 
+`ManifestEntry.content_sha256` is the sha256 of `canonical_text(raw_html)` at
+discovery time, not of the raw response bytes. www.rbi.org.in sits behind a WAF that
+injects a freshly randomised token into every raw response (so a raw-byte hash never
+reproduces), and even `canonical_text` has been observed to vary between fetches in
+trailing page furniture (a PDF-size widget), so `content_sha256` is a best-effort
+snapshot, not a guarantee of whole-document stability. See
+`docs/superpowers/specs/2026-09-19-ingestion-and-storage-design.md` section 9.
+
 Usage:
     uv run python -m clause.sources.discover --start-id 13704 --count 400 \
         --out data/corpus/kyc.manifest.jsonl
 
-    # Re-fetch every entry already in a committed manifest to correct their titles
-    # (does not change corpus selection; aborts if any sha256 has drifted):
-    uv run python -m clause.sources.discover --retitle data/corpus/kyc.manifest.jsonl \
+    # Re-fetch every entry already in a committed manifest to refresh its title and
+    # content_sha256 (does not change corpus selection; aborts if header identity —
+    # circular_no/dept_ref/published_date — has drifted):
+    uv run python -m clause.sources.discover --resync data/corpus/kyc.manifest.jsonl \
         --out data/corpus/kyc.manifest.jsonl
 """
 
@@ -64,6 +73,15 @@ def is_kyc_document(title: str, text: str) -> bool:
     return any(term in haystack for term in KYC_TERMS)
 
 
+def _content_sha256(text: str) -> str:
+    """sha256 of the canonical extracted text — what `ManifestEntry.content_sha256` stores.
+
+    Deliberately not a hash of raw response bytes: see the module docstring for why a
+    raw-byte hash is unusable against this source.
+    """
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
 def build_entry(rbi_id: int, url: str, raw: bytes, title: str) -> ManifestEntry:
     text = canonical_text(raw.decode("utf-8", errors="replace"))
     circular_no, dept_ref, published = parse_header(text)
@@ -75,7 +93,7 @@ def build_entry(rbi_id: int, url: str, raw: bytes, title: str) -> ManifestEntry:
         dept_ref=dept_ref,
         title=title.strip() or circular_no,
         published_date=published,
-        sha256=hashlib.sha256(raw).hexdigest(),
+        content_sha256=_content_sha256(text),
     )
 
 
@@ -132,38 +150,32 @@ class ManifestDriftError(Exception):
     """
 
 
-def _run_retitle(manifest_path: Path, out_path: Path, *, interval: float, user_agent: str) -> int:
-    """Re-fetch every entry in an existing manifest and correct its title in place.
+def _run_resync(manifest_path: Path, out_path: Path, *, interval: float, user_agent: str) -> int:
+    """Re-fetch every entry in an existing manifest and refresh its derived fields.
 
     Performs no discovery and changes no corpus-selection decision: it only refetches
-    each entry's own URL and rewrites `title` using the current `_title_of` logic.
-    Every other field, *including the originally recorded sha256*, is carried over
-    byte-identical from the source manifest — this function never adopts a freshly
-    fetched hash into the manifest.
+    each entry's own URL and rewrites `title` (current `_title_of`) and
+    `content_sha256` (current `_content_sha256`, i.e. sha256 of `canonical_text`) from
+    that fetch. Every other field is carried over byte-identical from the source
+    manifest.
 
-    Drift check: this does **not** compare a live sha256 of the raw response against
-    the manifest's recorded one. www.rbi.org.in sits behind an F5 BIG-IP WAF that
-    injects a `f5_cspm` client-side-persistence script containing a freshly randomised
-    token into (at least) every `NotificationUser.aspx` response. Fetching the same
-    URL twice, two seconds apart, was confirmed to produce three different raw-byte
-    sha256 values for the same document while `canonical_text` extracted from each was
-    byte-identical — i.e. a raw-byte hash comparison against a live refetch would
-    report "drift" on every single entry, always, independent of whether the actual
-    circular content changed. Comparing raw bytes is therefore not a usable freeze
-    check for this source.
+    `content_sha256` is *recomputed*, never carried over: the field this replaces
+    (`sha256`, retired — see the field rename in `clause.models.ManifestEntry`) hashed
+    raw response bytes, which were never a hash of canonical_text to begin with and are
+    not reproducible against this source anyway (see the module docstring), so there is
+    nothing meaningful in the old value to preserve.
 
-    Instead, this compares the header fields `parse_header` recovers from the fresh
+    Drift check: compares the header fields `parse_header` recovers from the fresh
     fetch (`circular_no`, `dept_ref`, `published_date`) against the manifest's
     recorded values, and raises `ManifestDriftError` if any differ. This catches RBI
-    replacing a circular under a new number/date or altering its own header, but it
-    cannot detect a silent in-place body edit that keeps the same header — no
-    canonical-text hash was captured at discovery time to compare against, only the
-    (now known to be unusable for this purpose) raw-byte sha256. A future task wanting
-    a stronger guarantee would need to start persisting a canonical-text hash in the
-    manifest going forward.
+    replacing a circular under a new number/date or altering its own header. It
+    cannot catch a silent in-place body edit that keeps the same header — the same
+    limitation `content_sha256` has once page-chrome noise is tolerated (see
+    `Fetcher._verify_live` in `clause.ingest.fetch`, which accepts a `content_sha256`
+    mismatch precisely when header identity still matches).
     """
     entries = load_manifest(manifest_path)
-    retitled: list[ManifestEntry] = []
+    resynced: list[ManifestEntry] = []
     with httpx.Client(timeout=30.0, follow_redirects=True) as client:
         for entry in entries:
             time.sleep(interval)
@@ -192,7 +204,8 @@ def _run_retitle(manifest_path: Path, out_path: Path, *, interval: float, user_a
                     "the manifest — investigate this document by hand before re-running."
                 )
             new_title = _title_of(text)
-            retitled.append(
+            new_content_sha256 = _content_sha256(text)
+            resynced.append(
                 ManifestEntry(
                     doc_id=entry.doc_id,
                     rbi_id=entry.rbi_id,
@@ -201,13 +214,17 @@ def _run_retitle(manifest_path: Path, out_path: Path, *, interval: float, user_a
                     dept_ref=entry.dept_ref,
                     title=new_title.strip() or entry.circular_no,
                     published_date=entry.published_date,
-                    sha256=entry.sha256,
+                    content_sha256=new_content_sha256,
                 )
             )
-            print(f"  retitled {entry.doc_id}: {new_title[:70]}", file=sys.stderr)
+            print(
+                f"  resynced {entry.doc_id}: title={new_title[:50]!r} "
+                f"content_sha256={new_content_sha256[:12]}...",
+                file=sys.stderr,
+            )
 
-    write_manifest(out_path, retitled)
-    print(f"wrote {len(retitled)} retitled entries to {out_path}", file=sys.stderr)
+    write_manifest(out_path, resynced)
+    print(f"wrote {len(resynced)} resynced entries to {out_path}", file=sys.stderr)
     return 0
 
 
@@ -220,23 +237,23 @@ def main() -> int:
     parser.add_argument("--interval", type=float, default=DEFAULT_INTERVAL_S)
     parser.add_argument("--user-agent", default=DEFAULT_USER_AGENT)
     parser.add_argument(
-        "--retitle",
+        "--resync",
         type=Path,
         help=(
             "Re-fetch every entry already in this manifest (no new discovery), "
-            "verify its sha256 is unchanged, and rewrite its title with the current "
-            "_title_of logic. Writes the result to --out."
+            "verify its header identity is unchanged, and rewrite its title and "
+            "content_sha256 from the fresh fetch. Writes the result to --out."
         ),
     )
     args = parser.parse_args()
 
-    if args.retitle is not None:
-        return _run_retitle(
-            args.retitle, args.out, interval=args.interval, user_agent=args.user_agent
+    if args.resync is not None:
+        return _run_resync(
+            args.resync, args.out, interval=args.interval, user_agent=args.user_agent
         )
 
     if args.start_id is None:
-        parser.error("--start-id is required unless --retitle is given")
+        parser.error("--start-id is required unless --resync is given")
 
     entries: list[ManifestEntry] = []
     with httpx.Client(timeout=30.0, follow_redirects=True) as client:
