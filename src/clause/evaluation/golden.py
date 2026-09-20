@@ -6,6 +6,7 @@ right answer would punish a retriever that returned an equally correct sibling.
 """
 
 import json
+import re
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -20,6 +21,31 @@ BUCKETS: tuple[str, ...] = (
 )
 
 PROVENANCE: tuple[str, ...] = ("drafted", "human_verified", "human_corrected")
+
+_TAG = re.compile(r"[a-z_]+=[a-z_0-9]+")
+
+
+def parse_tags(notes: str) -> dict[str, str]:
+    """Read the `key=value` tags a question carries in its free-text `notes`.
+
+    Some caveats about a question are not properties of its spans and so cannot
+    be derived from the corpus -- which retrieval task a `numeric_threshold`
+    question really poses, or that its span sits in a document heading a chunker
+    may isolate or drop. Carried as prose in a report they get dropped at the
+    first hand-off; carried here they are data the renderer groups on, and a
+    test can assert they stay complete.
+
+    Tags are whitespace-delimited tokens anywhere in `notes`, so prose and tags
+    coexist without a positional convention that would rot. Unknown keys are
+    returned as-is: the vocabulary is the caller's business, not the parser's.
+    A repeated key keeps its last occurrence.
+    """
+    tags: dict[str, str] = {}
+    for token in notes.split():
+        if _TAG.fullmatch(token):
+            key, _, value = token.partition("=")
+            tags[key] = value
+    return tags
 
 
 class GoldenSetError(Exception):

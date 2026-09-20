@@ -10,12 +10,27 @@ import sqlalchemy as sa
 from sqlalchemy.orm import Session
 
 from clause.db.schema import DocumentRow
-from clause.evaluation.golden import BUCKETS, load_golden, validate_spans
+from clause.evaluation.golden import BUCKETS, load_golden, parse_tags, validate_spans
 
 GOLDEN = Path("data/golden/kyc-v1.jsonl")
 MIN_QUESTIONS = 60
 MIN_PER_BUCKET = 15
 MAX_SHARED_RUN = 40
+
+# The `numeric_threshold` bucket mixes three retrieval tasks, and the corpus holds
+# only five true thresholds -- too few to split into a bucket of its own without
+# dropping below MIN_PER_BUCKET. The sub-kind is therefore carried per question so
+# the eval report can break the bucket out instead of averaging over three tasks.
+NUMERIC_KINDS = frozenset({"regulatory_threshold", "entry_count", "identifier"})
+NOTE_TAGS = frozenset({"standing_obligation_not_sequence"})
+TAG_KEYS = frozenset({"kind", "span", "note"})
+
+# Spans lying entirely inside a document's heading block. A chunker that isolates
+# or drops heading blocks makes these trivially easy or impossible for reasons
+# that have nothing to do with retrieval quality, so they must stay visible per
+# question rather than folded into a bucket average.
+HEADING_SPAN_QIDS = frozenset({"num-006", "num-007", "num-008", "num-009", "num-010"})
+SALUTATIONS = ("The Chairpersons", "Madam", "Dear Sir")
 INGEST_HINT = (
     "no ingested corpus in the application database; run "
     "`uv run python -m clause.cli ingest --manifest data/corpus/kyc.manifest.jsonl` first"
@@ -74,6 +89,58 @@ def test_every_span_resolves_against_the_stored_corpus() -> None:
     if not docs:
         pytest.skip(INGEST_HINT)
     validate_spans(load_golden(GOLDEN), docs)
+
+
+def test_the_tag_vocabulary_is_closed_and_every_numeric_question_declares_its_kind() -> None:
+    """A convention nothing enforces drifts, and these tags are what the report groups on."""
+    questions = load_golden(GOLDEN)
+    missing, wrong_kind, stray, unknown = [], [], [], []
+    for q in questions:
+        tags = parse_tags(q.notes)
+        unknown.extend(f"{q.qid}:{k}={v}" for k, v in tags.items() if k not in TAG_KEYS)
+        if "note" in tags and tags["note"] not in NOTE_TAGS:
+            unknown.append(f"{q.qid}:note={tags['note']}")
+        if "span" in tags and tags["span"] != "heading":
+            unknown.append(f"{q.qid}:span={tags['span']}")
+        if q.bucket == "numeric_threshold":
+            if "kind" not in tags:
+                missing.append(q.qid)
+            elif tags["kind"] not in NUMERIC_KINDS:
+                wrong_kind.append((q.qid, tags["kind"]))
+        elif "kind" in tags:
+            stray.append(q.qid)
+    assert not missing, f"numeric_threshold questions with no kind= tag: {missing}"
+    assert not wrong_kind, f"kind= values outside {sorted(NUMERIC_KINDS)}: {wrong_kind}"
+    assert not stray, f"kind= tag on a question outside numeric_threshold: {stray}"
+    assert not unknown, f"tags outside the declared vocabulary: {unknown}"
+
+
+def test_the_heading_span_tag_matches_the_questions_that_carry_one() -> None:
+    """Tagged and untagged must both be wrong-proof: the set is checked, not the count."""
+    tagged = {q.qid for q in load_golden(GOLDEN) if parse_tags(q.notes).get("span") == "heading"}
+    assert tagged == HEADING_SPAN_QIDS, f"span=heading drifted: {tagged ^ HEADING_SPAN_QIDS}"
+
+
+def test_heading_tagged_spans_really_sit_inside_a_document_heading() -> None:
+    """Cross-check the tag against the corpus, so neither side can rot unnoticed."""
+    texts = _corpus_texts()
+    if not texts:
+        pytest.skip(INGEST_HINT)
+    actual = set()
+    for q in load_golden(GOLDEN):
+        limits = [_heading_end(texts[a.doc_id]) for a in q.answers]
+        if all(limit and a.char_end <= limit for a, limit in zip(q.answers, limits, strict=True)):
+            actual.add(q.qid)
+    assert actual == HEADING_SPAN_QIDS, (
+        f"spans inside a heading block disagree with the span=heading tag: "
+        f"{actual ^ HEADING_SPAN_QIDS}"
+    )
+
+
+def _heading_end(text: str) -> int:
+    """Offset where the masthead stops and the addressee line begins, or 0 if unclear."""
+    offsets = [i for i in (text.find(s) for s in SALUTATIONS) if i > 0]
+    return min(offsets) if offsets else 0
 
 
 def _corpus_texts() -> dict[str, str]:
