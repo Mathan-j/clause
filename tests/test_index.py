@@ -12,7 +12,9 @@ from clause.embed import Encoder
 from clause.index import (
     PUBLISHED_DATE_FIELD,
     REGULATED_ENTITY_FIELD,
+    DegeneratePruneError,
     _missing_payload_indexes,
+    _prune_stale_points,
     collection_name,
     ensure_collection,
     foreign_collections,
@@ -186,6 +188,87 @@ def test_ensure_collection_backfills_missing_payload_indexes(client: QdrantClien
         schema = client.get_collection(name).payload_schema
         assert PUBLISHED_DATE_FIELD in schema
         assert REGULATED_ENTITY_FIELD in schema
+    finally:
+        client.delete_collection(name)
+
+
+def test_prune_stale_points_raises_when_ids_empty_but_collection_is_not(
+    client: QdrantClient,
+) -> None:
+    """An empty current-chunk-id set alongside a non-empty collection is never a
+    legitimate "the corpus shrank to nothing" state -- it means the corpus is
+    missing from Postgres (an un-ingested or wiped database), not that it shrank
+    one document at a time. A guard that raises *after* deleting would be no
+    guard at all, so this also asserts the points survive the call.
+    """
+    name = "clause_test_prune_guard_nonempty"
+    ensure_collection(client, name, 4)
+    try:
+        client.upsert(
+            collection_name=name,
+            points=[
+                models.PointStruct(id=1, vector=[0.1, 0.2, 0.3, 0.4]),
+                models.PointStruct(id=2, vector=[0.2, 0.3, 0.4, 0.5]),
+                models.PointStruct(id=3, vector=[0.3, 0.4, 0.5, 0.6]),
+            ],
+        )
+
+        with pytest.raises(DegeneratePruneError):
+            _prune_stale_points(client, name, set())
+
+        assert client.get_collection(name).points_count == 3
+        remaining_ids = {
+            point.id
+            for point in client.scroll(collection_name=name, limit=100, with_payload=False)[0]
+        }
+        assert remaining_ids == {1, 2, 3}
+    finally:
+        client.delete_collection(name)
+
+
+def test_prune_stale_points_is_a_noop_when_both_are_empty(client: QdrantClient) -> None:
+    """A fresh Qdrant instance against an un-ingested database risks nothing --
+    there is no point in failing here."""
+    name = "clause_test_prune_guard_empty"
+    ensure_collection(client, name, 4)
+    try:
+        assert client.get_collection(name).points_count == 0
+        pruned = _prune_stale_points(client, name, set())
+        assert pruned == 0
+        assert client.get_collection(name).points_count == 0
+    finally:
+        client.delete_collection(name)
+
+
+def test_prune_stale_points_prunes_the_difference_and_reports_the_count(
+    client: QdrantClient, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The ordinary case: a genuinely partial id set prunes exactly the
+    difference. No percentage cap is applied -- the corpus can legitimately
+    shrink a lot when circulars are withdrawn -- so the count is always
+    reported instead, to keep a surprising number visible rather than silent.
+    """
+    name = "clause_test_prune_guard_partial"
+    ensure_collection(client, name, 4)
+    try:
+        client.upsert(
+            collection_name=name,
+            points=[
+                models.PointStruct(id=1, vector=[0.1, 0.2, 0.3, 0.4]),
+                models.PointStruct(id=2, vector=[0.2, 0.3, 0.4, 0.5]),
+                models.PointStruct(id=3, vector=[0.3, 0.4, 0.5, 0.6]),
+            ],
+        )
+
+        pruned = _prune_stale_points(client, name, {1, 3})
+
+        assert pruned == 1
+        remaining_ids = {
+            point.id
+            for point in client.scroll(collection_name=name, limit=100, with_payload=False)[0]
+        }
+        assert remaining_ids == {1, 3}
+        assert f"{name}: 1 stale point(s) pruned" in capsys.readouterr().err
     finally:
         client.delete_collection(name)
 

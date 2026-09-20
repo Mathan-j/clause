@@ -6,6 +6,7 @@ index, so mixing both strategies would make each strategy's number a function of
 the other -- destroying the comparison the two strategies exist to enable.
 """
 
+import sys
 from collections.abc import Iterable, Iterator, Sequence
 
 import sqlalchemy as sa
@@ -133,19 +134,53 @@ def _existing_point_ids(client: QdrantClient, name: str) -> set[int]:
     return ids
 
 
+class DegeneratePruneError(RuntimeError):
+    """Raised when a prune would remove every point in a collection.
+
+    An empty current-chunk-id set together with a non-empty collection is
+    never a legitimate "the corpus shrank to nothing" state -- it means
+    Postgres has no chunks for this strategy, not that every chunk of every
+    document was individually withdrawn. The most likely cause is an
+    un-ingested or wiped database (this project's postgres service has no
+    named volume and has come up empty in this environment before). Left
+    unchecked, a prune step meant to protect citation integrity becomes a
+    faster way to destroy the index than the staleness it was built to fix.
+    """
+
+
 def _prune_stale_points(client: QdrantClient, name: str, current_ids: set[int]) -> int:
     """Delete points whose chunk_id no longer exists for this strategy.
 
     Called only after every current chunk has been upserted, never before:
     upsert-then-prune keeps the collection servable throughout the run, and a
     crash between the two steps leaves exactly today's behaviour (stale points
-    linger) rather than a window with nothing indexed at all. Returns the
-    number of points removed.
+    linger) rather than a window with nothing indexed at all.
+
+    Refuses outright (see DegeneratePruneError) when current_ids is empty but
+    the collection is not -- that pair is never legitimate. An already-empty
+    collection is left alone; there is nothing at risk. No cap is applied to a
+    partial prune: the corpus can legitimately shrink a lot when circulars are
+    withdrawn, and any percentage threshold would just block a real one.
+    Instead the pruned count is always reported so a surprising number is
+    visible rather than silent.
+
+    Returns the number of points removed.
     """
-    stale = _existing_point_ids(client, name) - current_ids
-    if not stale:
-        return 0
-    client.delete(collection_name=name, points_selector=models.PointIdsList(points=list(stale)))
+    existing = _existing_point_ids(client, name)
+    if not current_ids and existing:
+        raise DegeneratePruneError(
+            f"refusing to prune {name!r}: {len(existing)} point(s) are indexed but the "
+            "current chunk_id set for this strategy is empty. This is not a legitimate "
+            "corpus state -- it means Postgres has no chunks for this strategy, most "
+            "likely from an un-ingested or wiped database, not a corpus that shrank to "
+            "nothing. Fix the data (re-run `make ingest`) before re-running the index."
+        )
+    stale = existing - current_ids
+    print(f"{name}: {len(stale)} stale point(s) pruned", file=sys.stderr)
+    if stale:
+        client.delete(
+            collection_name=name, points_selector=models.PointIdsList(points=list(stale))
+        )
     return len(stale)
 
 
