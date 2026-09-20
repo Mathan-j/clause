@@ -17,7 +17,7 @@ easy one, and the golden set is where "easy" comes from.
 """
 
 import json
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
@@ -62,6 +62,34 @@ class StrategyResult:
     overall: BucketResult
 
 
+@dataclass(frozen=True, slots=True)
+class ChanceBaseline:
+    """The measured probability a uniform random top-5 already contains an
+    acceptable chunk, for one strategy, computed fresh against the live
+    corpus this run.
+
+    Method (for whoever computes this -- it will be a different implementer,
+    since this module has no corpus access): an "acceptable" chunk for a
+    question is one whose span overlaps any acceptable answer span **in the
+    same document**; a chunk overlapping two acceptable spans still counts
+    once, not twice. With `N` chunks in the strategy's collection and `m`
+    acceptable chunks for a question, `P = 1 - C(N-m, 5) / C(N, 5)`.
+    `recall_at_5` is the mean of that probability over every question in the
+    golden set; `worst_question_recall_at_5` is the maximum.
+
+    This is *measured* data, distinct from `CHANCE_BASELINE_RECALL_AT_5` /
+    `CHANCE_BASELINE_WORST` below, which are a pinned human-recorded
+    reference. The two are compared at render time and any disagreement is
+    reported rather than silently preferring one -- a pinned constant can
+    itself be wrong (as happened once already; see fix round 2/3 in the SDD
+    ledger), and only a live measurement compared against the pin can catch
+    that a drift check on the pin's own inputs cannot.
+    """
+
+    recall_at_5: float
+    worst_question_recall_at_5: float
+
+
 PRECISION_NOTE = (
     "`precision@1` is arithmetically identical to `recall@1` under "
     "set-of-acceptable-spans semantics: both are \"did the single top result "
@@ -78,27 +106,32 @@ BUCKET_SIZE_NOTE = (
     "beyond what `n` supports."
 )
 
-#: Method: an "acceptable" chunk is one whose span overlaps any acceptable
-#: answer span in the same document (m per question, out of N chunks total in
-#: that strategy's corpus). The probability a uniform random draw of 5 chunks
-#: contains at least one acceptable chunk is `1 - C(N-m, 5) / C(N, 5)`; each
-#: value below is the mean of that probability over all 65 golden-set
-#: questions. This module does not recompute it -- doing so needs the indexed
-#: corpus, which a pure renderer does not have -- it only publishes it next to
-#: the numbers it exists to put a floor under.
+#: PINNED REFERENCE values, human-recorded, not computed by this module (see
+#: `ChanceBaseline` above for the method and for how the *measured* figure
+#: `build_report` receives each run relates to these). They exist so a reader
+#: -- and `_chance_baseline_mismatch` below -- has something fixed to compare
+#: a fresh measurement against; moving them is a deliberate human act, the
+#: same philosophy as Task 11's `reports/baseline.json`, precisely because a
+#: harness that quietly re-pins its own reference every run cannot detect a
+#: regression in it.
 #:
 #: Corrected during Task 9 fix round 2: the value first recorded for
 #: `fixed_window` was 0.058, which understated its real 0.084 by about 45% and
 #: had the two strategies backwards -- `fixed_window` has fewer chunks (318 vs
 #: 336) but a higher share of them overlap an answer span, so its floor is the
-#: *higher* of the two, not the lower.
+#: *higher* of the two, not the lower. Fix round 3 stopped reading these as a
+#: live value at render time -- they could not have caught their own original
+#: error, since the drift check below only catches the golden set or corpus
+#: *changing*, not the original computation being wrong -- and made them a
+#: pinned reference that an independently measured value is checked against
+#: instead.
 CHANCE_BASELINE_RECALL_AT_5: dict[str, float] = {
     "structural": 0.058,
     "fixed_window": 0.084,
 }
 
-#: The single worst (highest-floor) question's chance figure, per strategy.
-#: Both strategies' worst is `proc-002` (30 acceptable chunks under
+#: The single worst (highest-floor) question's pinned chance figure, per
+#: strategy. Both strategies' worst is `proc-002` (30 acceptable chunks under
 #: `structural`, 45 under `fixed_window`), but the resulting floor differs
 #: by strategy and must be presented as such, not as one shared number --
 #: that was the other half of the fix round 2 correction.
@@ -107,13 +140,15 @@ CHANCE_BASELINE_WORST: dict[str, float] = {
     "fixed_window": 0.536,
 }
 
-#: The golden-set file and corpus the constants above were computed against
-#: (SDD ledger, Task 3 ruling). `golden_sha256` is `sha256(data/golden/kyc-v1.jsonl)`
-#: as committed; `chunk_counts` is the `clause_structural` / `clause_fixed_window`
-#: collection sizes at that time. If the fingerprint of the report being rendered
-#: disagrees with either, the constants above no longer describe this run, and
-#: `_chance_baseline_staleness` below turns that into a warning printed in the
-#: artifact itself rather than a silently wrong floor.
+#: The golden-set file and corpus the pinned constants above were computed
+#: against (SDD ledger, Task 3 ruling). `golden_sha256` is
+#: `sha256(data/golden/kyc-v1.jsonl)` as committed; `chunk_counts` is the
+#: `clause_structural` / `clause_fixed_window` collection sizes at that time.
+#: If the fingerprint of the report being rendered disagrees with either, the
+#: pin's own stated inputs no longer describe this run, and
+#: `_chance_baseline_staleness` below turns that into a warning -- distinct
+#: from, and in addition to, `_chance_baseline_mismatch`'s check of whether
+#: the pinned *value* agrees with what was actually measured this run.
 CHANCE_BASELINE_GOLDEN_SHA256 = "c138b258815f3fa2b4b7c2f94855454207494c3c63520d9e7558ab2851f2e03f"
 CHANCE_BASELINE_CHUNK_COUNTS: dict[str, int] = {
     "structural": 336,
@@ -122,17 +157,19 @@ CHANCE_BASELINE_CHUNK_COUNTS: dict[str, int] = {
 
 CHANCE_BASELINE_NOTE = (
     "Chance floor: the probability that a *random* top-5 already contains an "
-    "acceptable chunk, computed over this golden set's real per-question "
-    "acceptable-chunk counts against each strategy's actual chunk corpus (SDD "
-    "ledger, Task 3 ruling; not recomputed by this renderer). Recall@5 must "
-    "be read against this floor, not as a bare number: a strong recall@5 "
-    "against a low chance floor is real evidence of retrieval quality, the "
-    "same recall@5 against a high floor may not be. The floor differs by "
-    "strategy -- a strategy with fewer chunks that overlap answer spans less "
-    "often can still have a *higher* floor than one with more chunks, if a "
-    "larger share of its chunks overlap an answer -- so each strategy's own "
-    "floor and its own worst-case question are printed below, not a single "
-    "shared figure."
+    "acceptable chunk, over this golden set's real per-question "
+    "acceptable-chunk counts against each strategy's actual chunk corpus. "
+    "Recall@5 must be read against this floor, not as a bare number: a "
+    "strong recall@5 against a low chance floor is real evidence of "
+    "retrieval quality, the same recall@5 against a high floor may not be. "
+    "The floor differs by strategy -- a strategy with fewer chunks that "
+    "overlap answer spans less often can still have a *higher* floor than "
+    "one with more chunks, if a larger share of its chunks overlap an "
+    "answer. Three distinct figures appear below for each strategy: the "
+    "floor **measured this run** against the live corpus, the floor "
+    "**pinned** as a human-recorded reference value (SDD ledger, Task 3 "
+    "method), and a warning if either the two disagree or the pin's own "
+    "recorded inputs no longer match this run's golden set or corpus."
 )
 
 NO_VERIFICATION_WARNING = (
@@ -165,6 +202,35 @@ def _chance_baseline_staleness(fingerprint: Fingerprint) -> list[str]:
             "the indexed corpus has changed since the chance baseline was computed "
             f"(this run's chunk counts are {fingerprint.chunk_counts}, the chance "
             f"baseline was computed against {CHANCE_BASELINE_CHUNK_COUNTS})"
+        )
+    return reasons
+
+
+def _chance_baseline_mismatch(strategy: str, measured: ChanceBaseline) -> list[str]:
+    """Reasons this run's measured chance baseline disagrees with the pin, if any.
+
+    Distinct from `_chance_baseline_staleness`: that function asks whether the
+    pin's own stated inputs (golden set, corpus) still match this run. This
+    function asks whether the pinned *value* agrees with what was actually
+    measured -- which can fail even when the inputs match, if the pinned
+    value was wrong from the moment it was recorded. Rounded to 3 decimals
+    before comparing, since the pins are only recorded to that precision.
+    """
+    reasons: list[str] = []
+    pinned_recall = CHANCE_BASELINE_RECALL_AT_5.get(strategy)
+    if pinned_recall is not None and round(measured.recall_at_5, 3) != round(pinned_recall, 3):
+        reasons.append(
+            f"measured recall@5 floor is {measured.recall_at_5:.3f} but the "
+            f"pinned reference is {pinned_recall:.3f}"
+        )
+    pinned_worst = CHANCE_BASELINE_WORST.get(strategy)
+    if pinned_worst is not None and round(
+        measured.worst_question_recall_at_5, 3
+    ) != round(pinned_worst, 3):
+        reasons.append(
+            f"measured worst-question floor is "
+            f"{measured.worst_question_recall_at_5:.3f} but the pinned "
+            f"reference is {pinned_worst:.3f}"
         )
     return reasons
 
@@ -213,28 +279,46 @@ def build_report(
     fingerprint: Fingerprint,
     provenance: dict[str, int],
     golden: Sequence[GoldenQuestion],
+    chance_baseline: Mapping[str, ChanceBaseline],
 ) -> dict[str, Any]:
     """Assemble the report dict that both artifacts render from.
 
-    `golden` is required, not defaulted: the sub-kind, heading-span,
-    answers-per-question and provenance sections below all come from it, and
-    a caller that forgot to load the golden set must fail loudly at the call
-    site rather than silently ship a report with those sections empty.
+    `golden` and `chance_baseline` are both required, not defaulted: a caller
+    that forgot to load the golden set, or forgot to measure the chance
+    baseline against the live corpus, must fail loudly at the call site
+    rather than silently ship a report with those sections empty or with a
+    stale pinned value standing in unchallenged for a live measurement.
     """
     kind_breakdown = _kind_breakdown(golden)
     staleness = _chance_baseline_staleness(fingerprint)
+    mismatches: dict[str, list[str]] = {
+        strategy: reasons
+        for strategy, measured in chance_baseline.items()
+        if (reasons := _chance_baseline_mismatch(strategy, measured))
+    }
     return {
         "fingerprint": fingerprint.to_dict(),
         "golden_provenance": provenance,
         "chance_baseline": {
-            "recall_at_5": dict(sorted(CHANCE_BASELINE_RECALL_AT_5.items())),
-            "worst_single_question": dict(sorted(CHANCE_BASELINE_WORST.items())),
+            "measured": {
+                strategy: asdict(cb) for strategy, cb in sorted(chance_baseline.items())
+            },
+            "pinned": {
+                "recall_at_5": dict(sorted(CHANCE_BASELINE_RECALL_AT_5.items())),
+                "worst_single_question": dict(sorted(CHANCE_BASELINE_WORST.items())),
+            },
             "computed_against": {
                 "golden_sha256": CHANCE_BASELINE_GOLDEN_SHA256,
                 "chunk_counts": dict(sorted(CHANCE_BASELINE_CHUNK_COUNTS.items())),
             },
             "stale": bool(staleness),
             "staleness_reasons": staleness,
+            "mismatch": bool(mismatches),
+            "mismatch_reasons": [
+                f"{strategy}: {reason}"
+                for strategy, reasons in sorted(mismatches.items())
+                for reason in reasons
+            ],
         },
         "golden_composition": {
             "n_questions": len(golden),
@@ -251,8 +335,23 @@ def build_report(
             r.strategy: {
                 "overall": asdict(r.overall),
                 "per_bucket": {b: asdict(v) for b, v in sorted(r.per_bucket.items())},
-                "chance_baseline_recall_at_5": CHANCE_BASELINE_RECALL_AT_5.get(r.strategy),
-                "chance_baseline_worst_question": CHANCE_BASELINE_WORST.get(r.strategy),
+                "chance_baseline_recall_at_5": (
+                    chance_baseline[r.strategy].recall_at_5
+                    if r.strategy in chance_baseline
+                    else None
+                ),
+                "chance_baseline_worst_question": (
+                    chance_baseline[r.strategy].worst_question_recall_at_5
+                    if r.strategy in chance_baseline
+                    else None
+                ),
+                "chance_baseline_pinned_recall_at_5": CHANCE_BASELINE_RECALL_AT_5.get(
+                    r.strategy
+                ),
+                "chance_baseline_pinned_worst_question": CHANCE_BASELINE_WORST.get(
+                    r.strategy
+                ),
+                "chance_baseline_mismatch_reasons": mismatches.get(r.strategy, []),
             }
             for r in results
         },
@@ -279,14 +378,29 @@ def _staleness_warning(chance_baseline: dict[str, Any]) -> str | None:
     if not reasons:
         return None
     return (
-        "**STALE CHANCE BASELINE:** the chance-baseline figures below no "
-        "longer describe this run -- " + "; ".join(reasons) + ". "
-        "Recompute the chance baseline (SDD ledger, Task 3 method) before "
-        "trusting the floor printed next to recall@5."
+        "**STALE CHANCE BASELINE PIN:** the pinned chance-baseline figures "
+        "below no longer describe this run -- " + "; ".join(reasons) + ". "
+        "Recompute the pin (SDD ledger, Task 3 method) before trusting it."
     )
 
 
-def _render_header(fp: dict[str, Any], staleness_warning: str | None) -> list[str]:
+def _mismatch_warning(chance_baseline: dict[str, Any]) -> str | None:
+    reasons: list[str] = chance_baseline.get("mismatch_reasons", [])
+    if not reasons:
+        return None
+    return (
+        "**CHANCE BASELINE MISMATCH:** this run's measured chance baseline "
+        "disagrees with the pinned reference value -- " + "; ".join(reasons) + ". "
+        "The pin may have been wrong when it was recorded, independent of "
+        "whether the golden set or corpus have since changed; recompute and "
+        "update it (SDD ledger, Task 3 method) rather than trusting either "
+        "number blindly."
+    )
+
+
+def _render_header(
+    fp: dict[str, Any], staleness_warning: str | None, mismatch_warning: str | None
+) -> list[str]:
     lines = [
         "# Retrieval evaluation",
         "",
@@ -303,6 +417,8 @@ def _render_header(fp: dict[str, Any], staleness_warning: str | None) -> list[st
         f"- {BUCKET_SIZE_NOTE}",
         f"- {CHANCE_BASELINE_NOTE}",
     ]
+    if mismatch_warning is not None:
+        lines.append(f"- {mismatch_warning}")
     if staleness_warning is not None:
         lines.append(f"- {staleness_warning}")
     lines.append("")
@@ -405,22 +521,36 @@ def _render_composition(composition: dict[str, Any]) -> list[str]:
 
 
 def _render_strategy(
-    strategy: str, data: dict[str, Any], staleness_warning: str | None
+    strategy: str,
+    data: dict[str, Any],
+    staleness_warning: str | None,
 ) -> list[str]:
     lines = [f"### {strategy}", ""]
-    cb = data.get("chance_baseline_recall_at_5")
-    worst = data.get("chance_baseline_worst_question")
-    if cb is not None:
-        worst_clause = f"{worst:.3f}" if worst is not None else "not recorded"
+    measured = data.get("chance_baseline_recall_at_5")
+    measured_worst = data.get("chance_baseline_worst_question")
+    pinned = data.get("chance_baseline_pinned_recall_at_5")
+    pinned_worst = data.get("chance_baseline_pinned_worst_question")
+    mismatch_reasons: list[str] = data.get("chance_baseline_mismatch_reasons", [])
+    if measured is not None:
+        measured_worst_clause = f"{measured_worst:.3f}" if measured_worst is not None else "n/a"
+        pinned_clause = f"{pinned:.3f}" if pinned is not None else "not pinned"
+        pinned_worst_clause = f"{pinned_worst:.3f}" if pinned_worst is not None else "not pinned"
         floor_line = (
             "Chance floor for recall@5, computed once over the **whole "
             "golden set** (not per bucket), on this strategy's chunk "
-            f"corpus: **{cb:.3f}** (this strategy's own worst single "
-            f"question: {worst_clause}). This floor applies only to the "
-            "**overall** row below -- per-bucket chance floors were not "
-            "computed, and a bucket's recall@5 must not be read against "
-            "this aggregate figure."
+            f"corpus. Measured this run: **{measured:.3f}** (this run's "
+            f"worst single question: {measured_worst_clause}). Pinned "
+            f"reference: {pinned_clause} (worst: {pinned_worst_clause}). "
+            "This floor applies only to the **overall** row below -- "
+            "per-bucket chance floors were not computed, and a bucket's "
+            "recall@5 must not be read against this aggregate figure."
         )
+        if mismatch_reasons:
+            floor_line += (
+                " **CHANCE BASELINE MISMATCH:** " + "; ".join(mismatch_reasons) + ". "
+                "Recompute and update the pin (SDD ledger, Task 3 method) "
+                "before trusting either number."
+            )
         if staleness_warning is not None:
             floor_line += " " + staleness_warning
         lines.append(floor_line)
@@ -466,12 +596,13 @@ def render_markdown(report: dict[str, Any]) -> str:
     provenance: dict[str, int] = report["golden_provenance"]
     composition = report.get("golden_composition", {})
     chance_baseline = report.get("chance_baseline", {})
-    warning = _staleness_warning(chance_baseline)
+    staleness_warning = _staleness_warning(chance_baseline)
+    mismatch_warning = _mismatch_warning(chance_baseline)
 
-    lines = _render_header(fp, warning)
+    lines = _render_header(fp, staleness_warning, mismatch_warning)
     lines += _render_provenance(provenance)
     lines += _render_composition(composition)
-    lines += _render_results(report, warning)
+    lines += _render_results(report, staleness_warning)
     lines += _render_fingerprint(fp)
     return "\n".join(lines)
 
