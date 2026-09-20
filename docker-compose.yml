@@ -12,3 +12,18 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+
+  qdrant:
+    image: qdrant/qdrant:v1.19.1
+    ports:
+      - "6335:6333"
+    volumes:
+      - qdrant-data:/qdrant/storage
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c ':> /dev/tcp/127.0.0.1/6333' || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  qdrant-data:

@@ -1,4 +1,4 @@
-.PHONY: install lint test migrate ingest eval serve up down
+.PHONY: install lint test migrate ingest index eval serve up down
 
 install:
 	uv sync
@@ -15,6 +15,9 @@ migrate:
 
 ingest: migrate
 	uv run python -m clause.cli ingest --manifest data/corpus/kyc.manifest.jsonl
+
+index:
+	uv run python -m clause.cli index
 
 up:
 	docker compose up -d

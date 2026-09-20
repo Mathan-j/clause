@@ -4,6 +4,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import httpx
+from qdrant_client import QdrantClient
 from sqlalchemy.orm import Session
 
 from clause.chunking.base import SliceIntegrityError, assert_slices
@@ -12,10 +13,19 @@ from clause.chunking.structural import StructuralChunker
 from clause.config import Settings, get_settings
 from clause.db.repository import replace_chunks, upsert_document
 from clause.db.session import make_engine, session_factory
+from clause.embed import Encoder
+from clause.index import index_strategy
 from clause.ingest.extract import ExtractionError, extract_document
 from clause.ingest.fetch import Fetcher, FetchError, RateLimiter
 from clause.ingest.validate import ValidationError
 from clause.sources.manifest import load_manifest
+
+# The two chunking strategies produced by `_chunkers()` above, indexed into
+# their own Qdrant collection each. Kept as a literal tuple here rather than
+# derived from `_chunkers()` because that helper builds chunker *instances*
+# (it needs `settings`), and indexing only needs the strategy names already
+# stored on `ChunkRow.strategy`.
+STRATEGIES = (FixedWindowChunker.name, StructuralChunker.name)
 
 
 def _chunkers(settings: Settings) -> list[FixedWindowChunker | StructuralChunker]:
@@ -59,14 +69,37 @@ def ingest(manifest_path: Path, *, session: Session, settings: Settings | None =
     return failures
 
 
+def index_all(*, session: Session, settings: Settings | None = None) -> dict[str, int]:
+    """Index every chunking strategy into its own Qdrant collection.
+
+    Returns {strategy: points_written}.
+    """
+    settings = settings or get_settings()
+    client = QdrantClient(url=settings.qdrant_url)
+    encoder = Encoder(settings.embedding_model)
+    return {
+        strategy: index_strategy(client, encoder, session, strategy) for strategy in STRATEGIES
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="clause")
     sub = parser.add_subparsers(dest="command", required=True)
     ing = sub.add_parser("ingest")
     ing.add_argument("--manifest", type=Path, required=True)
+    sub.add_parser("index")
     args = parser.parse_args(argv)
 
     settings = get_settings()
+
+    if args.command == "index":
+        engine = make_engine(settings.database_url)
+        with session_factory(engine)() as session:
+            counts = index_all(session=session, settings=settings)
+        for strategy, count in counts.items():
+            print(f"indexed {count} point(s) into clause_{strategy}", file=sys.stderr)
+        return 0
+
     engine = make_engine(settings.database_url)
     with session_factory(engine)() as session:
         failures = ingest(args.manifest, session=session, settings=settings)
