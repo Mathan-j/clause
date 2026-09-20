@@ -5,8 +5,11 @@ Much of this corpus is near-identical sanctions-list updates; insisting on one
 right answer would punish a retriever that returned an equally correct sibling.
 """
 
+import contextlib
 import json
+import os
 import re
+import tempfile
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -78,26 +81,47 @@ class GoldenQuestion:
 
 
 def write_golden(path: Path, questions: Iterable[GoldenQuestion]) -> None:
+    """Write questions to a golden set file atomically.
+
+    Writes to a temporary file in the destination directory, then uses os.replace
+    to swap it into place atomically. This ensures the original file is never
+    truncated or left in a partially-written state if the process crashes or is
+    interrupted.
+    """
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8", newline="\n") as fh:
-        for q in questions:
-            row = {
-                "qid": q.qid,
-                "question": q.question,
-                "bucket": q.bucket,
-                "answers": [
-                    {
-                        "doc_id": a.doc_id,
-                        "char_start": a.char_start,
-                        "char_end": a.char_end,
-                        "content_sha256": a.content_sha256,
-                    }
-                    for a in q.answers
-                ],
-                "provenance": q.provenance,
-                "notes": q.notes,
-            }
-            fh.write(json.dumps(row, ensure_ascii=False) + "\n")
+    # Write to a temporary file in the same directory so os.replace is atomic
+    tmp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w", encoding="utf-8", newline="\n", dir=path.parent, delete=False
+        ) as tmp_fh:
+            tmp_path = tmp_fh.name
+            for q in questions:
+                row = {
+                    "qid": q.qid,
+                    "question": q.question,
+                    "bucket": q.bucket,
+                    "answers": [
+                        {
+                            "doc_id": a.doc_id,
+                            "char_start": a.char_start,
+                            "char_end": a.char_end,
+                            "content_sha256": a.content_sha256,
+                        }
+                        for a in q.answers
+                    ],
+                    "provenance": q.provenance,
+                    "notes": q.notes,
+                }
+                tmp_fh.write(json.dumps(row, ensure_ascii=False) + "\n")
+        # File is now closed; atomically replace the destination with the complete temp file
+        os.replace(tmp_path, path)
+    except Exception:
+        # Clean up the temporary file if something went wrong
+        if tmp_path is not None:
+            with contextlib.suppress(OSError):
+                os.unlink(tmp_path)
+        raise
 
 
 def _row_to_question(row: dict[str, object], lineno: int, qid: str) -> GoldenQuestion:

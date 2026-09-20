@@ -1,5 +1,6 @@
 import dataclasses
 import json
+import unittest.mock
 from pathlib import Path
 
 import pytest
@@ -231,6 +232,38 @@ def test_loader_rejects_empty_string_qid(tmp_path: Path) -> None:
     p.write_text(json.dumps({**_raw(Q), "qid": ""}) + "\n", encoding="utf-8")
     with pytest.raises(GoldenSetError, match=r"line 1.*qid.*non-empty"):
         load_golden(p)
+
+
+def test_write_is_atomic_on_failure(tmp_path: Path) -> None:
+    """If writing fails partway through, the original file is untouched.
+
+    write_golden writes to a temporary file then atomically replaces the
+    destination, so a process crash or other write failure during the write
+    leaves the original file intact — the golden set cannot be silently truncated.
+    """
+    # Write an initial golden set
+    p = tmp_path / "g.jsonl"
+    write_golden(p, [Q])
+    initial_content = p.read_text(encoding="utf-8")
+
+    # Monkeypatch json.dumps to fail on the second question
+    original_dumps = json.dumps
+    call_count = [0]  # Use list to allow modification in nested function
+
+    def failing_dumps(*args: object, **kwargs: object) -> str:
+        call_count[0] += 1
+        if call_count[0] == 2:
+            raise RuntimeError("simulated write failure")
+        return original_dumps(*args, **kwargs)
+
+    # Attempt to write with two questions; the second will fail
+    with unittest.mock.patch("json.dumps", failing_dumps), pytest.raises(
+        RuntimeError, match="simulated write failure"
+    ):
+        write_golden(p, [Q, dataclasses.replace(Q, qid="q002")])
+
+    # The original file must be unchanged
+    assert p.read_text(encoding="utf-8") == initial_content
 
 
 def _raw(q: GoldenQuestion) -> dict:

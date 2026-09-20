@@ -27,8 +27,13 @@ def test_sample_is_balanced_across_buckets() -> None:
 
 
 def test_sample_is_deterministic_for_a_seed() -> None:
+    # Same seed produces identical results
     assert [q.qid for q in select_sample(QUESTIONS, 3, seed=7)] == [
         q.qid for q in select_sample(QUESTIONS, 3, seed=7)
+    ]
+    # Different seeds produce different results
+    assert [q.qid for q in select_sample(QUESTIONS, 3, seed=7)] != [
+        q.qid for q in select_sample(QUESTIONS, 3, seed=8)
     ]
 
 
@@ -52,3 +57,21 @@ def test_correcting_replaces_the_span_and_marks_it_corrected() -> None:
 def test_an_unknown_decision_is_rejected() -> None:
     with pytest.raises(ValueError, match="decision"):
         apply_decision(QUESTIONS[0], "maybe")
+
+
+def test_negative_span_start_is_rejected() -> None:
+    """Span validation rejects negative char_start."""
+    with pytest.raises(ValueError, match="span start must not be negative"):
+        apply_decision(QUESTIONS[0], "correct", span=(-10, 50))
+
+
+def test_reversed_span_is_rejected() -> None:
+    """Span validation rejects reversed spans (char_start > char_end)."""
+    with pytest.raises(ValueError, match="span must be non-empty and forward"):
+        apply_decision(QUESTIONS[0], "correct", span=(90, 50))
+
+
+def test_zero_width_span_is_rejected() -> None:
+    """Span validation rejects zero-width spans (char_start == char_end)."""
+    with pytest.raises(ValueError, match="span must be non-empty and forward"):
+        apply_decision(QUESTIONS[0], "correct", span=(50, 50))

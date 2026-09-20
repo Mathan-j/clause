@@ -1,6 +1,5 @@
 import contextlib
 import os
-import sys
 from collections.abc import Iterator
 from pathlib import Path
 
@@ -15,7 +14,6 @@ from clause.cli import ingest
 from clause.sources.manifest import load_manifest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(REPO_ROOT))
 
 
 _LOOPBACK = {"localhost", "127.0.0.1", "::1", ""}

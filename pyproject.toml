@@ -43,5 +43,6 @@ files = ["src/clause"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 addopts = "--strict-markers -q"
 markers = ["db: requires a live Postgres instance"]

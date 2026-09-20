@@ -27,7 +27,9 @@ from clause.evaluation.golden import (
 )
 
 CONTEXT_CHARS = 300
-DECISIONS = ("confirm", "correct", "reject")
+DECISIONS = ("confirm", "correct")
+SPAN_INDEX_FORMAT_PARTS = 3
+SPAN_ONLY_FORMAT_PARTS = 2
 
 
 def select_sample(
@@ -51,17 +53,21 @@ def select_sample(
 
 
 def apply_decision(
-    question: GoldenQuestion, decision: str, span: tuple[int, int] | None = None
+    question: GoldenQuestion,
+    decision: str,
+    span: tuple[int, int] | None = None,
+    answer_index: int = 0,
 ) -> GoldenQuestion:
     """Apply a human's decision to a golden question.
 
     Args:
         question: The question to update.
-        decision: One of "confirm", "correct", "reject".
+        decision: One of "confirm", "correct".
         span: Required for "correct": (char_start, char_end).
+        answer_index: For "correct", which answer span to replace (default 0).
 
     Raises:
-        ValueError: If decision is unknown or span is invalid.
+        ValueError: If decision is unknown, span is invalid, or answer_index is out of range.
     """
     if decision == "confirm":
         return dataclasses.replace(question, provenance="human_verified")
@@ -76,23 +82,30 @@ def apply_decision(
             raise ValueError(
                 f"span must be non-empty and forward: [{start}:{end}]"
             )
-        first = question.answers[0]
-        corrected = dataclasses.replace(first, char_start=start, char_end=end)
+        if answer_index < 0 or answer_index >= len(question.answers):
+            raise ValueError(
+                f"answer index {answer_index} out of range [0:{len(question.answers)}]"
+            )
+        # Replace the specified answer span
+        answers_list = list(question.answers)
+        target = answers_list[answer_index]
+        corrected = dataclasses.replace(target, char_start=start, char_end=end)
+        answers_list[answer_index] = corrected
         return dataclasses.replace(
-            question, answers=(corrected, *question.answers[1:]), provenance="human_corrected"
+            question, answers=tuple(answers_list), provenance="human_corrected"
         )
     raise ValueError(f"unknown decision {decision!r}; expected one of {DECISIONS}")
 
 
 def _render(question: GoldenQuestion, texts: dict[str, str]) -> str:
     lines = [f"\n{'=' * 78}", f"{question.qid}  [{question.bucket}]", "", question.question, ""]
-    for a in question.answers:
+    for idx, a in enumerate(question.answers):
         text = texts.get(a.doc_id, "")
         before = text[max(0, a.char_start - CONTEXT_CHARS) : a.char_start]
         answer = text[a.char_start : a.char_end]
         after = text[a.char_end : a.char_end + CONTEXT_CHARS]
         lines += [
-            f"--- {a.doc_id} [{a.char_start}:{a.char_end}] ---",
+            f"--- [{idx}] {a.doc_id} [{a.char_start}:{a.char_end}] ---",
             f"...{before}",
             f">>> {answer} <<<",
             f"{after}...",
@@ -121,7 +134,14 @@ def main(argv: list[str] | None = None) -> int:
 
     sample = select_sample(questions, args.per_bucket, args.seed)
     print(f"Reviewing {len(sample)} of {len(questions)} questions.", file=sys.stderr)
-    print("For each: [c]onfirm, [e]dit the span, [s]kip, [q]uit and save.", file=sys.stderr)
+    print(
+        "For each: [c]onfirm, [e]dit a span, [s]kip, [q]uit and save.",
+        file=sys.stderr,
+    )
+    print(
+        "Edit format: [index:]start:end (e.g. '50:90' for span 0, or '1:100:150' for span 1).",
+        file=sys.stderr,
+    )
 
     for question in sample:
         print(_render(question, texts))
@@ -131,11 +151,26 @@ def main(argv: list[str] | None = None) -> int:
         if choice == "c":
             by_qid[question.qid] = apply_decision(question, "confirm")
         elif choice == "e":
-            raw = input("replacement span as start:end > ").strip()
-            start, _, end = raw.partition(":")
-            by_qid[question.qid] = apply_decision(
-                question, "correct", span=(int(start), int(end))
-            )
+            while True:
+                raw = input("replacement span (see format above) > ").strip()
+                try:
+                    # Try to parse as "index:start:end" or "start:end"
+                    parts = raw.split(":")
+                    if len(parts) == SPAN_ONLY_FORMAT_PARTS:
+                        # Format: start:end (default index 0)
+                        start, end = int(parts[0]), int(parts[1])
+                        answer_index = 0
+                    elif len(parts) == SPAN_INDEX_FORMAT_PARTS:
+                        # Format: index:start:end
+                        answer_index, start, end = int(parts[0]), int(parts[1]), int(parts[2])
+                    else:
+                        raise ValueError(f"expected format [index:]start:end, got {raw!r}")
+                    by_qid[question.qid] = apply_decision(
+                        question, "correct", span=(start, end), answer_index=answer_index
+                    )
+                    break
+                except (ValueError, IndexError) as exc:
+                    print(f"Invalid input: {exc}. Try again.", file=sys.stderr)
 
     write_golden(args.golden, [by_qid[q.qid] for q in questions])
     print(f"\nprovenance now: {provenance_split(list(by_qid.values()))}", file=sys.stderr)
