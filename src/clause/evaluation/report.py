@@ -587,8 +587,65 @@ def _render_strategy(
     return lines
 
 
+def _render_comparison(report: dict[str, Any]) -> list[str]:
+    """Both strategies' raw numbers and their own live-measured chance floor,
+    side by side, before either strategy gets its own section.
+
+    Facts only -- no derived ratio, no asserted ordering. A bare recall
+    ranking and a chance-floor-normalised one can disagree (one strategy can
+    lead on raw recall@5 while trailing the other relative to its own floor),
+    and reading four numbers split across two later sections does not
+    surface that on its own. Putting all of them in one table, before the
+    per-strategy detail, does.
+    """
+    lines = [
+        "### Strategy comparison",
+        "",
+        "A bare recall ranking and a chance-floor-normalised one can "
+        "disagree -- one strategy can lead on raw recall while the other "
+        "leads once each is read against its own chance floor. This table "
+        "puts both strategies' overall numbers and their own live-measured "
+        "chance floor in one place, before either gets its own section "
+        "below, so that comparison is visible rather than requiring the "
+        "reader to hold four numbers across two sections.",
+        "",
+        "| strategy | n | recall@1 | recall@5 | recall@10 | MRR@10 "
+        "| chance floor (recall@5) |",
+        "|---|---:|---:|---:|---:|---:|---:|",
+    ]
+    for strategy, data in sorted(report["strategies"].items()):
+        overall = data["overall"]
+        floor = data.get("chance_baseline_recall_at_5")
+        floor_clause = f"{floor:.3f}" if floor is not None else "n/a"
+        lines.append(
+            f"| {strategy} | {overall['n']} | {overall['recall_at_1']:.2f} "
+            f"| {overall['recall_at_5']:.2f} | {overall['recall_at_10']:.2f} "
+            f"| {overall['mrr_at_10']:.3f} | {floor_clause} |"
+        )
+    lines.append("")
+    return lines
+
+
+CROSS_REFERENCE_NOTE = (
+    "**Interpretation, not measurement:** `cross_reference` questions are "
+    "two-hop -- the acceptable answer text (an amendment, a cross-cited "
+    "provision) typically lives in a document other than the one whose "
+    "wording the question echoes, so the answer can share little lexical or "
+    "semantic overlap with the query itself. A single dense-retrieval query "
+    "with no decomposition or reranking is poorly suited to that gap, and "
+    "this is largely independent of which chunker produced the corpus -- "
+    "both strategies show the same pattern on this bucket. This is a "
+    "reading of *why* the number below is low, not a separate measurement, "
+    "and it should not be over-read: at n=16, the honest statement is that "
+    "both strategies are weaker on this small, hard slice, not a precise "
+    "gap."
+)
+
+
 def _render_results(report: dict[str, Any], staleness_warning: str | None) -> list[str]:
     lines = ["## Results", ""]
+    lines += _render_comparison(report)
+    lines += [CROSS_REFERENCE_NOTE, ""]
     for strategy, data in sorted(report["strategies"].items()):
         lines += _render_strategy(strategy, data, staleness_warning)
     return lines

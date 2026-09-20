@@ -149,7 +149,6 @@ def _bucket_result(ranks: Sequence[int | None]) -> BucketResult:
 
 
 def evaluate(
-    session: Session,
     client: QdrantClient,
     encoder: Encoder,
     questions: Sequence[GoldenQuestion],
@@ -158,7 +157,7 @@ def evaluate(
 ) -> list[StrategyResult]:
     """Score both strategies against the golden set."""
     results: list[StrategyResult] = []
-    for strategy in ("fixed_window", "structural"):
+    for strategy in STRATEGIES:
         ranks_overall: list[int | None] = []
         ranks_by_bucket: dict[str, list[int | None]] = {b: [] for b in BUCKETS}
         for question in questions:
@@ -262,7 +261,7 @@ def run_eval(
         encoder = Encoder(settings.embedding_model)
         client = QdrantClient(url=settings.qdrant_url)
 
-        results = evaluate(session, client, encoder, questions)
+        results = evaluate(client, encoder, questions)
 
         chunk_counts: dict[str, int] = {}
         chance_baseline: dict[str, ChanceBaseline] = {}

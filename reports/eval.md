@@ -67,6 +67,17 @@ Ground truth here is a *set* of acceptable spans, not one right answer, so quest
 
 ## Results
 
+### Strategy comparison
+
+A bare recall ranking and a chance-floor-normalised one can disagree -- one strategy can lead on raw recall while the other leads once each is read against its own chance floor. This table puts both strategies' overall numbers and their own live-measured chance floor in one place, before either gets its own section below, so that comparison is visible rather than requiring the reader to hold four numbers across two sections.
+
+| strategy | n | recall@1 | recall@5 | recall@10 | MRR@10 | chance floor (recall@5) |
+|---|---:|---:|---:|---:|---:|---:|
+| fixed_window | 65 | 0.23 | 0.45 | 0.51 | 0.319 | 0.084 |
+| structural | 65 | 0.18 | 0.34 | 0.43 | 0.256 | 0.058 |
+
+**Interpretation, not measurement:** `cross_reference` questions are two-hop -- the acceptable answer text (an amendment, a cross-cited provision) typically lives in a document other than the one whose wording the question echoes, so the answer can share little lexical or semantic overlap with the query itself. A single dense-retrieval query with no decomposition or reranking is poorly suited to that gap, and this is largely independent of which chunker produced the corpus -- both strategies show the same pattern on this bucket. This is a reading of *why* the number below is low, not a separate measurement, and it should not be over-read: at n=16, the honest statement is that both strategies are weaker on this small, hard slice, not a precise gap.
+
 ### fixed_window
 
 Chance floor for recall@5, computed once over the **whole golden set** (not per bucket), on this strategy's chunk corpus. Measured this run: **0.084** (this run's worst single question: 0.536). Pinned reference: 0.084 (worst: 0.536). This floor applies only to the **overall** row below -- per-bucket chance floors were not computed, and a bucket's recall@5 must not be read against this aggregate figure.
@@ -101,4 +112,4 @@ Chance floor for recall@5, computed once over the **whole golden set** (not per 
 | golden set | `data/golden/kyc-v1.jsonl` (`c138b258815f3fa2...`) |
 | chunk count (fixed_window) | 318 |
 | chunk count (structural) | 336 |
-| git commit | `50bf7f97fcf2dfb5df6a06aac4b9d91087db8f45` |
+| git commit | `9ac47783f094c1b4631884189ef2918b8a1f1663` |

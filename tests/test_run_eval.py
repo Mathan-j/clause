@@ -144,7 +144,6 @@ def test_run_eval_writes_to_the_given_paths_not_the_defaults(
             pass
 
     def _fake_evaluate(
-        session: object,
         client: object,
         encoder: object,
         questions: object,
