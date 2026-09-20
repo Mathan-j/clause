@@ -70,6 +70,33 @@ def test_default_model_is_the_documented_baseline() -> None:
     assert DEFAULT_MODEL == "sentence-transformers/all-MiniLM-L6-v2"
 
 
+def test_dimension_raises_when_the_model_declares_none(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Pins correction (c): .dimension must raise, not silently cast `None` to
+    `int`, when the underlying model does not declare an embedding dimension.
+
+    The real baseline model always declares a dimension, so none of the tests
+    above ever reach this branch -- reverting `.dimension` to `int(dim)` would
+    leave the rest of this file green. This fakes the model the same way
+    test_encoder_requests_local_files_only does, so it can force the `None`
+    case directly instead of hoping to find a real model that lacks one; it
+    needs neither a cached model nor the network.
+    """
+
+    class _FakeModelWithNoDeclaredDimension:
+        def get_embedding_dimension(self) -> int | None:
+            return None
+
+    monkeypatch.setattr(embed, "_is_cached", lambda _model_name: True)
+    monkeypatch.setattr(
+        embed, "SentenceTransformer", lambda *_a, **_k: _FakeModelWithNoDeclaredDimension()
+    )
+
+    enc = embed.Encoder()
+
+    with pytest.raises(ValueError, match="does not declare"):
+        _ = enc.dimension
+
+
 def test_encoder_requests_local_files_only(monkeypatch: pytest.MonkeyPatch) -> None:
     """THE GUARD. Pins that Encoder's construction call actually passes
     local_files_only=True to SentenceTransformer -- this is the property our

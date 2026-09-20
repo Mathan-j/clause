@@ -167,7 +167,7 @@ requires-dist = [
     { name = "psycopg", extras = ["binary"], specifier = ">=3.3.6" },
     { name = "pydantic-settings", specifier = ">=2.15.0" },
     { name = "selectolax", specifier = ">=0.4.12" },
-    { name = "sentence-transformers", specifier = ">=5.7.0" },
+    { name = "sentence-transformers", specifier = ">=5.7.0,<6.0.0" },
     { name = "sqlalchemy", specifier = ">=2.0" },
 ]
 

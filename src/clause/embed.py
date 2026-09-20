@@ -10,6 +10,7 @@ swap can then be measured instead of asserted.
 from collections.abc import Sequence
 
 from huggingface_hub import scan_cache_dir
+from huggingface_hub.errors import CacheNotFound
 from sentence_transformers import SentenceTransformer
 
 DEFAULT_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
@@ -28,7 +29,7 @@ def _is_cached(model_name: str) -> bool:
     """
     try:
         cache = scan_cache_dir()
-    except Exception:  # no cache directory yet
+    except CacheNotFound:  # no cache directory yet
         return False
     wanted = model_name.lower()
     return any(repo.repo_id.lower() == wanted for repo in cache.repos)

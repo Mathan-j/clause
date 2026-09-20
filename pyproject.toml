@@ -10,7 +10,12 @@ dependencies = [
     "psycopg[binary]>=3.3.6",
     "pydantic-settings>=2.15.0",
     "selectolax>=0.4.12",
-    "sentence-transformers>=5.7.0",
+    # Upper bound is load-bearing: sentence-transformers>=6.0.0 requires
+    # transformers>=5.0.0, but optimum-onnx (pulled in by optimum[onnxruntime]
+    # below, required for backend="onnx") caps transformers<4.58 as of
+    # 2026-09-20. Without this bound, `uv lock --upgrade` re-resolves straight
+    # into that conflict. Lift it once optimum-onnx supports transformers 5.x.
+    "sentence-transformers>=5.7.0,<6.0.0",
     "sqlalchemy>=2.0",
 ]
 
