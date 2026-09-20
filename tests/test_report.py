@@ -37,6 +37,7 @@ FP = Fingerprint(
     golden_path="data/golden/kyc-v1.jsonl",
     golden_sha256="g" * 64,
     git_commit="abc1234",
+    retrieval_code_sha256="c" * 64,
 )
 
 #: A fingerprint that matches the chance-baseline constants exactly (real
@@ -49,6 +50,7 @@ FP_CONSISTENT = Fingerprint(
     golden_path="data/golden/kyc-v1.jsonl",
     golden_sha256=CHANCE_BASELINE_GOLDEN_SHA256,
     git_commit="abc1234",
+    retrieval_code_sha256="c" * 64,
 )
 
 RESULT = StrategyResult(
@@ -118,9 +120,23 @@ def test_markdown_states_the_precision_identity() -> None:
 
 
 def test_markdown_never_prints_precision_as_a_separate_column() -> None:
+    """Pinned to the per-bucket results table specifically (the one whose
+    header starts with the `bucket` column), not "the first line that looks
+    like a table". `ed60154` (Task 10's fix round) inserted a
+    strategy-comparison table above the per-strategy sections that also
+    contains `recall@1` and `|` in its header -- `next(...)` silently
+    latched onto that instead, so this test stopped checking the table it
+    was written about the moment that table existed, and a `precision@1`
+    column added to the per-bucket table (the thing this test forbids) would
+    have passed it. See `clause.evaluation.report._render_strategy`'s header
+    line, which is the one line this must inspect.
+    """
     md = render_markdown(build_report([RESULT], FP, {"drafted": 60}, golden=[], chance_baseline=CB))
-    header = next(line for line in md.splitlines() if "recall@1" in line and "|" in line)
-    assert "precision@1" not in header
+    bucket_table_headers = [
+        line for line in md.splitlines() if line.startswith("| bucket ") and "recall@1" in line
+    ]
+    assert bucket_table_headers, "no per-bucket results table header found to check"
+    assert all("precision@1" not in header for header in bucket_table_headers)
 
 
 def test_markdown_names_every_bucket_and_strategy() -> None:
@@ -468,6 +484,7 @@ def test_stale_chance_baseline_warns_when_chunk_counts_have_moved() -> None:
         golden_path=FP_CONSISTENT.golden_path,
         golden_sha256=FP_CONSISTENT.golden_sha256,
         git_commit=FP_CONSISTENT.git_commit,
+        retrieval_code_sha256=FP_CONSISTENT.retrieval_code_sha256,
     )
     report = build_report([RESULT], moved, {"drafted": 60}, golden=[], chance_baseline=CB)
     assert report["chance_baseline"]["stale"] is True

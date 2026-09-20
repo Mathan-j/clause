@@ -38,10 +38,11 @@
       "structural": 336
     },
     "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
-    "git_commit": "9ac47783f094c1b4631884189ef2918b8a1f1663",
+    "git_commit": "a767eb89e89da5089d03e8507a50375c0084512e",
     "golden_path": "data/golden/kyc-v1.jsonl",
     "golden_sha256": "c138b258815f3fa2b4b7c2f94855454207494c3c63520d9e7558ab2851f2e03f",
     "manifest_sha256": "289bd71ad462d6237f934023e163bb05bf238dfad36491aa4940325e49216f9e",
+    "retrieval_code_sha256": "d6f737a84ad77fd4dfd9bef16fa50f4a20dea0d75cf16995a7833c72facdf99a",
     "retrieval_depth": 10
   },
   "golden_composition": {

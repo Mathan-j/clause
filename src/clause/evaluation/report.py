@@ -32,6 +32,19 @@ class Fingerprint:
     CI compares this against the working tree, which is what makes gating a
     committed artifact defensible: without it, "CI fails on a deliberate
     regression" would be satisfiable by simply not re-running the eval.
+
+    `git_commit` is `git rev-parse HEAD` at the moment this report was
+    generated. It is necessarily the *parent* of whatever commit adds this
+    file to the tree -- a report cannot name a commit that does not exist
+    yet -- so read it as "what was checked out when this ran", not as a
+    claim about the commit that carries it.
+
+    `retrieval_code_sha256` is the field that actually catches a retrieval
+    *code* regression: none of the other fields is a function of
+    `retrieve.py`, `embed.py`, `index.py`, `chunking/*.py` or
+    `evaluation/metrics.py`, so editing any of those, degrading recall, and
+    committing without a fresh `make eval` used to leave every other field
+    unchanged and the gate would pass. See `clause.cli.RETRIEVAL_CODE_PATHS`.
     """
 
     manifest_sha256: str
@@ -41,6 +54,7 @@ class Fingerprint:
     golden_path: str
     golden_sha256: str
     git_commit: str
+    retrieval_code_sha256: str
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -664,7 +678,21 @@ def _render_fingerprint(fp: dict[str, Any]) -> list[str]:
     ]
     for strategy, count in sorted(fp["chunk_counts"].items()):
         lines.append(f"| chunk count ({strategy}) | {count} |")
-    lines.append(f"| git commit | `{fp['git_commit']}` |")
+    lines.append(f"| retrieval code sha256 | `{fp['retrieval_code_sha256'][:16]}...` |")
+    lines.append(f"| git commit at run time | `{fp['git_commit']}` |")
+    lines.append("")
+    lines.append(
+        "_`git commit` names whatever was checked out when this report was "
+        "generated -- necessarily the **parent** of the commit that adds this "
+        "file, since a report cannot name a commit that does not exist yet. "
+        "It is not itself compared by the CI gate (a commit moves on every "
+        "push, including ones this eval doesn't depend on). "
+        "`retrieval code sha256` is: a hash over `retrieve.py`, `embed.py`, "
+        "`index.py`, `chunking/*.py` and `evaluation/metrics.py` "
+        "(`clause.cli.RETRIEVAL_CODE_PATHS`), so that editing any of them and "
+        "committing without a fresh `make eval` is caught as a stale report, "
+        "the same as a stale golden set or corpus._"
+    )
     lines.append("")
     return lines
 

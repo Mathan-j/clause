@@ -17,7 +17,7 @@ from sqlalchemy.orm import Session
 from clause.chunking.base import SliceIntegrityError, assert_slices
 from clause.chunking.fixed import FixedWindowChunker
 from clause.chunking.structural import StructuralChunker
-from clause.config import Settings, get_settings
+from clause.config import GateSettings, Settings, get_gate_settings, get_settings
 from clause.db.repository import replace_chunks, upsert_document
 from clause.db.schema import ChunkRow, DocumentRow
 from clause.db.session import make_engine, session_factory
@@ -215,6 +215,58 @@ def _sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+#: The retrieval path: source files whose change can alter a recall, MRR or
+#: chance-baseline number in `reports/eval.md` without any *other* fingerprint
+#: field moving. `retrieve.py` and `embed.py` are what `evaluate()` calls
+#: through on every question; `index.py` and `chunking/*.py` because they
+#: produce the corpus `chunk_counts` describes only as a count, not as
+#: content -- two different chunkings can share a chunk count; `metrics.py`
+#: because it defines what counts as a hit and how recall/MRR are computed.
+#:
+#: Deliberately *not* every `.py` file in the repo, and not `cli.py` itself:
+#: both also hold ingest/index/gate code that cannot move a number in the
+#: report, and hashing them would make this field as noisy as `git_commit`
+#: (which moves on every commit, including ones this eval doesn't depend on)
+#: -- exactly the false-positive `FINGERPRINT_FIELDS` already excludes
+#: `git_commit` to avoid. If a future change moves scoring logic into
+#: `cli.py` or elsewhere, extend this tuple; the test for it
+#: (`tests/test_cli.py::test_retrieval_code_sha256_changes_when_the_code_does`)
+#: is the guard that this set is actually being hashed, not that it is
+#: complete -- completeness is a judgement call, revisited when the code
+#: that computes a number moves.
+RETRIEVAL_CODE_PATHS: tuple[Path, ...] = (
+    Path("src/clause/retrieve.py"),
+    Path("src/clause/embed.py"),
+    Path("src/clause/index.py"),
+    Path("src/clause/chunking/base.py"),
+    Path("src/clause/chunking/fixed.py"),
+    Path("src/clause/chunking/structural.py"),
+    Path("src/clause/evaluation/metrics.py"),
+)
+
+
+def _retrieval_code_sha256(paths: Sequence[Path] = RETRIEVAL_CODE_PATHS) -> str:
+    """One hash over the retrieval path's source, stable across platforms.
+
+    Sorted by POSIX path so file-discovery order never matters. Each file's
+    text is decoded and its line endings normalised to `\\n` before hashing --
+    without that, a Windows checkout (CRLF) and a Linux CI checkout (LF) of
+    the *identical* commit would hash differently, and this field would fail
+    every build on whichever platform did not produce the committed report.
+    Each file's POSIX path is hashed alongside its content (with a NUL
+    separator, which cannot appear in either) so renaming a file with no
+    content change still changes the hash.
+    """
+    digest = hashlib.sha256()
+    for path in sorted(paths, key=lambda p: p.as_posix()):
+        normalised = path.read_text(encoding="utf-8").replace("\r\n", "\n")
+        digest.update(path.as_posix().encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(normalised.encode("utf-8"))
+        digest.update(b"\0")
+    return digest.hexdigest()
+
+
 def _git_commit() -> str:
     result = subprocess.run(
         ["git", "rev-parse", "HEAD"],
@@ -287,6 +339,7 @@ def run_eval(
         golden_path=GOLDEN_PATH.as_posix(),
         golden_sha256=_sha256_file(GOLDEN_PATH),
         git_commit=_git_commit(),
+        retrieval_code_sha256=_retrieval_code_sha256(),
     )
     report = build_report(
         results,
@@ -361,12 +414,14 @@ def _gate_chunk_counts(
 
 
 def _rebuild_tree_fingerprint(
-    report: dict[str, Any], *, session: Session, settings: Settings
+    report: dict[str, Any], *, session: Session, settings: Settings | GateSettings
 ) -> tuple[dict[str, Any], list[str]]:
     """Rebuild the fingerprint from the working tree, the same way `run_eval`
-    does -- but without needing Qdrant, the embedding model or retrieval,
-    since the gate only ever compares this dict's fields against the
-    committed report, never runs a search itself.
+    does -- but without needing Qdrant, a loaded embedding model or a real
+    search, since the gate only ever compares this dict's fields against the
+    committed report and never runs retrieval itself. `retrieval_code_sha256`
+    is cheap file I/O over `RETRIEVAL_CODE_PATHS`, not a model load, so it
+    fits that constraint too.
     """
     chunk_counts, notes = _gate_chunk_counts(session, report)
     fingerprint = {
@@ -377,6 +432,7 @@ def _rebuild_tree_fingerprint(
         "golden_path": GOLDEN_PATH.as_posix(),
         "golden_sha256": _sha256_file(GOLDEN_PATH),
         "git_commit": _git_commit(),
+        "retrieval_code_sha256": _retrieval_code_sha256(),
     }
     return fingerprint, notes
 
@@ -419,16 +475,23 @@ def run_gate(
     *,
     report_path: Path = DEFAULT_REPORT_JSON,
     baseline_path: Path = DEFAULT_BASELINE_JSON,
-    settings: Settings | None = None,
+    settings: Settings | GateSettings | None = None,
 ) -> None:
     """Load the committed report and baseline, rebuild the tree fingerprint,
     and raise `GateFailure` if `check()` finds a problem.
+
+    Defaults to `GateSettings`, not the full `Settings` -- the gate never
+    needs `CLAUSE_USER_AGENT`, so it must not refuse to start somewhere that
+    only sets `CLAUSE_DATABASE_URL` (CI's `gate` step). A caller that already
+    has a full `Settings` (e.g. `main()` for every other subcommand, or a
+    test) may still pass one; both expose `database_url` and
+    `embedding_model`, which is all this needs.
 
     Every note and every failure is printed to stderr before this returns or
     raises, so a reader watching CI output sees what ran, what was skipped
     and why, and what failed -- never just an exit code.
     """
-    settings = settings or get_settings()
+    settings = settings or get_gate_settings()
     report = _load_json_or_fail(report_path, "report")
 
     baseline: dict[str, Any] | None = None
@@ -502,6 +565,20 @@ def main(argv: list[str] | None = None) -> int:
     gate.add_argument("--baseline", type=Path, default=DEFAULT_BASELINE_JSON)
     args = parser.parse_args(argv)
 
+    if args.command == "gate":
+        # Deliberately not get_settings(): the gate compares two committed
+        # JSON files and a chunk count, and must not refuse to start
+        # somewhere (CI) that never sets CLAUSE_USER_AGENT.
+        try:
+            run_gate(
+                report_path=args.report,
+                baseline_path=args.baseline,
+                settings=get_gate_settings(),
+            )
+        except GateFailure:
+            return 1
+        return 0
+
     settings = get_settings()
 
     if args.command == "index":
@@ -509,13 +586,6 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "eval":
         run_eval(settings=settings)
-        return 0
-
-    if args.command == "gate":
-        try:
-            run_gate(report_path=args.report, baseline_path=args.baseline, settings=settings)
-        except GateFailure:
-            return 1
         return 0
 
     return _cmd_ingest(args.manifest, settings)

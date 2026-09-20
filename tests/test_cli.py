@@ -8,6 +8,7 @@ without ever refusing to run.
 
 from collections.abc import Sequence
 from dataclasses import dataclass, field
+from pathlib import Path
 
 import pytest
 from sqlalchemy.orm import Session
@@ -114,3 +115,79 @@ def test_index_all_warns_but_continues_when_foreign_collections_present(
     assert calls == list(cli.STRATEGIES)
     assert counts == dict.fromkeys(cli.STRATEGIES, 0)
     assert "someone_elses_data" in capsys.readouterr().err
+
+
+# ---------------------------------------------------------------------------
+# _retrieval_code_sha256: the fingerprint field that catches a retrieval
+# code regression with no fresh `make eval` (fix round 2, blocker 3).
+# ---------------------------------------------------------------------------
+
+
+def test_retrieval_code_sha256_default_paths_are_real_and_stable() -> None:
+    """Every path in RETRIEVAL_CODE_PATHS is a real, readable file, and
+    hashing them twice gives the same answer.
+    """
+    first = cli._retrieval_code_sha256()
+    second = cli._retrieval_code_sha256()
+    assert first == second
+    assert len(first) == 64
+
+
+def test_retrieval_code_sha256_is_order_independent(tmp_path: Path) -> None:
+    a = tmp_path / "a.py"
+    b = tmp_path / "b.py"
+    a.write_text("print('a')\n", encoding="utf-8", newline="\n")
+    b.write_text("print('b')\n", encoding="utf-8", newline="\n")
+
+    assert cli._retrieval_code_sha256([a, b]) == cli._retrieval_code_sha256([b, a])
+
+
+def test_retrieval_code_sha256_changes_when_the_code_does(tmp_path: Path) -> None:
+    """This is the property the whole field exists for: editing a retrieval
+    file must move the hash, or a code regression with no fresh `make eval`
+    would still pass every fingerprint field unchanged.
+    """
+    path = tmp_path / "a.py"
+    path.write_text("print('a')\n", encoding="utf-8", newline="\n")
+    before = cli._retrieval_code_sha256([path])
+
+    path.write_text("print('a')  # changed\n", encoding="utf-8", newline="\n")
+    after = cli._retrieval_code_sha256([path])
+
+    assert before != after
+
+
+def test_retrieval_code_sha256_changes_when_a_file_is_renamed(tmp_path: Path) -> None:
+    same_content = "print('a')\n"
+    a = tmp_path / "a.py"
+    b = tmp_path / "b.py"
+    a.write_text(same_content, encoding="utf-8", newline="\n")
+    b.write_text(same_content, encoding="utf-8", newline="\n")
+
+    assert cli._retrieval_code_sha256([a]) != cli._retrieval_code_sha256([b])
+
+
+def test_retrieval_code_sha256_is_stable_across_line_endings(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A Windows checkout (CRLF) and a Linux CI checkout (LF) of the
+    identical commit must hash identically -- otherwise this field would
+    fail every build on whichever platform did not produce the committed
+    report. The relative path text is identical in both calls (as it always
+    is for RETRIEVAL_CODE_PATHS, which are POSIX-style repo-relative
+    literals on every OS); only the on-disk bytes differ, exactly as a real
+    cross-platform checkout would.
+    """
+    win_dir, nix_dir = tmp_path / "win", tmp_path / "nix"
+    win_dir.mkdir()
+    nix_dir.mkdir()
+    (win_dir / "code.py").write_bytes(b"a = 1\r\nb = 2\r\n")
+    (nix_dir / "code.py").write_bytes(b"a = 1\nb = 2\n")
+
+    monkeypatch.chdir(win_dir)
+    win_hash = cli._retrieval_code_sha256([Path("code.py")])
+
+    monkeypatch.chdir(nix_dir)
+    nix_hash = cli._retrieval_code_sha256([Path("code.py")])
+
+    assert win_hash == nix_hash

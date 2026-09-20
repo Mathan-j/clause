@@ -44,3 +44,27 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()  # type: ignore[call-arg]
+
+
+class GateSettings(BaseSettings):
+    """The narrow slice of configuration `clause gate` needs: a database to
+    read chunk counts from, and the embedding model name the fingerprint
+    compares.
+
+    Deliberately not `Settings`: comparing two committed JSON files and a
+    chunk count has nothing to do with a scraping identity, so requiring
+    `CLAUSE_USER_AGENT` (as the full `Settings` does, with no default) made
+    the gate refuse to even start wherever only `CLAUSE_DATABASE_URL` is
+    set -- which is exactly CI's `gate` step. The coupling was the bug, not
+    the missing value.
+    """
+
+    model_config = SettingsConfigDict(env_prefix="CLAUSE_", env_file=".env", extra="ignore")
+
+    database_url: str
+    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+
+
+@lru_cache
+def get_gate_settings() -> GateSettings:
+    return GateSettings()  # type: ignore[call-arg]

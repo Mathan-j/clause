@@ -17,6 +17,7 @@ FP = {
     "golden_path": "data/golden/kyc-v1.jsonl",
     "golden_sha256": "g" * 64,
     "git_commit": "abc1234",
+    "retrieval_code_sha256": "c" * 64,
 }
 
 REPORT = {
@@ -58,6 +59,17 @@ def test_a_stale_fingerprint_fails() -> None:
 def test_a_changed_model_fails_the_fingerprint() -> None:
     moved = {**FP, "embedding_model": "something-else"}
     assert any("embedding_model" in p for p in check(REPORT, BASELINE, moved))
+
+
+def test_a_retrieval_code_change_fails_the_fingerprint() -> None:
+    """This is the field that catches editing retrieve.py/embed.py/index.py/
+    chunking/*.py/metrics.py, degrading recall, and committing without a
+    fresh `make eval` -- none of the other fields is a function of that
+    code, so before this field existed, that exact regression passed every
+    check silently.
+    """
+    moved = {**FP, "retrieval_code_sha256": "d" * 64}
+    assert any("retrieval_code_sha256" in p for p in check(REPORT, BASELINE, moved))
 
 
 def test_no_baseline_skips_the_regression_check() -> None:

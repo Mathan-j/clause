@@ -14,12 +14,22 @@ function's comparison for that one field compare `reports/eval.json` to
 itself -- it cannot fail. That is a deliberate, bounded exception, not a
 silent one: the caller is responsible for printing why whenever it takes that
 fallback, so a passing gate is never read as having verified that field.
+
+`retrieval_code_sha256` is what makes "not re-running the eval at all" catch
+a *code* regression, not just a stale golden set or corpus: none of the other
+five fields is a function of `retrieve.py`, `embed.py`, `index.py`,
+`chunking/*.py` or `evaluation/metrics.py`, so editing any of those, degrading
+recall, and committing without `make eval` used to pass every other field
+unchanged. See `clause.cli.RETRIEVAL_CODE_PATHS` and
+`clause.cli._retrieval_code_sha256` for exactly what it covers and why.
 """
 
 from typing import Any
 
 #: Fields whose change invalidates a report. `git_commit` is excluded: it moves
-#: on every commit, including ones that touch nothing the eval depends on.
+#: on every commit, including ones that touch nothing the eval depends on --
+#: the same reasoning that keeps `retrieval_code_sha256` scoped to the
+#: retrieval path rather than the whole repository (see `clause.cli`).
 FINGERPRINT_FIELDS = (
     "manifest_sha256",
     "chunk_counts",
@@ -27,6 +37,7 @@ FINGERPRINT_FIELDS = (
     "retrieval_depth",
     "golden_path",
     "golden_sha256",
+    "retrieval_code_sha256",
 )
 
 

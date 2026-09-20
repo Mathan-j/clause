@@ -113,10 +113,11 @@ This compares the committed `reports/eval.json` against `reports/baseline.json` 
 against a fingerprint of the working tree (the manifest, the golden set, the
 embedding model, the retrieval depth, and the indexed chunk counts), and fails if
 either recall has regressed below the baseline or the report is stale relative to
-the tree. It is what CI runs after the test suite; see `.github/workflows/ci.yml`
-and `clause.cli._gate_chunk_counts` for the one field it cannot verify without a
-real corpus in CI, and why the gate prints that it is skipping it rather than
-silently passing.
+the tree. `.github/workflows/ci.yml` runs this after the test suite -- the
+workflow is configured but has not yet executed anywhere, since no remote is
+configured. See `clause.cli._gate_chunk_counts` for the one field it cannot
+verify without a real corpus in CI, and why the gate prints that it is skipping
+it rather than silently passing.
 
 **Updating the baseline deliberately**
 

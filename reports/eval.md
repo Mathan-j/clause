@@ -112,4 +112,7 @@ Chance floor for recall@5, computed once over the **whole golden set** (not per 
 | golden set | `data/golden/kyc-v1.jsonl` (`c138b258815f3fa2...`) |
 | chunk count (fixed_window) | 318 |
 | chunk count (structural) | 336 |
-| git commit | `9ac47783f094c1b4631884189ef2918b8a1f1663` |
+| retrieval code sha256 | `d6f737a84ad77fd4...` |
+| git commit at run time | `a767eb89e89da5089d03e8507a50375c0084512e` |
+
+_`git commit` names whatever was checked out when this report was generated -- necessarily the **parent** of the commit that adds this file, since a report cannot name a commit that does not exist yet. It is not itself compared by the CI gate (a commit moves on every push, including ones this eval doesn't depend on). `retrieval code sha256` is: a hash over `retrieve.py`, `embed.py`, `index.py`, `chunking/*.py` and `evaluation/metrics.py` (`clause.cli.RETRIEVAL_CODE_PATHS`), so that editing any of them and committing without a fresh `make eval` is caught as a stale report, the same as a stale golden set or corpus._

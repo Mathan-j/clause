@@ -18,7 +18,7 @@ import pytest
 from sqlalchemy.orm import Session
 
 from clause import cli
-from clause.config import Settings
+from clause.config import GateSettings, Settings
 from clause.db.schema import ChunkRow, DocumentRow
 from clause.evaluation.gate import GateFailure
 from clause.evaluation.metrics import RETRIEVAL_DEPTH
@@ -29,6 +29,15 @@ def _settings() -> Settings:
         database_url="postgresql+psycopg://clause:clause@localhost:5434/clause_test",
         user_agent="clause-test/0.1 (+mailto:test@example.com)",
     )
+
+
+def _gate_settings() -> GateSettings:
+    """No `user_agent` anywhere -- the point of these settings is that the
+    gate must not need one. Constructed directly (bypassing env/`.env`) so
+    the test proves the decoupling regardless of what's in this machine's
+    environment.
+    """
+    return GateSettings(database_url="postgresql+psycopg://clause:clause@localhost:5434/clause_test")
 
 
 def _real_fingerprint(chunk_counts: dict[str, int]) -> dict[str, Any]:
@@ -46,6 +55,7 @@ def _real_fingerprint(chunk_counts: dict[str, int]) -> dict[str, Any]:
         "golden_path": cli.GOLDEN_PATH.as_posix(),
         "golden_sha256": cli._sha256_file(cli.GOLDEN_PATH),
         "git_commit": cli._git_commit(),
+        "retrieval_code_sha256": cli._retrieval_code_sha256(),
     }
 
 
@@ -296,7 +306,7 @@ def test_main_gate_exits_zero_on_a_clean_pass(
     baseline_path.write_text(
         json.dumps({"structural": {"recall_at_5": 0.75}}), encoding="utf-8", newline="\n"
     )
-    monkeypatch.setattr(cli, "get_settings", _settings)
+    monkeypatch.setattr(cli, "get_gate_settings", _gate_settings)
 
     exit_code = cli.main(["gate", "--report", str(report_path), "--baseline", str(baseline_path)])
 
@@ -316,7 +326,7 @@ def test_main_gate_exits_one_on_a_regression(
     baseline_path.write_text(
         json.dumps({"structural": {"recall_at_5": 0.75}}), encoding="utf-8", newline="\n"
     )
-    monkeypatch.setattr(cli, "get_settings", _settings)
+    monkeypatch.setattr(cli, "get_gate_settings", _gate_settings)
 
     exit_code = cli.main(["gate", "--report", str(report_path), "--baseline", str(baseline_path)])
 
@@ -341,8 +351,46 @@ def test_main_gate_exits_one_on_a_stale_fingerprint(
     baseline_path.write_text(
         json.dumps({"structural": {"recall_at_5": 0.75}}), encoding="utf-8", newline="\n"
     )
-    monkeypatch.setattr(cli, "get_settings", _settings)
+    monkeypatch.setattr(cli, "get_gate_settings", _gate_settings)
 
     exit_code = cli.main(["gate", "--report", str(report_path), "--baseline", str(baseline_path)])
 
     assert exit_code == 1
+
+
+def test_main_gate_needs_no_user_agent(
+    db_session: Session, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Reproduces blocker 2 exactly: the literal CI condition is only
+    `CLAUSE_DATABASE_URL` set, never `CLAUSE_USER_AGENT`. Before the fix,
+    `main()` called `get_settings()` (the full `Settings`, `user_agent`
+    required with no default) unconditionally, so `clause gate` died with a
+    raw pydantic `ValidationError` before ever reaching `run_gate`. This
+    calls `cli.main` for real, with no monkeypatching of the settings
+    loader itself, so a regression back to `get_settings()` here would fail
+    it the same way CI failed.
+    """
+    report_path = tmp_path / "eval.json"
+    _write_report(
+        report_path,
+        chunk_counts={"fixed_window": 1, "structural": 1},
+        strategies={"structural": {"overall": {"recall_at_5": 0.90}}},
+    )
+    baseline_path = tmp_path / "baseline.json"
+    baseline_path.write_text(
+        json.dumps({"structural": {"recall_at_5": 0.75}}), encoding="utf-8", newline="\n"
+    )
+
+    monkeypatch.delenv("CLAUSE_USER_AGENT", raising=False)
+    monkeypatch.setenv(
+        "CLAUSE_DATABASE_URL", "postgresql+psycopg://clause:clause@localhost:5434/clause_test"
+    )
+    cli.get_gate_settings.cache_clear()
+    try:
+        exit_code = cli.main(
+            ["gate", "--report", str(report_path), "--baseline", str(baseline_path)]
+        )
+    finally:
+        cli.get_gate_settings.cache_clear()
+
+    assert exit_code == 0
