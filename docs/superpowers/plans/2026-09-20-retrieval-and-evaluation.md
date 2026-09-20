@@ -642,12 +642,15 @@ This task is content work, not code. Read the corpus and write questions.
 """Guards on the committed golden set itself."""
 
 import collections
+import difflib
+import os
 from pathlib import Path
 
 import pytest
 import sqlalchemy as sa
 from sqlalchemy.orm import Session
 
+from clause.db.schema import DocumentRow
 from clause.evaluation.golden import BUCKETS, load_golden, validate_spans
 
 GOLDEN = Path("data/golden/kyc-v1.jsonl")
@@ -669,9 +672,6 @@ def test_every_bucket_is_well_represented() -> None:
 
 def test_no_question_quotes_its_source_verbatim() -> None:
     """A question echoing its source measures lexical overlap, not retrieval."""
-    import sqlalchemy as sa
-    from clause.db.schema import DocumentRow
-
     questions = load_golden(GOLDEN)
     engine = sa.create_engine(_db_url())
     with Session(engine) as session:
@@ -688,8 +688,6 @@ def test_no_question_quotes_its_source_verbatim() -> None:
 
 @pytest.mark.db
 def test_every_span_resolves_against_the_stored_corpus(db_session: Session) -> None:
-    from clause.db.schema import DocumentRow
-
     docs = {
         d.doc_id: (d.text, d.sha256)
         for d in db_session.scalars(sa.select(DocumentRow)).all()
@@ -700,8 +698,6 @@ def test_every_span_resolves_against_the_stored_corpus(db_session: Session) -> N
 
 
 def _longest_common_run(a: str, b: str) -> int:
-    import difflib
-
     match = difflib.SequenceMatcher(None, a, b, autojunk=False).find_longest_match(
         0, len(a), 0, len(b)
     )
@@ -709,8 +705,6 @@ def _longest_common_run(a: str, b: str) -> int:
 
 
 def _db_url() -> str:
-    import os
-
     return os.environ.get(
         "CLAUSE_DATABASE_URL", "postgresql+psycopg://clause:clause@localhost:5434/clause"
     )
@@ -804,8 +798,9 @@ measures lexical overlap, not retrieval, and would inflate every number."
 # tests/test_verify_golden.py
 import collections
 
-from clause.evaluation.golden import Answer, GoldenQuestion
+import pytest
 
+from clause.evaluation.golden import Answer, GoldenQuestion
 from scripts.verify_golden import apply_decision, select_sample
 
 
@@ -853,8 +848,6 @@ def test_correcting_replaces_the_span_and_marks_it_corrected() -> None:
 
 
 def test_an_unknown_decision_is_rejected() -> None:
-    import pytest
-
     with pytest.raises(ValueError, match="decision"):
         apply_decision(QUESTIONS[0], "maybe")
 ```
@@ -1317,7 +1310,7 @@ document's absence from it can be trusted."
 - Modify: `pyproject.toml`, `docs/decisions.md`, `.env.example`, `src/clause/config.py`
 
 **Interfaces:**
-- Consumes: `Settings`
+- Consumes: nothing (it *adds* fields to `Settings`)
 - Produces:
   - `DEFAULT_MODEL: str = "sentence-transformers/all-MiniLM-L6-v2"`
   - `ModelNotCachedError(Exception)`
@@ -1328,6 +1321,8 @@ document's absence from it can be trusted."
 
 ```python
 # tests/test_embed.py
+import math
+
 import pytest
 
 from clause.embed import DEFAULT_MODEL, Encoder, ModelNotCachedError
@@ -1377,8 +1372,6 @@ def test_default_model_is_the_documented_baseline() -> None:
 
 
 def _cos(a: list[float], b: list[float]) -> float:
-    import math
-
     dot = sum(x * y for x, y in zip(a, b, strict=True))
     na = math.sqrt(sum(x * x for x in a))
     nb = math.sqrt(sum(y * y for y in b))
@@ -1431,6 +1424,7 @@ swap can then be measured instead of asserted.
 from collections.abc import Sequence
 from pathlib import Path
 
+from huggingface_hub import scan_cache_dir
 from sentence_transformers import SentenceTransformer
 
 DEFAULT_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
@@ -1447,8 +1441,6 @@ def _is_cached(model_name: str) -> bool:
     the network mid-measurement: a first run that downloads has different timing
     and a different reproducibility story from every run after it.
     """
-    from huggingface_hub import scan_cache_dir
-
     try:
         cache = scan_cache_dir()
     except Exception:  # no cache directory yet
@@ -1530,7 +1522,7 @@ after it, and a measurement harness whose inputs move is not one."
 - Modify: `docker-compose.yml`, `pyproject.toml`, `docs/decisions.md`, `Makefile`, `src/clause/cli.py`
 
 **Interfaces:**
-- Consumes: `Encoder`, `ChunkRow`, `Settings`
+- Consumes: `Encoder`, `ChunkRow`, `DocumentRow`
 - Produces:
   - `collection_name(strategy: str) -> str` — returns `f"clause_{strategy}"`
   - `ensure_collection(client: QdrantClient, name: str, dimension: int) -> None`
@@ -2297,6 +2289,8 @@ from pathlib import Path
 
 import pytest
 
+from clause.evaluation.golden import BUCKETS
+
 pytestmark = [pytest.mark.db, pytest.mark.qdrant, pytest.mark.model]
 
 REPORT_MD = Path("reports/eval.md")
@@ -2314,8 +2308,6 @@ def test_both_strategies_are_measured(evaluated: None) -> None:
 
 
 def test_every_bucket_appears_for_every_strategy(evaluated: None) -> None:
-    from clause.evaluation.golden import BUCKETS
-
     report = json.loads(REPORT_JSON.read_text(encoding="utf-8"))
     for data in report["strategies"].values():
         assert set(data["per_bucket"]) == set(BUCKETS)
@@ -2345,11 +2337,12 @@ def test_the_report_records_how_ground_truth_was_made(evaluated: None) -> None:
 Add to `tests/conftest.py`:
 
 ```python
+Add `run_eval` to conftest's existing `from clause.cli import ingest` line, then:
+
+```python
 @pytest.fixture
 def evaluated(db_session: Session) -> None:
     """Run the real evaluation once, against the warm cache and a live Qdrant."""
-    from clause.cli import run_eval
-
     run_eval()
 ```
 
@@ -2457,7 +2450,7 @@ monotonic in k, metrics in range, every bucket present for every strategy
 - Modify: `src/clause/cli.py`, `.github/workflows/ci.yml`, `README.md`
 
 **Interfaces:**
-- Consumes: `Fingerprint`
+- Consumes: `reports/eval.json` as a plain dict — deliberately **not** `Fingerprint`, so the gate can read a committed file without importing the renderer
 - Produces:
   - `GateFailure(Exception)`
   - `check(report: dict, baseline: dict | None, tree_fingerprint: dict) -> list[str]` — returns failure messages, empty when clean
