@@ -1,15 +1,24 @@
 import os
+from datetime import UTC, date, datetime
 
 import pytest
+import sqlalchemy as sa
 from qdrant_client import QdrantClient, models
+from sqlalchemy.orm import Session
 
+from clause.db.repository import replace_chunks, upsert_document
+from clause.db.schema import ChunkRow
+from clause.embed import Encoder
 from clause.index import (
     PUBLISHED_DATE_FIELD,
     REGULATED_ENTITY_FIELD,
+    _missing_payload_indexes,
     collection_name,
     ensure_collection,
     foreign_collections,
+    index_strategy,
 )
+from clause.models import Chunk, Document
 
 pytestmark = pytest.mark.qdrant
 
@@ -147,3 +156,177 @@ def test_payload_indexes_actually_restrict_filtered_queries(client: QdrantClient
         assert {p.id for p in by_entity} == {2}
     finally:
         client.delete_collection(name)
+
+
+def test_missing_payload_indexes_reports_both_when_absent() -> None:
+    assert set(_missing_payload_indexes(())) == {PUBLISHED_DATE_FIELD, REGULATED_ENTITY_FIELD}
+
+
+def test_missing_payload_indexes_reports_none_when_present() -> None:
+    assert _missing_payload_indexes([PUBLISHED_DATE_FIELD, REGULATED_ENTITY_FIELD]) == []
+
+
+def test_missing_payload_indexes_reports_only_the_absent_one() -> None:
+    assert _missing_payload_indexes([PUBLISHED_DATE_FIELD]) == [REGULATED_ENTITY_FIELD]
+
+
+def test_ensure_collection_backfills_missing_payload_indexes(client: QdrantClient) -> None:
+    """A collection with the right dimension but missing indexes -- built by an
+    older version of this code, or left over from a partial run -- must not be
+    treated as complete just because ensure_collection's dimension check passes.
+    """
+    name = "clause_test_payload_backfill"
+    client.create_collection(
+        collection_name=name,
+        vectors_config=models.VectorParams(size=8, distance=models.Distance.COSINE),
+    )
+    try:
+        assert client.get_collection(name).payload_schema == {}
+        ensure_collection(client, name, 8)
+        schema = client.get_collection(name).payload_schema
+        assert PUBLISHED_DATE_FIELD in schema
+        assert REGULATED_ENTITY_FIELD in schema
+    finally:
+        client.delete_collection(name)
+
+
+def _make_document(doc_id: str, published: date) -> Document:
+    return Document(
+        doc_id=doc_id,
+        rbi_id=999000,
+        url=f"https://example.com/{doc_id}",
+        circular_no="TEST/1",
+        dept_ref="TEST",
+        title="Synthetic test document",
+        doc_type="circular",
+        published_date=published,
+        effective_date=None,
+        sha256="0" * 64,
+        fetched_at=datetime.now(UTC),
+        text="alpha beta gamma delta epsilon zeta",
+        regulated_entity=("banks",),
+    )
+
+
+def _make_chunk(document: Document, ordinal: int, char_start: int, char_end: int) -> Chunk:
+    return Chunk(
+        doc_id=document.doc_id,
+        strategy="unused",  # replace_chunks uses its own `strategy` argument instead
+        ordinal=ordinal,
+        char_start=char_start,
+        char_end=char_end,
+        text=document.text[char_start:char_end],
+        source_url=document.url,
+        effective_date=document.effective_date,
+        doc_type=document.doc_type,
+        regulated_entity=document.regulated_entity,
+    )
+
+
+@pytest.mark.db
+@pytest.mark.model
+def test_index_strategy_writes_expected_points_and_payload(
+    client: QdrantClient, db_session: Session
+) -> None:
+    """index_strategy's actual work -- the doc_id -> published_date join,
+    chunk_id-as-point-id assignment, and payload construction -- had no test
+    coverage; only manual runs verified it. source_url in particular is the
+    project's citation-provenance non-negotiable and belongs under a test, not
+    just an eyeballed CLI run.
+    """
+    strategy = "test_payload"
+    doc = _make_document("test-payload-doc", date(2025, 6, 1))
+    upsert_document(db_session, doc)
+    replace_chunks(
+        db_session,
+        doc.doc_id,
+        strategy,
+        [_make_chunk(doc, 0, 0, 5), _make_chunk(doc, 1, 6, 10)],
+    )
+    db_session.commit()
+
+    name = collection_name(strategy)
+    try:
+        written = index_strategy(client, Encoder(), db_session, strategy)
+        assert written == 2
+
+        rows = db_session.scalars(
+            sa.select(ChunkRow).where(ChunkRow.doc_id == doc.doc_id).order_by(ChunkRow.ordinal)
+        ).all()
+        assert len(rows) == 2
+
+        assert client.get_collection(name).points_count == 2
+
+        retrieved = client.retrieve(
+            collection_name=name,
+            ids=[row.chunk_id for row in rows],
+            with_payload=True,
+        )
+        assert {point.id for point in retrieved} == {row.chunk_id for row in rows}
+        for point in retrieved:
+            assert point.payload is not None
+            assert point.payload["source_url"] == doc.url
+            assert point.payload["published_date"] == doc.published_date.isoformat()
+            assert point.payload["regulated_entity"] == list(doc.regulated_entity)
+    finally:
+        if name in {c.name for c in client.get_collections().collections}:
+            client.delete_collection(name)
+
+
+@pytest.mark.db
+@pytest.mark.model
+def test_index_strategy_prunes_points_whose_chunks_are_gone(
+    client: QdrantClient, db_session: Session
+) -> None:
+    """`replace_chunks` is delete-then-insert against an autoincrement PK, so
+    re-ingesting a document mints fresh chunk_ids and strands the old points in
+    Qdrant unless index_strategy prunes them. Amendment/supersession is the
+    normal case for RBI circulars, so this must hold on every reindex.
+    """
+    strategy = "test_prune"
+    doc = _make_document("test-prune-doc", date(2025, 1, 1))
+    upsert_document(db_session, doc)
+    replace_chunks(
+        db_session,
+        doc.doc_id,
+        strategy,
+        [_make_chunk(doc, 0, 0, 5), _make_chunk(doc, 1, 6, 10)],
+    )
+    db_session.commit()
+
+    name = collection_name(strategy)
+    encoder = Encoder()
+    try:
+        index_strategy(client, encoder, db_session, strategy)
+        old_ids = set(
+            db_session.scalars(
+                sa.select(ChunkRow.chunk_id).where(ChunkRow.doc_id == doc.doc_id)
+            ).all()
+        )
+        assert len(old_ids) == 2
+        assert client.get_collection(name).points_count == 2
+
+        # Simulate a re-ingest that reshapes this document's chunks: delete-then-insert
+        # mints a brand-new chunk_id for the single surviving chunk.
+        replace_chunks(db_session, doc.doc_id, strategy, [_make_chunk(doc, 0, 0, 10)])
+        db_session.commit()
+
+        index_strategy(client, encoder, db_session, strategy)
+
+        new_id = db_session.scalar(
+            sa.select(ChunkRow.chunk_id).where(ChunkRow.doc_id == doc.doc_id)
+        )
+        assert new_id is not None
+        assert new_id not in old_ids
+
+        remaining_ids = {
+            point.id
+            for point in client.scroll(collection_name=name, limit=100, with_payload=False)[0]
+        }
+        assert remaining_ids == {new_id}, (
+            f"expected only the current chunk_id {new_id} to remain, found {remaining_ids} "
+            f"(stale ids from before the reindex: {old_ids})"
+        )
+    finally:
+        if name in {c.name for c in client.get_collections().collections}:
+            client.delete_collection(name)

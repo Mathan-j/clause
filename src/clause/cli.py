@@ -14,7 +14,7 @@ from clause.config import Settings, get_settings
 from clause.db.repository import replace_chunks, upsert_document
 from clause.db.session import make_engine, session_factory
 from clause.embed import Encoder
-from clause.index import index_strategy
+from clause.index import foreign_collections, index_strategy
 from clause.ingest.extract import ExtractionError, extract_document
 from clause.ingest.fetch import Fetcher, FetchError, RateLimiter
 from clause.ingest.validate import ValidationError
@@ -76,6 +76,22 @@ def index_all(*, session: Session, settings: Settings | None = None) -> dict[str
     """
     settings = settings or get_settings()
     client = QdrantClient(url=settings.qdrant_url)
+
+    # Unlike the test suite's fixture (tests/test_index.py), this production path
+    # warns rather than refuses: it only ever adds clause_* collections, so the
+    # blast radius of a misconfigured CLAUSE_QDRANT_URL is far smaller than a test
+    # that creates and deletes collections, and refusing outright would block a
+    # legitimate first run against a fresh shared instance. Make the
+    # misconfiguration visible; leave the decision with the operator.
+    foreign = foreign_collections([c.name for c in client.get_collections().collections])
+    if foreign:
+        print(
+            f"warning: Qdrant at {settings.qdrant_url} holds non-clause collection(s) "
+            f"{foreign!r}; this may be another project's instance sharing the URL. "
+            "Continuing anyway -- this command only ever adds clause_* collections.",
+            file=sys.stderr,
+        )
+
     encoder = Encoder(settings.embedding_model)
     return {
         strategy: index_strategy(client, encoder, session, strategy) for strategy in STRATEGIES
