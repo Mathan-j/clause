@@ -517,17 +517,17 @@ path. Every unit in section 5 is in that path except `cli`.
 
 | Test | Asserts |
 |---|---|
-| `test_offsets_roundtrip` | For every chunk of every ingested document, read back from Postgres: `documents.text[char_start:char_end] == chunks.text`. This is Phase 1's definition of done. |
-| `test_chunkers_slice_only` | Both strategies, over real fixtures and adversarial generated text (Unicode, whitespace runs, nested numbering): slice identity holds, spans ordered, no characters dropped |
-| `test_waf_page_is_rejected` | The captured block page, committed as a fixture, raises rather than parsing |
+| `test_every_chunk_slice_roundtrips_against_stored_source` (`tests/test_ingest_acceptance.py`) | For every chunk of every ingested document, read back from Postgres: `documents.text[char_start:char_end] == chunks.text`. This is Phase 1's definition of done. |
+| `test_fixed_window_chunks_are_pure_slices` (`tests/test_chunking.py`) / `test_invariant_holds_on_adversarial_input` (`tests/test_chunking_structural.py`) | Both strategies, over real fixtures and adversarial generated text (Unicode, whitespace runs, nested numbering): slice identity holds, spans ordered, no characters dropped |
+| `test_block_page_is_rejected_despite_http_200` (`tests/test_validate.py`) | The captured block page, committed as a fixture, raises rather than parsing |
 | `test_chrome_only_mismatch_is_accepted_when_header_matches` | A live fetch's `content_sha256` divergence with intact header identity is accepted, with a warning, not a failure (section 9) |
 | `test_header_identity_mismatch_is_fatal` | A live fetch's `content_sha256` divergence *and* a header identity divergence fails loudly |
 | `test_cached_chrome_only_mismatch_is_accepted_when_header_matches` | The same tolerance applies on the warm-cache path - the regression test for the strict-cache trap (section 9) |
 | `test_cached_header_identity_mismatch_is_fatal` | A cached file's header identity divergence fails loudly, same as a live fetch |
 | `test_cached_file_failing_content_gate_is_rejected` | A cached file that fails section 7.1 content validation (truncated, a block marker) is rejected before the hash check runs |
-| `test_extract_metadata` | Circular number, department reference and date parse from the real header line |
-| `test_ingest_is_idempotent` | Two runs produce identical rows and the second performs zero network calls |
-| `test_fetcher_rate_limit` | Minimum interval honoured, against a local stub server with a controlled clock |
+| `test_parse_header_reads_the_real_document` (`tests/test_extract.py`) | Circular number, department reference and date parse from the real header line |
+| **not implemented** | Two runs produce identical rows and the second performs zero network calls. No test in the suite asserts this; `test_ingest_is_idempotent`, named here in an earlier draft, was never written. |
+| `test_rate_limiter_waits_between_calls` (`tests/test_fetch.py`) | Minimum interval honoured, against a local stub server with a controlled clock |
 
 **No test touches `rbi.org.in`.** Fixtures are two or three real cached pages plus one
 captured block page, held in `tests/fixtures/` - test data, not bulk corpus

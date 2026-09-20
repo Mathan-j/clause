@@ -37,3 +37,21 @@ jobs:
       - run: uv run pytest
         env:
           CLAUSE_TEST_DATABASE_URL: postgresql+psycopg://clause:clause@localhost:5432/clause_test
+      - run: uv run python -m clause.cli gate
+        env:
+          # Same Postgres service the test suite uses above, pointed at the same
+          # `clause_test` database name (not a separate `clause` database, which
+          # this service never creates). `make ingest` never runs in CI, so by the
+          # time this step runs, the pytest step's own db_session fixture has left
+          # this schema torn down to nothing (its last use downgrades to `base`) --
+          # there is no corpus here to count.
+          #
+          # The gate tolerates that: `clause.cli._gate_chunk_counts` falls back to
+          # the committed report's own chunk_counts and prints why, so the
+          # chunk-count half of the fingerprint check is visibly skipped rather
+          # than silently comparing reports/eval.json to itself. Every other
+          # fingerprint field (manifest hash, golden set hash, embedding model,
+          # retrieval depth) and the recall@5-vs-baseline check are real checks
+          # against the committed artifact -- CI is checking that artifact's
+          # internal consistency and the baseline, not recomputing the corpus.
+          CLAUSE_DATABASE_URL: postgresql+psycopg://clause:clause@localhost:5432/clause_test

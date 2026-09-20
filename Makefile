@@ -1,4 +1,4 @@
-.PHONY: install lint test migrate ingest index eval serve up down
+.PHONY: install lint test migrate ingest index eval gate serve up down
 
 install:
 	uv sync
@@ -21,6 +21,9 @@ index:
 
 eval:
 	uv run python -m clause.cli eval
+
+gate:
+	uv run python -m clause.cli gate
 
 up:
 	docker compose up -d

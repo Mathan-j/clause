@@ -1,5 +1,6 @@
 import argparse
 import hashlib
+import json
 import math
 import subprocess
 import sys
@@ -21,6 +22,7 @@ from clause.db.repository import replace_chunks, upsert_document
 from clause.db.schema import ChunkRow, DocumentRow
 from clause.db.session import make_engine, session_factory
 from clause.embed import Encoder
+from clause.evaluation.gate import GateFailure, check
 from clause.evaluation.golden import (
     BUCKETS,
     GoldenQuestion,
@@ -62,6 +64,7 @@ GOLDEN_PATH = Path("data/golden/kyc-v1.jsonl")
 MANIFEST_PATH = Path("data/corpus/kyc.manifest.jsonl")
 DEFAULT_REPORT_MD = Path("reports/eval.md")
 DEFAULT_REPORT_JSON = Path("reports/eval.json")
+DEFAULT_BASELINE_JSON = Path("reports/baseline.json")
 
 #: The chance-baseline formula considers a random draw of exactly this many
 #: chunks, matching `recall_at_5` -- the figure it exists to give a floor for.
@@ -297,41 +300,152 @@ def run_eval(
     return report
 
 
-def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="clause")
-    sub = parser.add_subparsers(dest="command", required=True)
-    ing = sub.add_parser("ingest")
-    ing.add_argument("--manifest", type=Path, required=True)
-    sub.add_parser("index")
-    sub.add_parser("eval")
-    args = parser.parse_args(argv)
+def _gate_chunk_counts(
+    session: Session, report: dict[str, Any]
+) -> tuple[dict[str, int], list[str]]:
+    """Chunk counts for the gate's tree fingerprint, tolerating an empty database.
 
-    settings = get_settings()
+    CI never runs `make ingest`: its Postgres service exists for the test suite,
+    not for a real corpus, so by the time the gate runs there is either no
+    `chunks` table at all or a table with zero rows for both strategies. Either
+    way there is nothing live to count, so this falls back to the *committed
+    report's own* `chunk_counts`.
 
-    if args.command == "index":
-        engine = make_engine(settings.database_url)
-        with session_factory(engine)() as session:
-            counts = index_all(session=session, settings=settings)
-        for strategy, count in counts.items():
-            print(f"indexed {count} point(s) into clause_{strategy}", file=sys.stderr)
-        return 0
+    That fallback makes the `chunk_counts` half of the fingerprint check
+    compare `reports/eval.json` to itself -- it cannot fail, in precisely the
+    environment where the gate actually runs. A check that cannot fire must at
+    minimum announce that it did not run: the second return value is the list
+    of notes the caller must print, so a passing gate is never read as having
+    verified this field.
+    """
+    try:
+        counts = {
+            strategy: (
+                session.scalar(
+                    sa.select(sa.func.count())
+                    .select_from(ChunkRow)
+                    .where(ChunkRow.strategy == strategy)
+                )
+                or 0
+            )
+            for strategy in STRATEGIES
+        }
+    except sa.exc.SQLAlchemyError as exc:
+        return (
+            dict(report.get("fingerprint", {}).get("chunk_counts", {})),
+            [
+                "chunk-count fingerprint check skipped: the database is unreachable "
+                f"or has no corpus ({exc.__class__.__name__}). Falling back to the "
+                "committed report's own chunk_counts as a stand-in for the working "
+                "tree's -- this means that field's comparison compares "
+                "reports/eval.json to itself and cannot fail. This is expected in "
+                "CI, which never runs `make ingest`; it is not expected on a "
+                "developer machine with a populated database."
+            ],
+        )
 
-    if args.command == "eval":
-        run_eval(settings=settings)
-        return 0
+    if sum(counts.values()) == 0:
+        return (
+            dict(report.get("fingerprint", {}).get("chunk_counts", {})),
+            [
+                "chunk-count fingerprint check skipped: the database has zero "
+                "chunks for every strategy. Falling back to the committed report's "
+                "own chunk_counts as a stand-in for the working tree's -- this "
+                "means that field's comparison compares reports/eval.json to "
+                "itself and cannot fail. This is expected in CI, which never runs "
+                "`make ingest`; it is not expected on a developer machine with a "
+                "populated database."
+            ],
+        )
+    return counts, []
+
+
+def _rebuild_tree_fingerprint(
+    report: dict[str, Any], *, session: Session, settings: Settings
+) -> tuple[dict[str, Any], list[str]]:
+    """Rebuild the fingerprint from the working tree, the same way `run_eval`
+    does -- but without needing Qdrant, the embedding model or retrieval,
+    since the gate only ever compares this dict's fields against the
+    committed report, never runs a search itself.
+    """
+    chunk_counts, notes = _gate_chunk_counts(session, report)
+    fingerprint = {
+        "manifest_sha256": _sha256_file(MANIFEST_PATH),
+        "chunk_counts": chunk_counts,
+        "embedding_model": settings.embedding_model,
+        "retrieval_depth": RETRIEVAL_DEPTH,
+        "golden_path": GOLDEN_PATH.as_posix(),
+        "golden_sha256": _sha256_file(GOLDEN_PATH),
+        "git_commit": _git_commit(),
+    }
+    return fingerprint, notes
+
+
+def run_gate(
+    *,
+    report_path: Path = DEFAULT_REPORT_JSON,
+    baseline_path: Path = DEFAULT_BASELINE_JSON,
+    settings: Settings | None = None,
+) -> None:
+    """Load the committed report and baseline, rebuild the tree fingerprint,
+    and raise `GateFailure` if `check()` finds a problem.
+
+    Every note and every failure is printed to stderr before this returns or
+    raises, so a reader watching CI output sees what ran, what was skipped
+    and why, and what failed -- never just an exit code.
+    """
+    settings = settings or get_settings()
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+
+    baseline: dict[str, Any] | None = None
+    if baseline_path.exists():
+        baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
+    else:
+        print(
+            f"NOTE: no baseline at {baseline_path} -- nothing to regress against "
+            "(a first run, or a baseline deliberately not yet committed). Only "
+            "the fingerprint is checked.",
+            file=sys.stderr,
+        )
 
     engine = make_engine(settings.database_url)
     with session_factory(engine)() as session:
-        failures = ingest(args.manifest, session=session, settings=settings)
+        tree_fingerprint, notes = _rebuild_tree_fingerprint(
+            report, session=session, settings=settings
+        )
+
+    for note in notes:
+        print(f"NOTE: {note}", file=sys.stderr)
+
+    problems = check(report, baseline, tree_fingerprint)
+    for problem in problems:
+        print(f"GATE FAILURE: {problem}", file=sys.stderr)
+    if problems:
+        raise GateFailure("; ".join(problems))
+
+
+def _cmd_index(settings: Settings) -> int:
+    engine = make_engine(settings.database_url)
+    with session_factory(engine)() as session:
+        counts = index_all(session=session, settings=settings)
+    for strategy, count in counts.items():
+        print(f"indexed {count} point(s) into clause_{strategy}", file=sys.stderr)
+    return 0
+
+
+def _cmd_ingest(manifest: Path, settings: Settings) -> int:
+    engine = make_engine(settings.database_url)
+    with session_factory(engine)() as session:
+        failures = ingest(manifest, session=session, settings=settings)
 
     if failures:
         print(f"\n{len(failures)} document(s) failed: {', '.join(failures)}", file=sys.stderr)
         return 1
 
-    entry_count = len(load_manifest(args.manifest))
+    entry_count = len(load_manifest(manifest))
     if entry_count == 0:
         print(
-            f"\nmanifest {args.manifest} contains no entries -- ingested 0 documents. "
+            f"\nmanifest {manifest} contains no entries -- ingested 0 documents. "
             "This is not success: PROMPT.md's Phase 1 definition of done requires "
             "at least 50 real documents.",
             file=sys.stderr,
@@ -340,6 +454,37 @@ def main(argv: list[str] | None = None) -> int:
 
     print(f"ingest complete, all {entry_count} document(s) succeeded", file=sys.stderr)
     return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(prog="clause")
+    sub = parser.add_subparsers(dest="command", required=True)
+    ing = sub.add_parser("ingest")
+    ing.add_argument("--manifest", type=Path, required=True)
+    sub.add_parser("index")
+    sub.add_parser("eval")
+    gate = sub.add_parser("gate")
+    gate.add_argument("--report", type=Path, default=DEFAULT_REPORT_JSON)
+    gate.add_argument("--baseline", type=Path, default=DEFAULT_BASELINE_JSON)
+    args = parser.parse_args(argv)
+
+    settings = get_settings()
+
+    if args.command == "index":
+        return _cmd_index(settings)
+
+    if args.command == "eval":
+        run_eval(settings=settings)
+        return 0
+
+    if args.command == "gate":
+        try:
+            run_gate(report_path=args.report, baseline_path=args.baseline, settings=settings)
+        except GateFailure:
+            return 1
+        return 0
+
+    return _cmd_ingest(args.manifest, settings)
 
 
 if __name__ == "__main__":
