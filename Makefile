@@ -19,6 +19,9 @@ ingest: migrate
 index:
 	uv run python -m clause.cli index
 
+eval:
+	uv run python -m clause.cli eval
+
 up:
 	docker compose up -d
 

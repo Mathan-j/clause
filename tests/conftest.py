@@ -10,7 +10,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import Session
 
-from clause.cli import ingest
+from clause.cli import ingest, run_eval
 from clause.sources.manifest import load_manifest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -199,3 +199,24 @@ def ingested(db_session: Session) -> bool:
     assert not failures, f"ingest reported {len(failures)} failed document(s): {failures}"
     db_session.commit()
     return True
+
+
+@pytest.fixture
+def evaluated(db_session: Session, tmp_path: Path) -> tuple[Path, Path]:
+    """Run the real evaluation once, against the warm cache and a live Qdrant.
+
+    `db_session` is a dependency only for its skip-if-no-Postgres behaviour --
+    `run_eval()` opens its own session against `CLAUSE_DATABASE_URL` (the real,
+    frozen corpus), not against this fixture's throwaway `clause_test` schema.
+
+    Writes to `tmp_path`, never to `reports/`. `reports/eval.md` and
+    `reports/eval.json` are committed artifacts that Task 11's CI gate exists
+    to protect; a test run that wrote over them on every `pytest` invocation
+    would silently replace a good report with a bad one, or leave the tree
+    dirty after every green test suite. `run_eval` takes output paths for
+    exactly this reason.
+    """
+    md_path = tmp_path / "eval.md"
+    json_path = tmp_path / "eval.json"
+    run_eval(md_path=md_path, json_path=json_path)
+    return md_path, json_path
