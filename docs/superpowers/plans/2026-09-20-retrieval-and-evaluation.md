@@ -2334,10 +2334,7 @@ def test_the_report_records_how_ground_truth_was_made(evaluated: None) -> None:
     assert sum(report["golden_provenance"].values()) >= 60
 ```
 
-Add to `tests/conftest.py`:
-
-```python
-Add `run_eval` to conftest's existing `from clause.cli import ingest` line, then:
+Add `run_eval` to `tests/conftest.py`'s existing `from clause.cli import ingest` line, then add this fixture:
 
 ```python
 @pytest.fixture
