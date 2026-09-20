@@ -5,6 +5,7 @@ import time
 import pytest
 from sentence_transformers import SentenceTransformer
 
+from clause import embed
 from clause.embed import DEFAULT_MODEL, Encoder, ModelNotCachedError
 
 
@@ -69,8 +70,51 @@ def test_default_model_is_the_documented_baseline() -> None:
     assert DEFAULT_MODEL == "sentence-transformers/all-MiniLM-L6-v2"
 
 
+def test_encoder_requests_local_files_only(monkeypatch: pytest.MonkeyPatch) -> None:
+    """THE GUARD. Pins that Encoder's construction call actually passes
+    local_files_only=True to SentenceTransformer -- this is the property our
+    code is responsible for, and the one that must fail the moment someone
+    removes the argument.
+
+    It cannot be tested by constructing a real Encoder against the genuinely
+    uncached case: _is_cached() raises ModelNotCachedError before
+    SentenceTransformer is ever called, so that path never reaches
+    local_files_only at all. The backstop only matters in the partial-cache
+    case (repo present, one file missing), which cannot be manufactured
+    through the public API without touching the real HuggingFace cache or the
+    network. So this pins the call site directly: force _is_cached() to
+    report the model as cached, replace SentenceTransformer with a spy that
+    records its kwargs, construct an Encoder, and assert on what was passed.
+
+    Deleting local_files_only=True from src/clause/embed.py makes this test
+    fail. See test_local_files_only_fails_rather_than_downloads_an_uncached_variant
+    below for the complementary test of what that argument actually does at
+    the library level -- that one keeps passing even if the argument is
+    removed from our code, which is exactly why it is not the guard.
+    """
+    captured: dict[str, object] = {}
+
+    def fake_sentence_transformer(*args: object, **kwargs: object) -> object:
+        captured.update(kwargs)
+        return object()
+
+    monkeypatch.setattr(embed, "_is_cached", lambda _model_name: True)
+    monkeypatch.setattr(embed, "SentenceTransformer", fake_sentence_transformer)
+
+    embed.Encoder()
+
+    assert captured.get("local_files_only") is True
+
+
 def test_local_files_only_fails_rather_than_downloads_an_uncached_variant() -> None:
-    """local_files_only=True is what actually closes the cache-check gap.
+    """LIBRARY BEHAVIOUR, not the guard. Documents why local_files_only=True is
+    the right argument to pin above: it is huggingface_hub's actual mechanism
+    for turning a cache miss into an immediate raise instead of a network
+    download. Deleting local_files_only=True from src/clause/embed.py does NOT
+    make this test fail -- it calls SentenceTransformer directly with the
+    argument hardcoded, not through Encoder -- so it cannot serve as a
+    regression check on our code; see test_encoder_requests_local_files_only
+    above for that.
 
     _is_cached() only proves the repo is present somewhere in the HuggingFace
     cache, not that the specific file a load needs is among the files on disk
