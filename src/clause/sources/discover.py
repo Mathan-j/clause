@@ -32,16 +32,16 @@ Usage:
 
 import argparse
 import hashlib
-import re
 import sys
 import time
 from pathlib import Path
 
 import httpx
 
-from clause.ingest.extract import HEADER, ExtractionError, canonical_text, parse_header
+from clause.ingest.extract import ExtractionError, canonical_text, parse_header
 from clause.ingest.validate import ValidationError, validate_response
 from clause.models import ManifestEntry
+from clause.rbi_format import HEADER, SALUTATION
 from clause.sources.manifest import load_manifest, write_manifest
 
 URL_TEMPLATE = "https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id={rbi_id}&Mode=0"
@@ -95,21 +95,6 @@ def build_entry(rbi_id: int, url: str, raw: bytes, title: str) -> ManifestEntry:
         published_date=published,
         content_sha256=_content_sha256(text),
     )
-
-
-# Many RBI circulars address a salutation to regulated entities between the header
-# line and the actual subject line, e.g.:
-#   "...September 18, 2026  The Chairpersons/ CEOs of ... All India Financial
-#   Institutions  Madam/Dear Sir,  Implementation of Section 51A of UAPA, 1967: ..."
-# Without skipping past the salutation, `_title_of` returns the addressee list
-# instead of the subject line. Spellings observed in the corpus: "Madam/Dear Sir,",
-# "Madam/ Dear Sir,", "Dear Sir/Madam,", "Dear Sir / Madam,", "Dear Sir/ Madam,",
-# "Dear Madam,", "Madam,", "Dear Sir," — this pattern is not guaranteed exhaustive
-# against spellings RBI has not yet used.
-SALUTATION = re.compile(
-    r"(?:Madam\s*/?\s*Dear Sir|Dear Sir\s*/?\s*Madam|Dear Madam|Madam|Dear Sir)\s*,",
-    re.IGNORECASE,
-)
 
 
 def _title_of(text: str) -> str:

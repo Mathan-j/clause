@@ -3,16 +3,12 @@ import re
 import unicodedata
 from datetime import date, datetime
 
+from clause.entities import parse_regulated_entities
 from clause.htmltext import document_text
 from clause.models import Document, ManifestEntry
+from clause.rbi_format import HEADER
 
 MIN_TEXT_CHARS = 500
-
-HEADER = re.compile(
-    r"(?P<circular_no>RBI/\d{4}-\d{2}/\d+)\s+"
-    r"(?P<dept_ref>[A-Z]{2,}(?:\.[A-Z0-9]+)+[A-Z0-9./-]*)\s+"
-    r"(?P<published>[A-Z][a-z]+ \d{1,2}, \d{4})"
-)
 
 _WS = re.compile(r"[ \t\xa0]+")
 
@@ -82,13 +78,6 @@ def _classify(title: str, body: str) -> str:
 
 
 def extract_document(entry: ManifestEntry, raw: bytes, *, fetched_at: datetime) -> Document:
-    # Deferred: clause.entities imports HEADER from this module at its own module
-    # top, so importing clause.entities from here at module top would be a real
-    # circular import (whichever module loads first fails looking up the other's
-    # not-yet-defined name). Importing it here, at call time, breaks the cycle
-    # without weakening either module's public interface.
-    from clause.entities import parse_regulated_entities  # noqa: PLC0415
-
     text = canonical_text(raw.decode("utf-8", errors="replace"))
     if len(text) < MIN_TEXT_CHARS:
         raise ExtractionError(f"extracted text too short: {len(text)} chars")

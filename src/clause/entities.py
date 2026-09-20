@@ -11,7 +11,7 @@ That block is structured data the corpus already contains, and it is what makes
 
 import re
 
-from clause.ingest.extract import HEADER
+from clause.rbi_format import HEADER, SALUTATION
 
 #: Closed vocabulary. A value outside it is not emitted, because a filter whose
 #: values are open-ended cannot be offered in a UI or asserted in a test.
@@ -34,15 +34,22 @@ ENTITY_VOCABULARY: tuple[str, ...] = (
     "Urban Co-operative Banks",
 )
 
-SALUTATION = re.compile(
-    r"(?:Madam\s*/?\s*Dear Sir|Dear Sir\s*/?\s*Madam|Dear Madam|Madam|Dear Sir)\s*,",
-    re.IGNORECASE,
-)
-
 #: The addressee block sits between the header and the salutation. Scanning only
 #: that window is what keeps a passing body mention of "Payment Banks" out of the
 #: filter values.
 ADDRESSEE_WINDOW_CHARS = 800
+
+#: RBI addresses roughly a quarter of this corpus's circulars to every regulated
+#: entity class at once -- "The Chairpersons/ CEOs of all the Regulated Entities" --
+#: rather than naming classes individually. Spacing varies in the corpus: "/ CEOs",
+#: "/CEOs", " / CEOs". This is not a vocabulary gap to fill by guessing; it is the
+#: document stating its own audience as universal. Recording it as an empty list
+#: would assert the opposite of what the text says, and would make a per-entity
+#: filter silently *exclude* a document that legitimately governs that entity --
+#: worse than an undiscriminating filter, a wrong one. So this one case is expanded
+#: to the full vocabulary by an explicit rule, not invented: the document said "all",
+#: and "all" is read plainly, from `ENTITY_VOCABULARY` as it stands today.
+_BLANKET_ADDRESSEE = re.compile(r"all\s+the\s+regulated\s+entities", re.IGNORECASE)
 
 
 def parse_regulated_entities(text: str) -> tuple[str, ...]:
@@ -50,7 +57,10 @@ def parse_regulated_entities(text: str) -> tuple[str, ...]:
 
     Returns an empty tuple when there is no header, no salutation, or no known
     entity in between. Never guesses: an entity filter is only useful if a
-    document's absence from it is trustworthy.
+    document's absence from it is trustworthy. The one exception is the blanket
+    "all the Regulated Entities" addressee (see `_BLANKET_ADDRESSEE`), which is
+    expanded to the full vocabulary because the document itself says "all" --
+    that is honouring a stated audience, not inventing one.
     """
     header = HEADER.search(text)
     if header is None:
@@ -60,5 +70,7 @@ def parse_regulated_entities(text: str) -> tuple[str, ...]:
     if salutation is None:
         return ()
     block = window[: salutation.start()]
+    if _BLANKET_ADDRESSEE.search(block):
+        return tuple(sorted(ENTITY_VOCABULARY))
     found = {name for name in ENTITY_VOCABULARY if name.lower() in block.lower()}
     return tuple(sorted(found))

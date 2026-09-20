@@ -72,10 +72,12 @@ def test_replace_chunks_swaps_only_that_strategy(db_session) -> None:
 
 
 def test_chunk_rows_store_their_own_provenance(db_session) -> None:
-    upsert_document(db_session, DOC)
-    replace_chunks(db_session, DOC.doc_id, "fixed_window", FixedWindowChunker(200, 50).chunk(DOC))
+    doc = dataclasses.replace(DOC, regulated_entity=("Commercial Banks", "Payment Banks"))
+    upsert_document(db_session, doc)
+    replace_chunks(db_session, doc.doc_id, "fixed_window", FixedWindowChunker(200, 50).chunk(doc))
     db_session.commit()
     row = db_session.scalars(select(ChunkRow)).first()
     assert row is not None
-    assert row.source_url == DOC.url
-    assert row.doc_type == DOC.doc_type
+    assert row.source_url == doc.url
+    assert row.doc_type == doc.doc_type
+    assert row.regulated_entity == list(doc.regulated_entity)

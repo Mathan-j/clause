@@ -44,11 +44,12 @@ def test_fixed_window_covers_every_character(text: str) -> None:
 
 
 def test_chunks_carry_their_own_provenance() -> None:
-    doc = _doc("x" * 1000)
+    doc = dataclasses.replace(_doc("x" * 1000), regulated_entity=("Commercial Banks",))
     chunk = FixedWindowChunker(window_chars=200, overlap_chars=50).chunk(doc)[0]
     assert chunk.source_url == doc.url
     assert chunk.doc_type == doc.doc_type
     assert chunk.effective_date == doc.effective_date
+    assert chunk.regulated_entity == doc.regulated_entity
 
 
 def test_ordinals_are_dense_and_ascending() -> None:
