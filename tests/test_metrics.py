@@ -89,3 +89,24 @@ def test_mrr_scores_a_rank_beyond_the_cutoff_as_zero() -> None:
 def test_retrieval_depth_is_ten() -> None:
     """Pinned by the spec: every metric is computed from one list of 10."""
     assert RETRIEVAL_DEPTH == 10
+
+
+def test_a_reversed_span_is_rejected() -> None:
+    with pytest.raises(ValueError, match="forward"):
+        Span(doc_id="d1", char_start=200, char_end=100)
+
+
+def test_a_zero_width_span_is_rejected() -> None:
+    """A zero-width span contains no characters, so it can share none."""
+    with pytest.raises(ValueError, match="non-empty"):
+        Span(doc_id="d1", char_start=100, char_end=100)
+
+
+def test_a_negative_offset_is_rejected() -> None:
+    with pytest.raises(ValueError, match="negative"):
+        Span(doc_id="d1", char_start=-1, char_end=10)
+
+
+def test_retrieved_enforces_the_same_invariant() -> None:
+    with pytest.raises(ValueError, match="forward"):
+        Retrieved(doc_id="d1", char_start=50, char_end=50, score=1.0)

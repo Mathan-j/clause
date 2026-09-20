@@ -16,11 +16,23 @@ RETRIEVAL_DEPTH = 10
 
 @dataclass(frozen=True, slots=True)
 class Span:
-    """A half-open character range `[char_start, char_end)` within one document."""
+    """A half-open character range `[char_start, char_end)` within one document.
+
+    Invariant: `char_start >= 0` and `char_start < char_end` (non-empty, forward, non-negative).
+    """
 
     doc_id: str
     char_start: int
     char_end: int
+
+    def __post_init__(self) -> None:
+        if self.char_start < 0:
+            raise ValueError(f"char_start must not be negative: {self.char_start}")
+        if self.char_start >= self.char_end:
+            raise ValueError(
+                f"span must be non-empty and forward: got "
+                f"[{self.char_start}:{self.char_end}] in {self.doc_id!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -29,6 +41,15 @@ class Retrieved:
     char_start: int
     char_end: int
     score: float
+
+    def __post_init__(self) -> None:
+        if self.char_start < 0:
+            raise ValueError(f"char_start must not be negative: {self.char_start}")
+        if self.char_start >= self.char_end:
+            raise ValueError(
+                f"span must be non-empty and forward: got "
+                f"[{self.char_start}:{self.char_end}] in {self.doc_id!r}"
+            )
 
 
 def overlaps(a: Span, b: Span) -> bool:
