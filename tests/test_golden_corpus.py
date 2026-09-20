@@ -69,9 +69,9 @@ def test_every_question_declares_a_recognised_provenance() -> None:
 def test_no_question_quotes_its_source_verbatim() -> None:
     """A question echoing its source measures lexical overlap, not retrieval."""
     questions = load_golden(GOLDEN)
-    texts = _corpus_texts()
+    texts, reason = _corpus_texts()
     if not texts:
-        pytest.skip(INGEST_HINT)
+        pytest.skip(_skip_reason(reason))
     offenders = []
     for q in questions:
         for a in q.answers:
@@ -90,9 +90,9 @@ def test_every_span_resolves_against_the_stored_corpus() -> None:
     fixture here would skip on every run, silently, forever -- a green result
     concealing the one check that pins every labelled offset to real text.
     """
-    docs = _corpus_documents()
+    docs, reason = _corpus_documents()
     if not docs:
-        pytest.skip(INGEST_HINT)
+        pytest.skip(_skip_reason(reason))
     validate_spans(load_golden(GOLDEN), docs)
 
 
@@ -128,9 +128,9 @@ def test_the_heading_span_tag_matches_the_questions_that_carry_one() -> None:
 
 def test_heading_tagged_spans_really_sit_inside_a_document_heading() -> None:
     """Cross-check the tag against the corpus, so neither side can rot unnoticed."""
-    texts = _corpus_texts()
+    texts, reason = _corpus_texts()
     if not texts:
-        pytest.skip(INGEST_HINT)
+        pytest.skip(_skip_reason(reason))
     actual = set()
     for q in load_golden(GOLDEN):
         limits = [_heading_end(texts[a.doc_id]) for a in q.answers]
@@ -148,30 +148,44 @@ def _heading_end(text: str) -> int:
     return min(offsets) if offsets else 0
 
 
-def _corpus_documents() -> dict[str, tuple[str, str]]:
-    """`{doc_id: (text, sha256)}` from the application database, or `{}` if it
-    cannot be reached at all -- a hardcoded fallback host/port (`_db_url()`
-    below) has nothing listening on it in CI, where only
-    `CLAUSE_TEST_DATABASE_URL` is set. That must skip via `INGEST_HINT`, the
-    same as a database that connects fine but holds no corpus, rather than
-    hard-failing with a raw `OperationalError` in the one environment that
-    matters most.
+def _corpus_documents() -> tuple[dict[str, tuple[str, str]], str | None]:
+    """`({doc_id: (text, sha256)}, connection_error)` from the application
+    database.
+
+    `connection_error` is `None` whenever the database was actually reached
+    (whether or not it holds a corpus); otherwise it is the exception text.
+    A hardcoded fallback host/port (`_db_url()` below) has nothing listening
+    on it in CI, where only `CLAUSE_TEST_DATABASE_URL` is set, so that case
+    must skip rather than hard-fail with a raw `OperationalError` in the one
+    environment that matters most -- but folding it into the *same* generic
+    "nobody ingested" hint as a merely-empty database would be misleading:
+    in CI the reason would then always read "nobody ingested", never the
+    true "nobody could connect". `_skip_reason()` below is what tells them
+    apart for the caller.
     """
+    engine = sa.create_engine(_db_url())
     try:
-        engine = sa.create_engine(_db_url())
         with Session(engine) as session:
             docs = {
                 d.doc_id: (d.text, d.sha256)
                 for d in session.scalars(sa.select(DocumentRow)).all()
             }
+    except sa.exc.SQLAlchemyError as exc:
+        return {}, str(exc)
+    finally:
         engine.dispose()
-    except sa.exc.SQLAlchemyError:
-        return {}
-    return docs
+    return docs, None
 
 
-def _corpus_texts() -> dict[str, str]:
-    return {doc_id: text for doc_id, (text, _sha256) in _corpus_documents().items()}
+def _corpus_texts() -> tuple[dict[str, str], str | None]:
+    docs, reason = _corpus_documents()
+    return {doc_id: text for doc_id, (text, _sha256) in docs.items()}, reason
+
+
+def _skip_reason(connection_error: str | None) -> str:
+    if connection_error is not None:
+        return f"could not connect to the application database ({_db_url()}): {connection_error}"
+    return INGEST_HINT
 
 
 def _longest_common_run(a: str, b: str) -> int:

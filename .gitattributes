@@ -12,3 +12,14 @@
 # byte-for-byte and never normalised. Without this the hash check passes on
 # Windows and fails on Linux CI.
 plans/data/** -text
+
+# The corpus manifest and golden set are hashed on every `make eval`/`make
+# gate` run (clause.cli._sha256_file) into manifest_sha256/golden_sha256,
+# which the gate compares byte-for-byte against the committed report. This
+# is the exact same lesson as plans/data/** above, generalised late: without
+# it, `* text=auto` normalises these files' line endings on checkout, so the
+# hash computed on a CRLF (Windows) checkout differs from the hash computed
+# on an LF (Linux CI, and the blob itself) checkout of the identical commit
+# -- meaning the gate could fail on its very first CI run over nothing but a
+# platform difference, never a real regression.
+data/** -text

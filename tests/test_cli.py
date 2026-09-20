@@ -6,6 +6,7 @@ foreign-collection warning path (see clause.index.foreign_collections) fires
 without ever refusing to run.
 """
 
+import ast
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -191,3 +192,75 @@ def test_retrieval_code_sha256_is_stable_across_line_endings(
     nix_hash = cli._retrieval_code_sha256([Path("code.py")])
 
     assert win_hash == nix_hash
+
+
+# ---------------------------------------------------------------------------
+# RETRIEVAL_CODE_PATHS membership: dropping a file, or adding a new one
+# without listing it, must be caught rather than silently going unhashed
+# until the next time someone happens to notice (fix round 3, blocker N3).
+# ---------------------------------------------------------------------------
+
+
+def test_retrieval_code_paths_covers_every_chunking_module() -> None:
+    chunking_dir = Path("src/clause/chunking")
+    on_disk = set(chunking_dir.glob("*.py"))
+    listed = {p for p in cli.RETRIEVAL_CODE_PATHS if p.parent == chunking_dir}
+    assert on_disk, "no .py files found under src/clause/chunking -- test itself is broken"
+    assert on_disk == listed, (
+        f"RETRIEVAL_CODE_PATHS disagrees with the files on disk under "
+        f"{chunking_dir}: on disk but not listed: {on_disk - listed}; "
+        f"listed but not on disk: {listed - on_disk}"
+    )
+
+
+def test_retrieval_code_paths_covers_every_module_retrieve_directly_imports() -> None:
+    """Every `clause.*` module that `clause.retrieve` itself directly imports
+    must be listed. Direct imports only, not the full transitive closure --
+    `clause.index` (one of retrieve.py's direct imports) itself imports
+    `clause.db.schema` for indexing, which cannot move a number this eval
+    computes and is deliberately not part of this set; walking the whole
+    graph would pull that in too and silently contradict the documented
+    exclusions above it.
+    """
+    retrieve_path = Path("src/clause/retrieve.py")
+    tree = ast.parse(retrieve_path.read_text(encoding="utf-8"))
+    imported_modules = {
+        node.module
+        for node in ast.walk(tree)
+        if isinstance(node, ast.ImportFrom) and node.module and node.module.startswith("clause")
+    }
+    assert imported_modules, "retrieve.py imports no clause.* module -- test itself is broken"
+
+    expected = {Path("src") / (mod.replace(".", "/") + ".py") for mod in imported_modules}
+    expected.add(retrieve_path)
+
+    listed = set(cli.RETRIEVAL_CODE_PATHS)
+    missing = expected - listed
+    assert not missing, (
+        f"retrieve.py imports {sorted(imported_modules)}, but RETRIEVAL_CODE_PATHS "
+        f"is missing: {missing}"
+    )
+
+
+def test_retrieval_code_paths_includes_golden_py() -> None:
+    """`golden.py` parses the committed golden set into the `GoldenQuestion`
+    objects `evaluate()` scores against; `golden_sha256` pins the file's
+    bytes, not what the parser does with them. Fix round 3, blocker 2:
+    proved live by the whole-branch reviewer -- shrinking every acceptable
+    span in `answer_spans()` to one character (which would collapse recall
+    for most questions) left every other fingerprint field unchanged and
+    the gate passed.
+    """
+    assert Path("src/clause/evaluation/golden.py") in cli.RETRIEVAL_CODE_PATHS
+
+
+def test_retrieval_code_paths_includes_scoring_py() -> None:
+    """`evaluate()`/`bucket_result()`/`chance_baseline_for_strategy()` moved
+    out of `cli.py` into `clause.evaluation.scoring` specifically so they
+    could be hashed -- `cli.py` itself is excluded (see
+    `RETRIEVAL_CODE_PATHS`'s own comment). Fix round 3, blocker 3: proved
+    live by the whole-branch reviewer -- hardcoding `recall_at_1=1.0` in
+    what was then `cli._bucket_result` made every recall@1 in the report a
+    lie and the gate still passed.
+    """
+    assert Path("src/clause/evaluation/scoring.py") in cli.RETRIEVAL_CODE_PATHS

@@ -1,7 +1,6 @@
 import argparse
 import hashlib
 import json
-import math
 import subprocess
 import sys
 from collections.abc import Sequence
@@ -23,52 +22,27 @@ from clause.db.schema import ChunkRow, DocumentRow
 from clause.db.session import make_engine, session_factory
 from clause.embed import Encoder
 from clause.evaluation.gate import GateFailure, check
-from clause.evaluation.golden import (
-    BUCKETS,
-    GoldenQuestion,
-    load_golden,
-    provenance_split,
-    validate_spans,
-)
-from clause.evaluation.metrics import (
-    RETRIEVAL_DEPTH,
-    Span,
-    first_hit_rank,
-    mrr,
-    overlaps,
-    recall_at_k,
-)
+from clause.evaluation.golden import load_golden, provenance_split, validate_spans
+from clause.evaluation.metrics import RETRIEVAL_DEPTH, Span
 from clause.evaluation.report import (
-    BucketResult,
     ChanceBaseline,
     Fingerprint,
     StrategyResult,
     build_report,
     write_report,
 )
+from clause.evaluation.scoring import STRATEGIES, chance_baseline_for_strategy, evaluate
 from clause.index import foreign_collections, index_strategy
 from clause.ingest.extract import ExtractionError, extract_document
 from clause.ingest.fetch import Fetcher, FetchError, RateLimiter
 from clause.ingest.validate import ValidationError
-from clause.retrieve import search
 from clause.sources.manifest import load_manifest
-
-# The two chunking strategies produced by `_chunkers()` above, indexed into
-# their own Qdrant collection each. Kept as a literal tuple here rather than
-# derived from `_chunkers()` because that helper builds chunker *instances*
-# (it needs `settings`), and indexing only needs the strategy names already
-# stored on `ChunkRow.strategy`.
-STRATEGIES = (FixedWindowChunker.name, StructuralChunker.name)
 
 GOLDEN_PATH = Path("data/golden/kyc-v1.jsonl")
 MANIFEST_PATH = Path("data/corpus/kyc.manifest.jsonl")
 DEFAULT_REPORT_MD = Path("reports/eval.md")
 DEFAULT_REPORT_JSON = Path("reports/eval.json")
 DEFAULT_BASELINE_JSON = Path("reports/baseline.json")
-
-#: The chance-baseline formula considers a random draw of exactly this many
-#: chunks, matching `recall_at_5` -- the figure it exists to give a floor for.
-_CHANCE_BASELINE_K = 5
 
 
 def _chunkers(settings: Settings) -> list[FixedWindowChunker | StructuralChunker]:
@@ -141,107 +115,85 @@ def index_all(*, session: Session, settings: Settings | None = None) -> dict[str
     }
 
 
-def _bucket_result(ranks: Sequence[int | None]) -> BucketResult:
-    return BucketResult(
-        n=len(ranks),
-        recall_at_1=recall_at_k(ranks, 1),
-        recall_at_5=recall_at_k(ranks, 5),
-        recall_at_10=recall_at_k(ranks, 10),
-        mrr_at_10=mrr(ranks),
-    )
-
-
-def evaluate(
-    client: QdrantClient,
-    encoder: Encoder,
-    questions: Sequence[GoldenQuestion],
-    *,
-    depth: int = RETRIEVAL_DEPTH,
-) -> list[StrategyResult]:
-    """Score both strategies against the golden set."""
-    results: list[StrategyResult] = []
-    for strategy in STRATEGIES:
-        ranks_overall: list[int | None] = []
-        ranks_by_bucket: dict[str, list[int | None]] = {b: [] for b in BUCKETS}
-        for question in questions:
-            hits = search(client, encoder, strategy, question.question, limit=depth)
-            rank = first_hit_rank(
-                [h.as_retrieved() for h in hits], question.answer_spans()
-            )
-            ranks_overall.append(rank)
-            ranks_by_bucket[question.bucket].append(rank)
-        results.append(
-            StrategyResult(
-                strategy=strategy,
-                overall=_bucket_result(ranks_overall),
-                per_bucket={b: _bucket_result(r) for b, r in ranks_by_bucket.items()},
-            )
-        )
-    return results
-
-
-def _chance_baseline_for_strategy(
-    questions: Sequence[GoldenQuestion], chunk_spans: Sequence[Span]
-) -> ChanceBaseline:
-    """The measured probability a uniform random top-5 already contains an
-    acceptable chunk, for one strategy's live chunk corpus.
-
-    See `clause.evaluation.report.ChanceBaseline`'s docstring for the method
-    this implements exactly: an acceptable chunk for a question is one whose
-    span overlaps any acceptable answer span in the same document (not
-    double-counted); with `N` chunks in the collection and `m` acceptable
-    ones, `P = 1 - C(N-m, 5) / C(N, 5)`. `recall_at_5` is the mean of `P` over
-    every question; `worst_question_recall_at_5` is the maximum.
-    """
-    n = len(chunk_spans)
-    total = math.comb(n, _CHANCE_BASELINE_K)
-    probabilities: list[float] = []
-    for question in questions:
-        answers = question.answer_spans()
-        m = sum(1 for span in chunk_spans if any(overlaps(span, a) for a in answers))
-        # math.comb(a, b) is 0 when b > a, which is exactly right here: once
-        # m acceptable chunks account for more than N - 5 of the corpus, a
-        # random draw of 5 can no longer avoid one, so P must be 1.
-        remaining = math.comb(n - m, _CHANCE_BASELINE_K)
-        p = 1.0 if total == 0 else 1 - remaining / total
-        probabilities.append(p)
-    return ChanceBaseline(
-        recall_at_5=sum(probabilities) / len(probabilities),
-        worst_question_recall_at_5=max(probabilities),
-    )
-
-
 def _sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 #: The retrieval path: source files whose change can alter a recall, MRR or
 #: chance-baseline number in `reports/eval.md` without any *other* fingerprint
-#: field moving. `retrieve.py` and `embed.py` are what `evaluate()` calls
-#: through on every question; `index.py` and `chunking/*.py` because they
-#: produce the corpus `chunk_counts` describes only as a count, not as
-#: content -- two different chunkings can share a chunk count; `metrics.py`
-#: because it defines what counts as a hit and how recall/MRR are computed.
+#: field moving.
 #:
-#: Deliberately *not* every `.py` file in the repo, and not `cli.py` itself:
-#: both also hold ingest/index/gate code that cannot move a number in the
-#: report, and hashing them would make this field as noisy as `git_commit`
-#: (which moves on every commit, including ones this eval doesn't depend on)
-#: -- exactly the false-positive `FINGERPRINT_FIELDS` already excludes
-#: `git_commit` to avoid. If a future change moves scoring logic into
-#: `cli.py` or elsewhere, extend this tuple; the test for it
-#: (`tests/test_cli.py::test_retrieval_code_sha256_changes_when_the_code_does`)
-#: is the guard that this set is actually being hashed, not that it is
-#: complete -- completeness is a judgement call, revisited when the code
-#: that computes a number moves.
+#: - `retrieve.py`, `embed.py`: what `evaluate()` (`clause.evaluation.scoring`)
+#:   calls through on every question.
+#: - `index.py`, `chunking/*.py` (every `.py` file under that package,
+#:   including the empty `__init__.py` -- see the membership guard below):
+#:   they produce the corpus `chunk_counts` describes only as a count, not as
+#:   content -- two different chunkings can share a chunk count.
+#: - `evaluation/metrics.py`: defines what counts as a hit and how
+#:   recall/MRR are computed.
+#: - `evaluation/golden.py`: parses the committed golden set into the
+#:   `GoldenQuestion` objects `evaluate()` scores against and owns
+#:   `answer_spans()`/`BUCKETS`/`validate_spans`. `golden_sha256` pins the
+#:   *bytes* of `data/golden/kyc-v1.jsonl`; nothing else pinned the *parser*
+#:   that turns those bytes into the spans a hit is measured against, and
+#:   `run_eval` executes it on every run. Proved during fix round 3: shrinking
+#:   every acceptable span in `answer_spans()` to one character (which would
+#:   collapse recall for most questions) left every other fingerprint field
+#:   unchanged and the gate passed.
+#: - `evaluation/scoring.py`: `evaluate()`, `bucket_result()` and
+#:   `chance_baseline_for_strategy()` -- the code that turns a query and a
+#:   corpus into the numbers in the report. This used to live in `cli.py`;
+#:   see below for why it was moved rather than added to this tuple in place.
+#:
+#: Deliberately *not* every `.py` file in the repo, and not `cli.py` itself,
+#: even though `evaluate()`, `bucket_result()` and `chance_baseline_for_strategy()`
+#: used to live there: `cli.py` also holds ingest/index/gate argument parsing
+#: and wiring that cannot move a number in the report, hashing it would make
+#: this field as noisy as `git_commit` (which `FINGERPRINT_FIELDS` already
+#: excludes for that exact reason -- it moves on every commit, including ones
+#: this eval doesn't depend on), and `RETRIEVAL_CODE_PATHS` itself lives in
+#: `cli.py`, which would make hashing it self-referential too. Moving the
+#: scoring functions into `clause.evaluation.scoring` (fix round 3) turned
+#: that exclusion from a gap -- proved during the same round: patching
+#: `_bucket_result` (as it then was) to hardcode `recall_at_1=1.0` made every
+#: recall@1 in the report a lie and the gate still passed -- into a principle:
+#: `cli.py` parses arguments and wires modules together; the modules it wires
+#: compute the numbers.
+#:
+#: Also *not* `evaluation/report.py`, despite it computing
+#: `golden_composition` figures that appear in the report: every one of those
+#: is derived from data already pinned elsewhere (`golden_sha256` pins the
+#: golden set those figures are computed from; the pinned chance-baseline
+#: constants have their own measured-vs-pinned mismatch check, distinct from
+#: this fingerprint entirely), and it is the highest-churn file in this
+#: package (rendering prose changes constantly; scoring logic does not).
+#: Hashing it would make this field fail on doc-only edits with no scoring
+#: consequence.
+#:
+#: Two guards keep this list honest rather than merely plausible:
+#: `tests/test_cli.py::test_retrieval_code_sha256_changes_when_the_code_does`
+#: proves the listed files are actually hashed (not just readable);
+#: `test_retrieval_code_paths_covers_every_chunking_module` and
+#: `test_retrieval_code_paths_covers_every_module_retrieve_directly_imports`
+#: are the membership guard added in fix round 3 -- they fail if a `.py` file
+#: is added under `chunking/` or a new `clause.*` import is added to
+#: `retrieve.py` without this tuple being updated to match, so a silent gap
+#: here is caught immediately rather than the next time someone happens to
+#: edit gate.py's tests. They do not, and cannot, prove *completeness* beyond
+#: those two specific properties -- extending this set beyond them (e.g. to
+#: `evaluation/scoring.py`'s own other imports) remains a judgement call,
+#: made explicitly above rather than silently.
 RETRIEVAL_CODE_PATHS: tuple[Path, ...] = (
     Path("src/clause/retrieve.py"),
     Path("src/clause/embed.py"),
     Path("src/clause/index.py"),
+    Path("src/clause/chunking/__init__.py"),
     Path("src/clause/chunking/base.py"),
     Path("src/clause/chunking/fixed.py"),
     Path("src/clause/chunking/structural.py"),
     Path("src/clause/evaluation/metrics.py"),
+    Path("src/clause/evaluation/golden.py"),
+    Path("src/clause/evaluation/scoring.py"),
 )
 
 
@@ -329,7 +281,7 @@ def run_eval(
                 Span(doc_id=row.doc_id, char_start=row.char_start, char_end=row.char_end)
                 for row in rows
             ]
-            chance_baseline[strategy] = _chance_baseline_for_strategy(questions, chunk_spans)
+            chance_baseline[strategy] = chance_baseline_for_strategy(questions, chunk_spans)
 
     fingerprint = Fingerprint(
         manifest_sha256=_sha256_file(MANIFEST_PATH),

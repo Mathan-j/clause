@@ -4,6 +4,8 @@ from pathlib import Path
 from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from clause.embed import DEFAULT_MODEL
+
 
 class Settings(BaseSettings):
     """Runtime configuration. Every value here is an input, never a measurement."""
@@ -29,7 +31,7 @@ class Settings(BaseSettings):
     overlap_chars: int = Field(default=200, ge=0)
 
     # Embedding + retrieval
-    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+    embedding_model: str = DEFAULT_MODEL
     qdrant_url: str = "http://localhost:6335"
 
     @model_validator(mode="after")
@@ -57,12 +59,20 @@ class GateSettings(BaseSettings):
     the gate refuse to even start wherever only `CLAUSE_DATABASE_URL` is
     set -- which is exactly CI's `gate` step. The coupling was the bug, not
     the missing value.
+
+    `embedding_model` shares `Settings`' default via `clause.embed.DEFAULT_MODEL`
+    rather than repeating the literal: two independently-typed copies of the
+    same string, with nothing pinning them equal and CI setting neither, would
+    let `run_eval` write one name into the fingerprint while `run_gate`
+    rebuilds a different one after nothing but a one-sided edit -- a mismatch
+    that re-running `make eval` cannot clear, because the gate's own default
+    would still disagree with it.
     """
 
     model_config = SettingsConfigDict(env_prefix="CLAUSE_", env_file=".env", extra="ignore")
 
     database_url: str
-    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+    embedding_model: str = DEFAULT_MODEL
 
 
 @lru_cache
