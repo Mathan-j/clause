@@ -22,6 +22,7 @@ def upsert_document(session: Session, document: Document) -> None:
         "sha256": document.sha256,
         "fetched_at": document.fetched_at,
         "text": document.text,
+        "regulated_entity": document.regulated_entity,
     }
     stmt = insert(DocumentRow).values(**values)
     stmt = stmt.on_conflict_do_update(index_elements=[DocumentRow.doc_id], set_=values)
@@ -50,6 +51,7 @@ def replace_chunks(session: Session, doc_id: str, strategy: str, chunks: list[Ch
                 source_url=c.source_url,
                 effective_date=c.effective_date,
                 doc_type=c.doc_type,
+                regulated_entity=c.regulated_entity,
                 created_at=now,
             )
             for c in chunks

@@ -1,6 +1,7 @@
 from datetime import date, datetime
 
 from sqlalchemy import DateTime, ForeignKey, Index, Integer, String, Text, UniqueConstraint
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -23,6 +24,7 @@ class DocumentRow(Base):
     sha256: Mapped[str] = mapped_column(String(64))
     fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     text: Mapped[str] = mapped_column(Text)
+    regulated_entity: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
 
 
 class ChunkRow(Base):
@@ -43,6 +45,7 @@ class ChunkRow(Base):
     source_url: Mapped[str] = mapped_column(Text)
     effective_date: Mapped[date | None]
     doc_type: Mapped[str] = mapped_column(String(32))
+    regulated_entity: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 

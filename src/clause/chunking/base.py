@@ -30,6 +30,7 @@ def make_chunk(document: Document, strategy: str, ordinal: int, start: int, end:
         source_url=document.url,
         effective_date=document.effective_date,
         doc_type=document.doc_type,
+        regulated_entity=document.regulated_entity,
     )
 
 

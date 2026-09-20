@@ -38,6 +38,7 @@ class Document:
     fetched_at: datetime
     text: str
     """Canonical, immutable. Every char offset in the system indexes into this string."""
+    regulated_entity: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -51,3 +52,4 @@ class Chunk:
     source_url: str
     effective_date: date | None
     doc_type: str
+    regulated_entity: tuple[str, ...] = ()

@@ -82,6 +82,13 @@ def _classify(title: str, body: str) -> str:
 
 
 def extract_document(entry: ManifestEntry, raw: bytes, *, fetched_at: datetime) -> Document:
+    # Deferred: clause.entities imports HEADER from this module at its own module
+    # top, so importing clause.entities from here at module top would be a real
+    # circular import (whichever module loads first fails looking up the other's
+    # not-yet-defined name). Importing it here, at call time, breaks the cycle
+    # without weakening either module's public interface.
+    from clause.entities import parse_regulated_entities  # noqa: PLC0415
+
     text = canonical_text(raw.decode("utf-8", errors="replace"))
     if len(text) < MIN_TEXT_CHARS:
         raise ExtractionError(f"extracted text too short: {len(text)} chars")
@@ -117,4 +124,5 @@ def extract_document(entry: ManifestEntry, raw: bytes, *, fetched_at: datetime) 
         sha256=hashlib.sha256(text.encode("utf-8")).hexdigest(),
         fetched_at=fetched_at,
         text=text,
+        regulated_entity=parse_regulated_entities(text),
     )
