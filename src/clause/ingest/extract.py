@@ -3,7 +3,7 @@ import re
 import unicodedata
 from datetime import date, datetime
 
-from clause.htmltext import visible_text
+from clause.htmltext import document_text
 from clause.models import Document, ManifestEntry
 
 MIN_TEXT_CHARS = 500
@@ -44,8 +44,11 @@ def canonical_text(html: str) -> str:
     Called exactly once per document. Nothing downstream re-normalises: both
     chunkers slice this string and never transform it, which is what makes the
     citation round-trip hold by construction.
+
+    Built from `document_text`, so it is the notification alone -- the surrounding
+    site template is excluded before any offset is assigned.
     """
-    text = visible_text(html)
+    text = document_text(html)
     text = unicodedata.normalize("NFC", text)
     text = text.replace("\xa0", " ")
     text = _WS.sub(" ", text)
