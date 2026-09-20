@@ -381,6 +381,40 @@ def _rebuild_tree_fingerprint(
     return fingerprint, notes
 
 
+def _load_json_or_fail(path: Path, what: str) -> dict[str, Any]:
+    """Load a committed JSON artifact for the gate, turning I/O and parse
+    failures into a diagnosed `GateFailure` instead of a raw traceback.
+
+    A deleted or corrupted committed report or baseline is precisely the
+    failure this gate exists to catch. It must not be the one case where a
+    CI reader gets a Python stack trace to parse instead of a sentence
+    naming the path and what was wrong with it -- every other failure mode
+    here prints `GATE FAILURE: <cause>` before raising, so this does too.
+    """
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError as exc:
+        message = f"could not read the {what} at {path}: {exc}"
+        print(f"GATE FAILURE: {message}", file=sys.stderr)
+        raise GateFailure(message) from exc
+    try:
+        loaded: dict[str, Any] = json.loads(text)
+    except json.JSONDecodeError as exc:
+        message = f"the {what} at {path} is not valid JSON: {exc}"
+        print(f"GATE FAILURE: {message}", file=sys.stderr)
+        raise GateFailure(message) from exc
+    return loaded
+
+
+#: How long the gate will wait to establish a database connection before
+#: treating it as unreachable. `_gate_chunk_counts` claims to tolerate an
+#: unreachable database -- without a bound here, a misconfigured
+#: `CLAUSE_DATABASE_URL` (wrong host, closed port, firewalled) would hang
+#: the whole CI job on the OS-level TCP timeout instead of failing fast into
+#: that fallback.
+_GATE_DB_CONNECT_TIMEOUT_S = 5.0
+
+
 def run_gate(
     *,
     report_path: Path = DEFAULT_REPORT_JSON,
@@ -395,11 +429,11 @@ def run_gate(
     and why, and what failed -- never just an exit code.
     """
     settings = settings or get_settings()
-    report = json.loads(report_path.read_text(encoding="utf-8"))
+    report = _load_json_or_fail(report_path, "report")
 
     baseline: dict[str, Any] | None = None
     if baseline_path.exists():
-        baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
+        baseline = _load_json_or_fail(baseline_path, "baseline")
     else:
         print(
             f"NOTE: no baseline at {baseline_path} -- nothing to regress against "
@@ -408,7 +442,7 @@ def run_gate(
             file=sys.stderr,
         )
 
-    engine = make_engine(settings.database_url)
+    engine = make_engine(settings.database_url, connect_timeout=_GATE_DB_CONNECT_TIMEOUT_S)
     with session_factory(engine)() as session:
         tree_fingerprint, notes = _rebuild_tree_fingerprint(
             report, session=session, settings=settings

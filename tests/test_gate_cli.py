@@ -157,6 +157,63 @@ def test_gate_chunk_counts_uses_the_live_database_when_populated(db_session: Ses
 
 
 # ---------------------------------------------------------------------------
+# run_gate: a missing or malformed committed artifact is diagnosed, not a
+# raw traceback. None of these need a live database -- run_gate must fail
+# before ever reaching the engine.
+# ---------------------------------------------------------------------------
+
+
+def test_run_gate_diagnoses_a_missing_report(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    missing_report = tmp_path / "does-not-exist.json"
+    baseline_path = tmp_path / "baseline.json"
+    baseline_path.write_text(json.dumps({}), encoding="utf-8", newline="\n")
+
+    with pytest.raises(GateFailure) as excinfo:
+        cli.run_gate(report_path=missing_report, baseline_path=baseline_path, settings=_settings())
+
+    assert str(missing_report) in str(excinfo.value)
+    err = capsys.readouterr().err
+    assert "GATE FAILURE" in err
+    assert str(missing_report) in err
+
+
+def test_run_gate_diagnoses_a_malformed_report(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    bad_report = tmp_path / "eval.json"
+    bad_report.write_text("{not valid json", encoding="utf-8", newline="\n")
+    baseline_path = tmp_path / "baseline.json"
+    baseline_path.write_text(json.dumps({}), encoding="utf-8", newline="\n")
+
+    with pytest.raises(GateFailure) as excinfo:
+        cli.run_gate(report_path=bad_report, baseline_path=baseline_path, settings=_settings())
+
+    assert "not valid JSON" in str(excinfo.value)
+    err = capsys.readouterr().err
+    assert "GATE FAILURE" in err
+    assert str(bad_report) in err
+
+
+def test_run_gate_diagnoses_a_malformed_baseline(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    report_path = tmp_path / "eval.json"
+    _write_report(report_path, chunk_counts={"fixed_window": 1, "structural": 1}, strategies={})
+    bad_baseline = tmp_path / "baseline.json"
+    bad_baseline.write_text("not json at all", encoding="utf-8", newline="\n")
+
+    with pytest.raises(GateFailure) as excinfo:
+        cli.run_gate(report_path=report_path, baseline_path=bad_baseline, settings=_settings())
+
+    assert "not valid JSON" in str(excinfo.value)
+    err = capsys.readouterr().err
+    assert "GATE FAILURE" in err
+    assert str(bad_baseline) in err
+
+
+# ---------------------------------------------------------------------------
 # run_gate: the no-baseline note, and pass/fail behaviour end to end
 # ---------------------------------------------------------------------------
 
