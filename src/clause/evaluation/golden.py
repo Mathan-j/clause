@@ -74,6 +74,81 @@ def write_golden(path: Path, questions: Iterable[GoldenQuestion]) -> None:
             fh.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
+def _row_to_question(row: dict[str, object], lineno: int, qid: str) -> GoldenQuestion:
+    """Convert a parsed JSONL row to a GoldenQuestion, validating all fields."""
+    # Validate bucket and provenance
+    if row.get("bucket") not in BUCKETS:
+        raise GoldenSetError(f"{qid}: bucket {row.get('bucket')!r} not one of {BUCKETS}")
+    if row.get("provenance") not in PROVENANCE:
+        raise GoldenSetError(
+            f"{qid}: provenance {row.get('provenance')!r} not one of {PROVENANCE}"
+        )
+
+    # Validate answers is a list
+    raw_answers = row.get("answers")
+    if not isinstance(raw_answers, list):
+        raise GoldenSetError(f"line {lineno}: answers must be a list")
+    if not raw_answers:
+        raise GoldenSetError(f"{qid}: needs at least one answer span")
+
+    # Process and validate each answer
+    answers: list[Answer] = []
+    for a in raw_answers:
+        if not isinstance(a, dict):
+            raise GoldenSetError(f"line {lineno}: answer entry must be an object")
+
+        # Check required answer keys
+        for required_key in ("doc_id", "char_start", "char_end", "content_sha256"):
+            if required_key not in a:
+                raise GoldenSetError(
+                    f"line {lineno}: missing required answer key '{required_key}'"
+                )
+
+        # Validate char_start and char_end are integers (not floats or other types)
+        char_start_raw = a["char_start"]
+        char_end_raw = a["char_end"]
+
+        if not isinstance(char_start_raw, int) or isinstance(char_start_raw, bool):
+            raise GoldenSetError(
+                f"line {lineno}: char_start must be an integer, "
+                f"got {type(char_start_raw).__name__}"
+            )
+        if not isinstance(char_end_raw, int) or isinstance(char_end_raw, bool):
+            raise GoldenSetError(
+                f"line {lineno}: char_end must be an integer, "
+                f"got {type(char_end_raw).__name__}"
+            )
+
+        char_start = char_start_raw
+        char_end = char_end_raw
+
+        if char_start < 0:
+            raise GoldenSetError(f"{qid}: char_start must not be negative: {char_start}")
+        if char_start >= char_end:
+            raise GoldenSetError(
+                f"{qid}: span must be non-empty and forward: "
+                f"[{char_start}:{char_end}]"
+            )
+
+        answers.append(
+            Answer(
+                doc_id=a["doc_id"],
+                char_start=char_start,
+                char_end=char_end,
+                content_sha256=a["content_sha256"],
+            )
+        )
+
+    return GoldenQuestion(
+        qid=qid,
+        question=str(row["question"]),
+        bucket=str(row["bucket"]),
+        answers=tuple(answers),
+        provenance=str(row["provenance"]),
+        notes=str(row.get("notes", "")),
+    )
+
+
 def load_golden(path: Path) -> list[GoldenQuestion]:
     questions: list[GoldenQuestion] = []
     seen: set[str] = set()
@@ -85,53 +160,41 @@ def load_golden(path: Path) -> list[GoldenQuestion]:
         except json.JSONDecodeError as exc:
             raise GoldenSetError(f"line {lineno}: not valid JSON: {exc}") from exc
 
-        qid = row.get("qid", f"<line {lineno}>")
-        if row.get("bucket") not in BUCKETS:
-            raise GoldenSetError(f"{qid}: bucket {row.get('bucket')!r} not one of {BUCKETS}")
-        if row.get("provenance") not in PROVENANCE:
-            raise GoldenSetError(
-                f"{qid}: provenance {row.get('provenance')!r} not one of {PROVENANCE}"
-            )
-        raw_answers = row.get("answers") or []
-        if not raw_answers:
-            raise GoldenSetError(f"{qid}: needs at least one answer span")
-        if qid in seen:
-            raise GoldenSetError(f"duplicate qid {qid!r} at line {lineno}")
-        seen.add(qid)
+        try:
+            # Check that the parsed row is a dict
+            if not isinstance(row, dict):
+                raise GoldenSetError(f"line {lineno}: expected an object, got {type(row).__name__}")
 
-        # Validate span ordering before constructing Answer objects.
-        # This ensures that a malformed span raises GoldenSetError (documented)
-        # rather than ValueError from Span.__post_init__ (undocumented).
-        answers: list[Answer] = []
-        for a in raw_answers:
-            char_start = int(a["char_start"])
-            char_end = int(a["char_end"])
-            if char_start < 0:
-                raise GoldenSetError(f"{qid}: char_start must not be negative: {char_start}")
-            if char_start >= char_end:
+            # Validate qid early so we can use it in error messages
+            qid_raw = row.get("qid")
+            if not isinstance(qid_raw, str):
                 raise GoldenSetError(
-                    f"{qid}: span must be non-empty and forward: "
-                    f"[{char_start}:{char_end}]"
+                    f"line {lineno}: qid must be a string, got {type(qid_raw).__name__}"
                 )
-            answers.append(
-                Answer(
-                    doc_id=a["doc_id"],
-                    char_start=char_start,
-                    char_end=char_end,
-                    content_sha256=a["content_sha256"],
-                )
-            )
+            if not qid_raw:
+                raise GoldenSetError(f"line {lineno}: qid must be non-empty")
+            qid = qid_raw
 
-        questions.append(
-            GoldenQuestion(
-                qid=qid,
-                question=row["question"],
-                bucket=row["bucket"],
-                answers=tuple(answers),
-                provenance=row["provenance"],
-                notes=row.get("notes", ""),
-            )
-        )
+            # Check required keys are present
+            for required_key in ("question", "bucket", "provenance", "answers"):
+                if required_key not in row:
+                    raise GoldenSetError(f"line {lineno}: missing required key '{required_key}'")
+
+            # Check for duplicate qids
+            if qid in seen:
+                raise GoldenSetError(f"duplicate qid {qid!r} at line {lineno}")
+            seen.add(qid)
+
+            # Convert row to GoldenQuestion
+            q = _row_to_question(row, lineno, qid)
+            questions.append(q)
+        except GoldenSetError:
+            # Re-raise GoldenSetError as-is without wrapping
+            raise
+        except (KeyError, TypeError, ValueError, AttributeError) as exc:
+            # This should not happen after the above checks, but catch it just in case
+            raise GoldenSetError(f"line {lineno}: unexpected error: {exc}") from exc
+
     return questions
 
 
@@ -175,6 +238,12 @@ def validate_spans(
 
 
 def provenance_split(questions: Sequence[GoldenQuestion]) -> dict[str, int]:
+    """Count questions by provenance state.
+
+    Returns a dict with provenance states as keys and counts as values.
+    Only states that actually occur in the input are included; absent states
+    are omitted. Use `.get(state, 0)` to handle sparse data.
+    """
     counts: dict[str, int] = {}
     for q in questions:
         counts[q.provenance] = counts.get(q.provenance, 0) + 1

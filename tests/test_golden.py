@@ -138,6 +138,101 @@ def test_loader_rejects_zero_width_span(tmp_path: Path) -> None:
         load_golden(p)
 
 
+def test_loader_rejects_malformed_line_not_object(tmp_path: Path) -> None:
+    """A line that is valid JSON but not an object should raise GoldenSetError."""
+    p = tmp_path / "g.jsonl"
+    p.write_text("42\n", encoding="utf-8")
+    with pytest.raises(GoldenSetError, match="line 1"):
+        load_golden(p)
+
+
+def test_loader_rejects_missing_question_key(tmp_path: Path) -> None:
+    """Missing 'question' key should raise GoldenSetError naming the line."""
+    p = tmp_path / "g.jsonl"
+    bad_q = {**_raw(Q)}
+    del bad_q["question"]
+    p.write_text(json.dumps(bad_q) + "\n", encoding="utf-8")
+    with pytest.raises(GoldenSetError, match=r"line 1.*question"):
+        load_golden(p)
+
+
+def test_loader_rejects_missing_answer_key(tmp_path: Path) -> None:
+    """Missing 'doc_id' in answer should raise GoldenSetError naming the line."""
+    p = tmp_path / "g.jsonl"
+    bad_answer = {
+        "char_start": 10,
+        "char_end": 40,
+        "content_sha256": "a" * 64,
+    }
+    p.write_text(
+        json.dumps({**_raw(Q), "answers": [bad_answer]}) + "\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(GoldenSetError, match=r"line 1.*doc_id"):
+        load_golden(p)
+
+
+def test_loader_rejects_non_integer_char_start(tmp_path: Path) -> None:
+    """Non-integer char_start should raise GoldenSetError naming the line."""
+    p = tmp_path / "g.jsonl"
+    bad_answer = {
+        "doc_id": "rbi-1",
+        "char_start": "abc",
+        "char_end": 40,
+        "content_sha256": "a" * 64,
+    }
+    p.write_text(
+        json.dumps({**_raw(Q), "answers": [bad_answer]}) + "\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(GoldenSetError, match=r"line 1.*char_start"):
+        load_golden(p)
+
+
+def test_loader_rejects_float_char_start(tmp_path: Path) -> None:
+    """Float char_start should be rejected, not silently truncated."""
+    p = tmp_path / "g.jsonl"
+    bad_answer = {
+        "doc_id": "rbi-1",
+        "char_start": 10.9,
+        "char_end": 40,
+        "content_sha256": "a" * 64,
+    }
+    p.write_text(
+        json.dumps({**_raw(Q), "answers": [bad_answer]}) + "\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(GoldenSetError, match=r"line 1.*char_start.*integer"):
+        load_golden(p)
+
+
+def test_loader_rejects_answer_entry_not_object(tmp_path: Path) -> None:
+    """An answer entry that is not an object should raise GoldenSetError."""
+    p = tmp_path / "g.jsonl"
+    p.write_text(
+        json.dumps({**_raw(Q), "answers": ["not a dict"]}) + "\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(GoldenSetError, match=r"line 1.*answer"):
+        load_golden(p)
+
+
+def test_loader_rejects_non_string_qid(tmp_path: Path) -> None:
+    """Non-string qid should be rejected."""
+    p = tmp_path / "g.jsonl"
+    p.write_text(json.dumps({**_raw(Q), "qid": 12345}) + "\n", encoding="utf-8")
+    with pytest.raises(GoldenSetError, match=r"line 1.*qid.*string"):
+        load_golden(p)
+
+
+def test_loader_rejects_empty_string_qid(tmp_path: Path) -> None:
+    """Empty string qid should be rejected."""
+    p = tmp_path / "g.jsonl"
+    p.write_text(json.dumps({**_raw(Q), "qid": ""}) + "\n", encoding="utf-8")
+    with pytest.raises(GoldenSetError, match=r"line 1.*qid.*non-empty"):
+        load_golden(p)
+
+
 def _raw(q: GoldenQuestion) -> dict:
     return {
         "qid": q.qid,
