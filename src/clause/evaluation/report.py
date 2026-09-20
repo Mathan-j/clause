@@ -90,6 +90,19 @@ CHANCE_BASELINE_RECALL_AT_5: dict[str, float] = {
 }
 CHANCE_BASELINE_WORST = 0.375
 
+#: The golden-set file and corpus the constants above were computed against
+#: (SDD ledger, Task 3 ruling). `golden_sha256` is `sha256(data/golden/kyc-v1.jsonl)`
+#: as committed; `chunk_counts` is the `clause_structural` / `clause_fixed_window`
+#: collection sizes at that time. If the fingerprint of the report being rendered
+#: disagrees with either, the constants above no longer describe this run, and
+#: `_chance_baseline_staleness` below turns that into a warning printed in the
+#: artifact itself rather than a silently wrong floor.
+CHANCE_BASELINE_GOLDEN_SHA256 = "c138b258815f3fa2b4b7c2f94855454207494c3c63520d9e7558ab2851f2e03f"
+CHANCE_BASELINE_CHUNK_COUNTS: dict[str, int] = {
+    "structural": 336,
+    "fixed_window": 318,
+}
+
 CHANCE_BASELINE_NOTE = (
     "Chance floor: the probability that a *random* top-5 already contains an "
     "acceptable span, computed over this golden set's real per-question span "
@@ -111,6 +124,30 @@ NO_VERIFICATION_WARNING = (
     "against drafted ground truth, not verified ground truth -- read it as a "
     "first honest baseline, not as validated fact."
 )
+
+
+def _chance_baseline_staleness(fingerprint: Fingerprint) -> list[str]:
+    """Reasons the chance-baseline constants no longer match this run, if any.
+
+    Empty means the constants still describe what is being measured. Both
+    checks compare against the fingerprint rather than anything recomputed --
+    this module has no corpus access to recompute the floor itself.
+    """
+    reasons: list[str] = []
+    if fingerprint.golden_sha256 != CHANCE_BASELINE_GOLDEN_SHA256:
+        reasons.append(
+            "the golden set has changed since the chance baseline was computed "
+            f"(this run's golden_sha256 is `{fingerprint.golden_sha256[:16]}…`, "
+            f"the chance baseline was computed against "
+            f"`{CHANCE_BASELINE_GOLDEN_SHA256[:16]}…`)"
+        )
+    if fingerprint.chunk_counts != CHANCE_BASELINE_CHUNK_COUNTS:
+        reasons.append(
+            "the indexed corpus has changed since the chance baseline was computed "
+            f"(this run's chunk counts are {fingerprint.chunk_counts}, the chance "
+            f"baseline was computed against {CHANCE_BASELINE_CHUNK_COUNTS})"
+        )
+    return reasons
 
 
 def _kind_breakdown(golden: Sequence[GoldenQuestion]) -> dict[str, dict[str, int]]:
@@ -156,23 +193,29 @@ def build_report(
     results: Sequence[StrategyResult],
     fingerprint: Fingerprint,
     provenance: dict[str, int],
-    golden: Sequence[GoldenQuestion] = (),
+    golden: Sequence[GoldenQuestion],
 ) -> dict[str, Any]:
     """Assemble the report dict that both artifacts render from.
 
-    `golden` is optional so a caller that only has aggregated `StrategyResult`
-    objects (as this module's own acceptance tests do) still gets a valid
-    report; when it is supplied, the golden-set-derived sections below are
-    populated from it rather than from any strategy's results, and the
-    renderer labels them as such.
+    `golden` is required, not defaulted: the sub-kind, heading-span,
+    answers-per-question and provenance sections below all come from it, and
+    a caller that forgot to load the golden set must fail loudly at the call
+    site rather than silently ship a report with those sections empty.
     """
     kind_breakdown = _kind_breakdown(golden)
+    staleness = _chance_baseline_staleness(fingerprint)
     return {
         "fingerprint": fingerprint.to_dict(),
         "golden_provenance": provenance,
         "chance_baseline": {
             "recall_at_5": dict(sorted(CHANCE_BASELINE_RECALL_AT_5.items())),
             "worst_single_question": CHANCE_BASELINE_WORST,
+            "computed_against": {
+                "golden_sha256": CHANCE_BASELINE_GOLDEN_SHA256,
+                "chunk_counts": dict(sorted(CHANCE_BASELINE_CHUNK_COUNTS.items())),
+            },
+            "stale": bool(staleness),
+            "staleness_reasons": staleness,
         },
         "golden_composition": {
             "n_questions": len(golden),
@@ -203,13 +246,19 @@ def _row(label: str, r: dict[str, Any]) -> str:
     )
 
 
-def render_markdown(report: dict[str, Any]) -> str:
-    fp = report["fingerprint"]
-    provenance: dict[str, int] = report["golden_provenance"]
-    composition = report.get("golden_composition", {})
+def _staleness_warning(chance_baseline: dict[str, Any]) -> str | None:
+    reasons: list[str] = chance_baseline.get("staleness_reasons", [])
+    if not reasons:
+        return None
+    return (
+        "**STALE CHANCE BASELINE:** the chance-baseline figures below no "
+        "longer describe this run -- " + "; ".join(reasons) + ". "
+        "Recompute the chance baseline (SDD ledger, Task 3 method) before "
+        "trusting the floor printed next to recall@5."
+    )
 
-    verified = sum(n for state, n in provenance.items() if state != "drafted")
 
+def _render_header(fp: dict[str, Any], staleness_warning: str | None) -> list[str]:
     lines = [
         "# Retrieval evaluation",
         "",
@@ -225,7 +274,16 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"- {PRECISION_NOTE}",
         f"- {BUCKET_SIZE_NOTE}",
         f"- {CHANCE_BASELINE_NOTE}",
-        "",
+    ]
+    if staleness_warning is not None:
+        lines.append(f"- {staleness_warning}")
+    lines.append("")
+    return lines
+
+
+def _render_provenance(provenance: dict[str, int]) -> list[str]:
+    verified = sum(n for state, n in provenance.items() if state != "drafted")
+    lines = [
         "## Ground-truth provenance",
         "",
         "The golden set was drafted by a model and sampled by a human. This is the split:",
@@ -237,59 +295,53 @@ def render_markdown(report: dict[str, Any]) -> str:
         lines.append(f"| {state} | {n} |")
     lines.append("")
     if verified == 0:
-        lines.append(NO_VERIFICATION_WARNING)
-        lines.append("")
+        lines += [NO_VERIFICATION_WARNING, ""]
+    return lines
 
-    lines += [
-        "## Golden set composition",
-        "",
-        "_These figures come from the golden set itself, not from any "
-        "strategy's retrieval results -- they describe the measurement, not "
-        "what was measured._",
-        "",
-        f"The golden set holds **{composition.get('n_questions', 0)}** questions.",
-        "",
-    ]
 
-    breakdown: dict[str, dict[str, int]] = composition.get("bucket_kind_breakdown", {})
-    lines += ["### `kind=` sub-kinds", ""]
-    if breakdown:
-        lines.append(
-            "A bucket-level average can hide that a model is good at one kind "
-            "of question within it and bad at another. Sub-kinds are tagged in "
-            "the golden set's `notes` field and read via "
-            "`clause.evaluation.golden.parse_tags`:"
-        )
-        lines.append("")
-        for bucket, kinds in breakdown.items():
-            lines.append(f"**`{bucket}`** (n={sum(kinds.values())}):")
-            lines.append("")
-            lines.append("| kind | n |")
-            lines.append("|---|---:|")
-            for kind, n in sorted(kinds.items()):
-                lines.append(f"| {kind} | {n} |")
-            lines.append("")
-    else:
-        lines += ["No question in this golden set carries a `kind=` tag.", ""]
-
-    heading_qids: list[str] = composition.get("heading_span_questions", [])
-    lines += ["### `span=heading` questions", ""]
-    if heading_qids:
-        lines.append(
-            f"**{len(heading_qids)}** question(s) have ground-truth spans that "
-            "are document headings rather than body text: "
-            + ", ".join(f"`{q}`" for q in heading_qids)
-            + ". Whether these score as hits swings between trivial and "
-            "unanswerable depending on how a chunker treats heading blocks -- "
-            "a property of chunking, not of retrieval quality -- and must not "
-            "be read as the latter."
-        )
-    else:
-        lines.append("No question in this golden set carries a `span=heading` tag.")
+def _render_kind_breakdown(breakdown: dict[str, dict[str, int]]) -> list[str]:
+    lines = ["### `kind=` sub-kinds", ""]
+    if not breakdown:
+        return [*lines, "No question in this golden set carries a `kind=` tag.", ""]
+    lines.append(
+        "A bucket-level average can hide that a model is good at one kind "
+        "of question within it and bad at another. Sub-kinds are tagged in "
+        "the golden set's `notes` field and read via "
+        "`clause.evaluation.golden.parse_tags`:"
+    )
     lines.append("")
+    for bucket, kinds in breakdown.items():
+        lines.append(f"**`{bucket}`** (n={sum(kinds.values())}):")
+        lines.append("")
+        lines.append("| kind | n |")
+        lines.append("|---|---:|")
+        for kind, n in sorted(kinds.items()):
+            lines.append(f"| {kind} | {n} |")
+        lines.append("")
+    return lines
 
-    histogram: dict[str, int] = composition.get("answers_per_question_histogram", {})
-    lines += [
+
+def _render_heading_questions(heading_qids: list[str]) -> list[str]:
+    lines = ["### `span=heading` questions", ""]
+    if not heading_qids:
+        lines.append("No question in this golden set carries a `span=heading` tag.")
+        lines.append("")
+        return lines
+    lines.append(
+        f"**{len(heading_qids)}** question(s) have ground-truth spans that "
+        "are document headings rather than body text: "
+        + ", ".join(f"`{q}`" for q in heading_qids)
+        + ". Whether these score as hits swings between trivial and "
+        "unanswerable depending on how a chunker treats heading blocks -- "
+        "a property of chunking, not of retrieval quality -- and must not "
+        "be read as the latter."
+    )
+    lines.append("")
+    return lines
+
+
+def _render_answer_histogram(histogram: dict[str, int]) -> list[str]:
+    lines = [
         "### Answers per question",
         "",
         "Ground truth here is a *set* of acceptable spans, not one right "
@@ -304,28 +356,62 @@ def render_markdown(report: dict[str, Any]) -> str:
     for k in sorted(histogram, key=int):
         lines.append(f"| {k} | {histogram[k]} |")
     lines.append("")
+    return lines
 
-    lines += ["## Results", ""]
-    for strategy, data in sorted(report["strategies"].items()):
-        lines += [f"### {strategy}", ""]
-        cb = data.get("chance_baseline_recall_at_5")
-        if cb is not None:
-            lines.append(
-                f"Chance floor for recall@5 on this strategy's chunk corpus: "
-                f"**{cb:.3f}** (worst single question in the golden set: "
-                f"{CHANCE_BASELINE_WORST:.3f}). Read recall@5 below against "
-                "this floor, not as a bare number."
-            )
-            lines.append("")
-        lines += [
-            "| bucket | n | recall@1 | recall@5 | recall@10 | MRR@10 |",
-            "|---|---:|---:|---:|---:|---:|",
-        ]
-        for bucket, r in data["per_bucket"].items():
-            lines.append(_row(bucket, r))
-        lines.append(_row("**overall**", data["overall"]))
+
+def _render_composition(composition: dict[str, Any]) -> list[str]:
+    lines = [
+        "## Golden set composition",
+        "",
+        "_These figures come from the golden set itself, not from any "
+        "strategy's retrieval results -- they describe the measurement, not "
+        "what was measured._",
+        "",
+        f"The golden set holds **{composition.get('n_questions', 0)}** questions.",
+        "",
+    ]
+    lines += _render_kind_breakdown(composition.get("bucket_kind_breakdown", {}))
+    lines += _render_heading_questions(composition.get("heading_span_questions", []))
+    lines += _render_answer_histogram(composition.get("answers_per_question_histogram", {}))
+    return lines
+
+
+def _render_strategy(
+    strategy: str, data: dict[str, Any], staleness_warning: str | None
+) -> list[str]:
+    lines = [f"### {strategy}", ""]
+    cb = data.get("chance_baseline_recall_at_5")
+    if cb is not None:
+        floor_line = (
+            f"Chance floor for recall@5 on this strategy's chunk corpus: "
+            f"**{cb:.3f}** (worst single question in the golden set: "
+            f"{CHANCE_BASELINE_WORST:.3f}). Read recall@5 below against "
+            "this floor, not as a bare number."
+        )
+        if staleness_warning is not None:
+            floor_line += " " + staleness_warning
+        lines.append(floor_line)
         lines.append("")
     lines += [
+        "| bucket | n | recall@1 | recall@5 | recall@10 | MRR@10 |",
+        "|---|---:|---:|---:|---:|---:|",
+    ]
+    for bucket, r in data["per_bucket"].items():
+        lines.append(_row(bucket, r))
+    lines.append(_row("**overall**", data["overall"]))
+    lines.append("")
+    return lines
+
+
+def _render_results(report: dict[str, Any], staleness_warning: str | None) -> list[str]:
+    lines = ["## Results", ""]
+    for strategy, data in sorted(report["strategies"].items()):
+        lines += _render_strategy(strategy, data, staleness_warning)
+    return lines
+
+
+def _render_fingerprint(fp: dict[str, Any]) -> list[str]:
+    return [
         "## Provenance fingerprint",
         "",
         "| field | value |",
@@ -338,6 +424,20 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"| git commit | `{fp['git_commit']}` |",
         "",
     ]
+
+
+def render_markdown(report: dict[str, Any]) -> str:
+    fp = report["fingerprint"]
+    provenance: dict[str, int] = report["golden_provenance"]
+    composition = report.get("golden_composition", {})
+    chance_baseline = report.get("chance_baseline", {})
+    warning = _staleness_warning(chance_baseline)
+
+    lines = _render_header(fp, warning)
+    lines += _render_provenance(provenance)
+    lines += _render_composition(composition)
+    lines += _render_results(report, warning)
+    lines += _render_fingerprint(fp)
     return "\n".join(lines)
 
 
