@@ -6,7 +6,7 @@ index, so mixing both strategies would make each strategy's number a function of
 the other -- destroying the comparison the two strategies exist to enable.
 """
 
-from collections.abc import Iterator, Sequence
+from collections.abc import Iterable, Iterator, Sequence
 
 import sqlalchemy as sa
 from qdrant_client import QdrantClient, models
@@ -32,6 +32,20 @@ REGULATED_ENTITY_FIELD = "regulated_entity"
 
 def collection_name(strategy: str) -> str:
     return f"{COLLECTION_PREFIX}{strategy}"
+
+
+def foreign_collections(names: Iterable[str], prefix: str = COLLECTION_PREFIX) -> list[str]:
+    """Names in `names` that this project did not create.
+
+    A test fixture that reaches a live Qdrant should not treat "reachable" as
+    "ours": on a shared dev machine, two unrelated projects can default to the
+    same port, and a test that creates or deletes collections there would be
+    writing into a stranger's database -- the same shape of incident that once
+    cost this project its own Postgres corpus (see tests/test_db_guard.py).
+    Returns the offending names; an empty result means every collection present
+    belongs to us (including none at all).
+    """
+    return [name for name in names if not name.startswith(prefix)]
 
 
 def ensure_collection(client: QdrantClient, name: str, dimension: int) -> None:

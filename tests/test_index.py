@@ -8,6 +8,7 @@ from clause.index import (
     REGULATED_ENTITY_FIELD,
     collection_name,
     ensure_collection,
+    foreign_collections,
 )
 
 pytestmark = pytest.mark.qdrant
@@ -19,15 +20,39 @@ URL = os.environ.get("CLAUSE_QDRANT_URL", "http://localhost:6335")
 def client() -> QdrantClient:
     c = QdrantClient(url=URL, timeout=5)
     try:
-        c.get_collections()
+        names = [col.name for col in c.get_collections().collections]
     except Exception as exc:
         pytest.skip(f"no Qdrant at {URL}: {exc}")
+    # "reachable" is not "ours": on a shared dev machine, CLAUSE_QDRANT_URL's
+    # default port can just as easily answer for a completely unrelated
+    # project. If this instance holds collections we didn't create, skip
+    # rather than create/delete test collections in someone else's database.
+    foreign = foreign_collections(names)
+    if foreign:
+        pytest.skip(
+            f"Qdrant at {URL} holds non-clause collection(s) {foreign!r}; this looks "
+            "like another project's instance sharing the URL, not ours. Refusing to "
+            "create or delete collections there. Point CLAUSE_QDRANT_URL at a Qdrant "
+            "this project owns and re-run."
+        )
     return c
 
 
 def test_collection_name_is_namespaced_per_strategy() -> None:
     assert collection_name("structural") == "clause_structural"
     assert collection_name("fixed_window") == "clause_fixed_window"
+
+
+def test_foreign_collections_empty_instance_is_safe() -> None:
+    assert foreign_collections([]) == []
+
+
+def test_foreign_collections_all_ours_is_safe() -> None:
+    assert foreign_collections(["clause_fixed_window", "clause_structural"]) == []
+
+
+def test_foreign_collections_flags_names_outside_our_prefix() -> None:
+    assert foreign_collections(["clause_fixed_window", "traefik_docs"]) == ["traefik_docs"]
 
 
 def test_ensure_collection_is_idempotent(client: QdrantClient) -> None:
