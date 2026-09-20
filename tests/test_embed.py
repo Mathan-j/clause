@@ -1,6 +1,9 @@
 import math
+import tempfile
+import time
 
 import pytest
+from sentence_transformers import SentenceTransformer
 
 from clause.embed import DEFAULT_MODEL, Encoder, ModelNotCachedError
 
@@ -64,6 +67,40 @@ def test_an_uncached_model_fails_loudly_rather_than_downloading() -> None:
 
 def test_default_model_is_the_documented_baseline() -> None:
     assert DEFAULT_MODEL == "sentence-transformers/all-MiniLM-L6-v2"
+
+
+def test_local_files_only_fails_rather_than_downloads_an_uncached_variant() -> None:
+    """local_files_only=True is what actually closes the cache-check gap.
+
+    _is_cached() only proves the repo is present somewhere in the HuggingFace
+    cache, not that the specific file a load needs is among the files on disk
+    for that repo. This test does not go through Encoder, because Encoder
+    deliberately has no way to point at an alternate cache location (that is
+    the dropped `cache_folder` parameter) -- it instead calls
+    SentenceTransformer the same way Encoder's constructor does, but against an
+    empty, temporary cache directory, so the "not on disk" condition is real
+    and reproducible without touching the real cache or the network.
+
+    huggingface_hub's local_files_only contract is to never attempt a network
+    call and instead raise immediately when a request cannot be satisfied
+    locally, so a fast run time here (rather than the tens of seconds a real
+    download takes) is itself part of what this test is asserting: this must
+    fail fast, not fail after downloading.
+    """
+    with tempfile.TemporaryDirectory() as empty_cache:
+        start = time.monotonic()
+        with pytest.raises(OSError):
+            SentenceTransformer(
+                DEFAULT_MODEL,
+                backend="onnx",
+                local_files_only=True,
+                cache_folder=empty_cache,
+            )
+        elapsed = time.monotonic() - start
+    assert elapsed < 5, (
+        f"raised after {elapsed:.1f}s -- too slow to have failed locally; "
+        "this may have attempted a network call instead of failing fast"
+    )
 
 
 def _cos(a: list[float], b: list[float]) -> float:

@@ -47,7 +47,16 @@ class Encoder:
         # untyped compatibility decorator, so mypy infers the constructor's
         # return type as `Any` without this — silently erasing types on every
         # attribute below rather than failing anywhere near the actual cause.
-        self._model: SentenceTransformer = SentenceTransformer(model_name, backend="onnx")
+        #
+        # local_files_only=True: _is_cached() only proves the repo is present in
+        # the HuggingFace cache, not that the specific ONNX file this load needs
+        # is among the files actually on disk (a repo can have some variants
+        # cached and others not). Without this flag, a cache miss on that one
+        # file falls through to a silent network download mid-run — the exact
+        # failure this class exists to prevent. With it, the load raises instead.
+        self._model: SentenceTransformer = SentenceTransformer(
+            model_name, backend="onnx", local_files_only=True
+        )
         self.model_name = model_name
 
     @property
