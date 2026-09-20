@@ -43,11 +43,6 @@ select = ["E", "F", "I", "UP", "B", "SIM", "PL", "RUF"]
 [tool.ruff.lint.per-file-ignores]
 # Test assertions compare against literal expected values by design.
 "tests/**" = ["PLR2004"]
-# search()'s signature is the task's public interface (client, encoder, strategy,
-# query, plus four keyword-only filter/limit params); splitting it into a params
-# object would just move the same eight names one level down for no readability
-# gain, and would break the interface Task 9/10 are written against.
-"src/clause/retrieve.py" = ["PLR0913"]
 
 [tool.mypy]
 python_version = "3.12"

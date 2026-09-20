@@ -114,8 +114,8 @@ def test_filter_draws_the_top_k_from_the_filtered_set_not_after_the_fact(
     """
     strategy = "test_serverside_filter"
     name = collection_name(strategy)
-    ensure_collection(client, name, encoder.dimension)
     try:
+        ensure_collection(client, name, encoder.dimension)
         query_vector = encoder.encode(["capital adequacy ratio"])[0]
         opposite = [-x for x in query_vector]
         cutoff = date(2026, 1, 1)
@@ -157,4 +157,11 @@ def test_filter_draws_the_top_k_from_the_filtered_set_not_after_the_fact(
 
         assert {h.doc_id for h in hits} == {"far-1", "far-2"}
     finally:
-        client.delete_collection(name)
+        # `ensure_collection` runs inside this try, not before it: if it
+        # partially succeeds (collection created, payload-index creation
+        # raises) the collection must still be cleaned up rather than
+        # leaking. Guarded on existence first since a failure before any
+        # collection was created would otherwise make this delete itself
+        # raise and mask the original exception.
+        if name in {c.name for c in client.get_collections().collections}:
+            client.delete_collection(name)

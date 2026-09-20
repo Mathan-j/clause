@@ -60,6 +60,16 @@ def _build_filter(
     published_before: date | None,
     entities: Sequence[str] | None,
 ) -> models.Filter | None:
+    """AND-compose a date-range condition and an entity condition, as given.
+
+    `entities=[]` is treated exactly like `entities=None` -- no entity
+    constraint at all, not "match none of the zero entities named". Both
+    readings are defensible; this one is pinned deliberately because it is the
+    less surprising of the two ("nothing selected" reads as "no filter"
+    upstream), and because Phase 3 will build queries from exactly this kind
+    of caller input, where the distinction between "omitted" and "empty"
+    needs to be a stated decision, not an accident of `if entities:`.
+    """
     conditions: list[models.Condition] = []
     if published_after is not None or published_before is not None:
         conditions.append(
@@ -80,7 +90,15 @@ def _build_filter(
     return models.Filter(must=conditions) if conditions else None
 
 
-def search(
+# PLR0913: this signature is the task's mandated public interface (client,
+# encoder, strategy, query, plus four keyword-only filter/limit params), not a
+# sign of a function doing too much. Unlike "tests/**" = ["PLR2004"] in
+# pyproject.toml -- a durable property of every present and future test file --
+# "one mandated signature" is not a property of everything that will ever live
+# in this module, so the exemption is pinned to this one definition rather than
+# to the whole file: a later `search_multi` or `rerank_within` added here would
+# not silently inherit it.
+def search(  # noqa: PLR0913
     client: QdrantClient,
     encoder: Encoder,
     strategy: str,
@@ -99,29 +117,44 @@ def search(
     different chunk sets, so a query against one strategy must not leak results
     from the other.
     """
+    name = collection_name(strategy)
     vector = encoder.encode([query])[0]
     response = client.query_points(
-        collection_name=collection_name(strategy),
+        collection_name=name,
         query=vector,
         limit=limit,
         query_filter=_build_filter(published_after, published_before, entities),
         with_payload=True,
     )
-    hits: list[Hit] = []
-    for point in response.points:
-        payload = point.payload or {}
-        hits.append(
-            Hit(
-                doc_id=payload["doc_id"],
-                strategy=payload["strategy"],
-                ordinal=int(payload["ordinal"]),
-                char_start=int(payload["char_start"]),
-                char_end=int(payload["char_end"]),
-                score=float(point.score),
-                text=payload["text"],
-                source_url=payload["source_url"],
-                published_date=date.fromisoformat(payload["published_date"]),
-                regulated_entity=tuple(payload.get("regulated_entity") or ()),
-            )
+    return [_hit_from_point(point, name) for point in response.points]
+
+
+def _hit_from_point(point: models.ScoredPoint, collection: str) -> Hit:
+    """Build a `Hit` from one scored point, or fail with enough context to find it.
+
+    A point missing a required payload field is kept as a hard failure --
+    CLAUDE.md treats a citation that cannot state its own provenance as
+    exactly that -- but a bare `KeyError: 'source_url'` gives whoever hits it
+    no way to find the offending point. Naming the point id and collection
+    turns "which point in which collection was malformed" from a manual
+    Qdrant query into a one-line error message.
+    """
+    payload = point.payload or {}
+    try:
+        return Hit(
+            doc_id=payload["doc_id"],
+            strategy=payload["strategy"],
+            ordinal=int(payload["ordinal"]),
+            char_start=int(payload["char_start"]),
+            char_end=int(payload["char_end"]),
+            score=float(point.score),
+            text=payload["text"],
+            source_url=payload["source_url"],
+            published_date=date.fromisoformat(payload["published_date"]),
+            regulated_entity=tuple(payload.get("regulated_entity") or ()),
         )
-    return hits
+    except KeyError as exc:
+        raise KeyError(
+            f"point {point.id!r} in collection {collection!r} is missing required "
+            f"payload field {exc.args[0]!r}; cannot state this chunk's provenance"
+        ) from exc
