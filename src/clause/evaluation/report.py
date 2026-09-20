@@ -78,17 +78,34 @@ BUCKET_SIZE_NOTE = (
     "beyond what `n` supports."
 )
 
-#: Computed once, over the golden set's real per-question answer-span counts
-#: against each strategy's actual chunk corpus, during Phase 2 (SDD ledger,
-#: Task 3 ruling on "questions with many spans make recall@5 nearly free").
-#: This module does not recompute it -- doing so needs the indexed corpus,
-#: which a pure renderer does not have -- it only publishes it next to the
-#: numbers it exists to put a floor under.
+#: Method: an "acceptable" chunk is one whose span overlaps any acceptable
+#: answer span in the same document (m per question, out of N chunks total in
+#: that strategy's corpus). The probability a uniform random draw of 5 chunks
+#: contains at least one acceptable chunk is `1 - C(N-m, 5) / C(N, 5)`; each
+#: value below is the mean of that probability over all 65 golden-set
+#: questions. This module does not recompute it -- doing so needs the indexed
+#: corpus, which a pure renderer does not have -- it only publishes it next to
+#: the numbers it exists to put a floor under.
+#:
+#: Corrected during Task 9 fix round 2: the value first recorded for
+#: `fixed_window` was 0.058, which understated its real 0.084 by about 45% and
+#: had the two strategies backwards -- `fixed_window` has fewer chunks (318 vs
+#: 336) but a higher share of them overlap an answer span, so its floor is the
+#: *higher* of the two, not the lower.
 CHANCE_BASELINE_RECALL_AT_5: dict[str, float] = {
-    "structural": 0.055,
-    "fixed_window": 0.058,
+    "structural": 0.058,
+    "fixed_window": 0.084,
 }
-CHANCE_BASELINE_WORST = 0.375
+
+#: The single worst (highest-floor) question's chance figure, per strategy.
+#: Both strategies' worst is `proc-002` (30 acceptable chunks under
+#: `structural`, 45 under `fixed_window`), but the resulting floor differs
+#: by strategy and must be presented as such, not as one shared number --
+#: that was the other half of the fix round 2 correction.
+CHANCE_BASELINE_WORST: dict[str, float] = {
+    "structural": 0.375,
+    "fixed_window": 0.536,
+}
 
 #: The golden-set file and corpus the constants above were computed against
 #: (SDD ledger, Task 3 ruling). `golden_sha256` is `sha256(data/golden/kyc-v1.jsonl)`
@@ -105,15 +122,17 @@ CHANCE_BASELINE_CHUNK_COUNTS: dict[str, int] = {
 
 CHANCE_BASELINE_NOTE = (
     "Chance floor: the probability that a *random* top-5 already contains an "
-    "acceptable span, computed over this golden set's real per-question span "
-    "counts against each strategy's actual chunk corpus (SDD ledger, Task 3 "
-    "ruling; not recomputed by this renderer). Recall@5 must be read against "
-    "this floor, not as a bare number -- recall@5 of 0.800 against a chance "
-    "floor of 0.055 is strong evidence, recall@5 of 0.800 against a floor of "
-    f"0.375 would not be. The single worst question in the golden set reaches "
-    f"a chance floor of {CHANCE_BASELINE_WORST:.3f} on its own, because it "
-    "happens to carry an unusually large number of acceptable spans -- a "
-    "property of the golden set's labelling, not of either strategy."
+    "acceptable chunk, computed over this golden set's real per-question "
+    "acceptable-chunk counts against each strategy's actual chunk corpus (SDD "
+    "ledger, Task 3 ruling; not recomputed by this renderer). Recall@5 must "
+    "be read against this floor, not as a bare number: a strong recall@5 "
+    "against a low chance floor is real evidence of retrieval quality, the "
+    "same recall@5 against a high floor may not be. The floor differs by "
+    "strategy -- a strategy with fewer chunks that overlap answer spans less "
+    "often can still have a *higher* floor than one with more chunks, if a "
+    "larger share of its chunks overlap an answer -- so each strategy's own "
+    "floor and its own worst-case question are printed below, not a single "
+    "shared figure."
 )
 
 NO_VERIFICATION_WARNING = (
@@ -137,9 +156,9 @@ def _chance_baseline_staleness(fingerprint: Fingerprint) -> list[str]:
     if fingerprint.golden_sha256 != CHANCE_BASELINE_GOLDEN_SHA256:
         reasons.append(
             "the golden set has changed since the chance baseline was computed "
-            f"(this run's golden_sha256 is `{fingerprint.golden_sha256[:16]}…`, "
+            f"(this run's golden_sha256 is `{fingerprint.golden_sha256[:16]}...`, "
             f"the chance baseline was computed against "
-            f"`{CHANCE_BASELINE_GOLDEN_SHA256[:16]}…`)"
+            f"`{CHANCE_BASELINE_GOLDEN_SHA256[:16]}...`)"
         )
     if fingerprint.chunk_counts != CHANCE_BASELINE_CHUNK_COUNTS:
         reasons.append(
@@ -209,7 +228,7 @@ def build_report(
         "golden_provenance": provenance,
         "chance_baseline": {
             "recall_at_5": dict(sorted(CHANCE_BASELINE_RECALL_AT_5.items())),
-            "worst_single_question": CHANCE_BASELINE_WORST,
+            "worst_single_question": dict(sorted(CHANCE_BASELINE_WORST.items())),
             "computed_against": {
                 "golden_sha256": CHANCE_BASELINE_GOLDEN_SHA256,
                 "chunk_counts": dict(sorted(CHANCE_BASELINE_CHUNK_COUNTS.items())),
@@ -233,6 +252,7 @@ def build_report(
                 "overall": asdict(r.overall),
                 "per_bucket": {b: asdict(v) for b, v in sorted(r.per_bucket.items())},
                 "chance_baseline_recall_at_5": CHANCE_BASELINE_RECALL_AT_5.get(r.strategy),
+                "chance_baseline_worst_question": CHANCE_BASELINE_WORST.get(r.strategy),
             }
             for r in results
         },
@@ -240,9 +260,17 @@ def build_report(
 
 
 def _row(label: str, r: dict[str, Any]) -> str:
+    """Recall is rounded to 2 decimals, not 3.
+
+    A bucket of ~16-17 questions can only land on multiples of 1/n -- a
+    third decimal implies a resolution the corpus doesn't have, which is
+    exactly what `BUCKET_SIZE_NOTE` warns against two sections above. Two
+    decimals still distinguishes every attainable value at these bucket
+    sizes.
+    """
     return (
-        f"| {label} | {r['n']} | {r['recall_at_1']:.3f} | {r['recall_at_5']:.3f} "
-        f"| {r['recall_at_10']:.3f} | {r['mrr_at_10']:.3f} |"
+        f"| {label} | {r['n']} | {r['recall_at_1']:.2f} | {r['recall_at_5']:.2f} "
+        f"| {r['recall_at_10']:.2f} | {r['mrr_at_10']:.3f} |"
     )
 
 
@@ -381,12 +409,17 @@ def _render_strategy(
 ) -> list[str]:
     lines = [f"### {strategy}", ""]
     cb = data.get("chance_baseline_recall_at_5")
+    worst = data.get("chance_baseline_worst_question")
     if cb is not None:
+        worst_clause = f"{worst:.3f}" if worst is not None else "not recorded"
         floor_line = (
-            f"Chance floor for recall@5 on this strategy's chunk corpus: "
-            f"**{cb:.3f}** (worst single question in the golden set: "
-            f"{CHANCE_BASELINE_WORST:.3f}). Read recall@5 below against "
-            "this floor, not as a bare number."
+            "Chance floor for recall@5, computed once over the **whole "
+            "golden set** (not per bucket), on this strategy's chunk "
+            f"corpus: **{cb:.3f}** (this strategy's own worst single "
+            f"question: {worst_clause}). This floor applies only to the "
+            "**overall** row below -- per-bucket chance floors were not "
+            "computed, and a bucket's recall@5 must not be read against "
+            "this aggregate figure."
         )
         if staleness_warning is not None:
             floor_line += " " + staleness_warning
@@ -411,19 +444,21 @@ def _render_results(report: dict[str, Any], staleness_warning: str | None) -> li
 
 
 def _render_fingerprint(fp: dict[str, Any]) -> list[str]:
-    return [
+    lines = [
         "## Provenance fingerprint",
         "",
         "| field | value |",
         "|---|---|",
         f"| embedding model | `{fp['embedding_model']}` |",
         f"| retrieval depth | {fp['retrieval_depth']} |",
-        f"| manifest sha256 | `{fp['manifest_sha256'][:16]}…` |",
-        f"| golden set | `{fp['golden_path']}` (`{fp['golden_sha256'][:16]}…`) |",
-        f"| chunk counts | {fp['chunk_counts']} |",
-        f"| git commit | `{fp['git_commit']}` |",
-        "",
+        f"| manifest sha256 | `{fp['manifest_sha256'][:16]}...` |",
+        f"| golden set | `{fp['golden_path']}` (`{fp['golden_sha256'][:16]}...`) |",
     ]
+    for strategy, count in sorted(fp["chunk_counts"].items()):
+        lines.append(f"| chunk count ({strategy}) | {count} |")
+    lines.append(f"| git commit | `{fp['git_commit']}` |")
+    lines.append("")
+    return lines
 
 
 def render_markdown(report: dict[str, Any]) -> str:

@@ -227,23 +227,108 @@ def test_answers_per_question_distribution_is_published() -> None:
 
 def test_chance_baseline_appears_next_to_each_strategys_recall() -> None:
     report = build_report([RESULT, RESULT_FIXED_WINDOW], FP, {"drafted": 60}, golden=[])
-    assert report["strategies"]["structural"]["chance_baseline_recall_at_5"] == 0.055
-    assert report["strategies"]["fixed_window"]["chance_baseline_recall_at_5"] == 0.058
+    assert report["strategies"]["structural"]["chance_baseline_recall_at_5"] == 0.058
+    assert report["strategies"]["fixed_window"]["chance_baseline_recall_at_5"] == 0.084
     assert report["chance_baseline"]["worst_single_question"] == CHANCE_BASELINE_WORST
 
     md = render_markdown(report)
-    structural_section = md.split("### structural")[1].split("### fixed_window")[0]
-    assert "0.055" in structural_section
-    assert str(CHANCE_BASELINE_WORST) in structural_section
-    fixed_window_section = md.split("### fixed_window")[1]
-    assert "0.058" in fixed_window_section
+    # Strategies render sorted: "fixed_window" before "structural" ("f" < "s").
+    fixed_window_section = md.split("### fixed_window")[1].split("### structural")[0]
+    structural_section = md.split("### structural")[1].split("## Provenance fingerprint")[0]
+    assert "0.058" in structural_section
+    assert "0.375" in structural_section  # structural's own worst question
+    assert "0.084" in fixed_window_section
+    assert "0.536" in fixed_window_section  # fixed_window's own, higher, worst question
+
+
+def test_each_strategy_gets_its_own_worst_question_not_a_shared_one() -> None:
+    """fixed_window's worst (0.536) must not be attributed to structural or vice versa.
+
+    Strategies render in sorted order, so `fixed_window` comes *before*
+    `structural` ("f" < "s") -- both sections are sliced explicitly by their
+    start and end markers rather than assumed order.
+    """
+    report = build_report([RESULT, RESULT_FIXED_WINDOW], FP, {"drafted": 60}, golden=[])
+    md = render_markdown(report)
+    fixed_window_section = md.split("### fixed_window")[1].split("### structural")[0]
+    structural_section = md.split("### structural")[1].split("## Provenance fingerprint")[0]
+    assert "0.536" not in structural_section
+    assert "0.375" not in fixed_window_section
 
 
 def test_chance_baseline_survives_into_json() -> None:
     report = build_report([RESULT], FP, {"drafted": 60}, golden=[])
     reloaded = json.loads(json.dumps(report))
-    assert reloaded["strategies"]["structural"]["chance_baseline_recall_at_5"] == 0.055
-    assert reloaded["chance_baseline"]["recall_at_5"]["structural"] == 0.055
+    assert reloaded["strategies"]["structural"]["chance_baseline_recall_at_5"] == 0.058
+    assert reloaded["chance_baseline"]["recall_at_5"]["structural"] == 0.058
+    assert reloaded["chance_baseline"]["worst_single_question"]["fixed_window"] == 0.536
+
+
+# --- fix round 2, finding 1: the floor must not license a per-bucket comparison ---
+
+
+def test_chance_floor_is_scoped_to_the_overall_row_only() -> None:
+    """The floor is an aggregate over the whole golden set, not per bucket.
+
+    Printing it directly above a per-bucket table invites a reader to compare
+    a bucket's recall@5 against the aggregate floor, which the aggregate does
+    not license -- buckets can have materially different true floors that
+    this renderer has no way to compute.
+    """
+    report = build_report([RESULT], FP, {"drafted": 60}, golden=[])
+    md = render_markdown(report)
+    section = md.split("### structural")[1].split("## Provenance fingerprint")[0]
+    assert "applies only to the **overall** row" in section
+    assert "per-bucket chance floors were not computed" in section
+
+
+def test_removing_the_overall_row_scoping_language_is_caught() -> None:
+    """Guard: without the scoping language, nothing distinguishes this floor
+    sentence from one that (wrongly) licenses a bucket-by-bucket comparison."""
+    report = build_report([RESULT], FP, {"drafted": 60}, golden=[])
+    md = render_markdown(report)
+    assert "computed once over the **whole golden set** (not per bucket)" in md
+
+
+# --- fix round 2, finding 2: chunk counts must not print as a raw dict ---
+
+
+def test_fingerprint_chunk_counts_render_as_readable_rows_not_a_dict() -> None:
+    md = render_markdown(build_report([RESULT], FP, {"drafted": 60}, golden=[]))
+    fingerprint_section = md.split("## Provenance fingerprint")[1]
+    assert "{'" not in fingerprint_section
+    assert "chunk count (structural) | 336" in fingerprint_section
+    assert "chunk count (fixed_window) | 318" in fingerprint_section
+
+
+# --- fix round 2, finding 3: recall rounds to 2 decimals, not 3 ---
+
+
+def test_recall_rounds_to_two_decimals_not_three() -> None:
+    """5/17 = 0.294117...; a 3rd decimal implies resolution a 17-question
+    bucket does not have, contradicting BUCKET_SIZE_NOTE two sections above.
+
+    Only the finding's target (recall) is checked against 2 decimals; MRR is
+    intentionally left at 3 -- the finding was specific to the recall columns.
+    """
+    odd_bucket = BucketResult(17, 5 / 17, 5 / 17, 5 / 17, 5 / 17)
+    result = StrategyResult(
+        strategy="structural", per_bucket={"numeric_threshold": odd_bucket}, overall=odd_bucket
+    )
+    md = render_markdown(build_report([result], FP, {"drafted": 60}, golden=[]))
+    row = next(line for line in md.splitlines() if line.startswith("| numeric_threshold |"))
+    _, _, recall_1, recall_5, recall_10, mrr = (c.strip() for c in row.strip("|").split("|"))
+    assert (recall_1, recall_5, recall_10) == ("0.29", "0.29", "0.29")
+    assert mrr == "0.294"
+
+
+# --- fix round 2, finding 4: one dash/ellipsis convention throughout ---
+
+
+def test_no_unicode_ellipsis_appears_only_ascii_truncation() -> None:
+    md = render_markdown(build_report([RESULT], FP, {"drafted": 60}, golden=[_q("num-a")]))
+    assert "…" not in md  # the "…" character
+    assert "..." in md  # truncated hashes use ASCII instead
 
 
 # --- chance-baseline drift detection ---
