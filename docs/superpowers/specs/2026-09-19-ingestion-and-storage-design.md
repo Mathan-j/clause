@@ -147,25 +147,40 @@ existing documents.
 
 ### 5.2 The invariant
 
-Extraction produces `document.text` exactly once: parse `tree.body` (not a narrower
-"notification content node" — nothing in the implementation locates one), drop
-`<script>`, `<style>` and `<noscript>`, decode entities, normalise to Unicode NFC,
-collapse whitespace runs. **Navigation is not dropped.** Page chrome — RBI's site
-navigation, breadcrumbs, skip links — is retained; every document's canonical text
-today begins with "Skip to main content Not Pressed Not Pressed ...", and site
-chrome is a large share of every stored document's characters. From that moment the
-string is **immutable**, and every character offset in the system indexes into
-precisely it. Nothing downstream re-normalises.
+Extraction produces `document.text` exactly once: select the notification's own
+content element (`#NotificationUser`, exposed as `CONTENT_SELECTOR` in
+`clause.htmltext`), drop `<script>`, `<style>` and `<noscript>`, decode entities,
+normalise to Unicode NFC, collapse whitespace runs. From that moment the string is
+**immutable**, and every character offset in the system indexes into precisely it.
+Nothing downstream re-normalises.
 
-**Correction, same register as section 9.** An earlier version of this section
-claimed navigation was dropped; it was not implemented, and this correction retracts
-that claim. **This is also why navigation-stripping must happen before, not after,
-Phase 2's golden set is hand-labelled.** Removing site chrome would shift every
-character offset in the corpus. If it is done after the golden set records
-ground-truth `char_start`/`char_end` spans against today's chrome-inclusive text,
-every one of those spans becomes wrong the moment chrome is stripped. Stripping
-navigation is therefore recorded here as the **first Phase 2 change**, to be done
-before any hand-labelling begins, not as a Phase 1 cleanup item.
+`clause.htmltext` exposes two functions, and the distinction matters:
+
+- `visible_text(html)` returns the **whole page**, site template included. The
+  validation gate uses it, because it is judging an untrusted response that may not
+  be a document at all.
+- `document_text(html)` returns **only the content element**, falling back to the
+  whole body when that element is absent. `canonical_text` uses it, so no offset is
+  ever assigned to site chrome.
+
+**Correction, 2026-09-20, same register as section 9.** Two earlier versions of this
+section were wrong in opposite directions. The first claimed navigation was dropped
+when nothing implemented it. The second retracted that claim and recorded
+navigation-stripping as the first Phase 2 change, on the reasoning that removing
+chrome shifts every character offset and would invalidate a hand-labelled golden
+set. That reasoning was right, and it is exactly why the change was made **now**
+instead: no golden set exists yet, no retrieval baseline exists yet, and nothing
+downstream depends on current offsets — so this was the cheapest moment it will ever
+have. Measured over the 61-document cached corpus before the change, the surrounding
+template accounted for 371,559 of 668,794 stored characters; the stored corpus is
+now the 297,235 characters that are actually regulation.
+
+Two consequences were handled with the change rather than left to be discovered:
+every entry's `content_sha256` was re-derived from the warm cache, since all 61 were
+computed over the old chrome-inclusive text and would otherwise have silently fallen
+through to the header-identity branch forever (see section 9); and the header
+identity of all 61 documents was re-parsed and confirmed unchanged first, so
+re-deriving a hash could not mask a document that had actually changed.
 
 Both chunkers are therefore **slicers**. They choose boundaries; they never transform
 characters. Consequently:
@@ -434,6 +449,24 @@ matters directly for Phase 2: hand-labelled `char_start`/`char_end` ground truth
 only valid against the exact `data/raw/` cache it was labelled from, not against "the
 manifest" in the abstract.
 
+**Second addendum, 2026-09-20 (Phase 1 follow-ups): the footer date is no longer
+inside the extracted text, and that retires the paragraph above.** Section 5.2's
+navigation-stripping change made `canonical_text` select the notification's own
+content element instead of the whole page body. `"Website last updated date: ..."`
+lives in the page footer, outside that element, so it is no longer part of
+`document.text` and no longer part of `content_sha256`. The "61 of 61, permanently"
+outcome predicted above therefore cannot happen: a site-wide footer date rolling
+over now changes nothing that is hashed.
+
+The remaining known furniture inside the content element is the PDF-size widget
+(`"( 275 kb )"`, whose casing varies between fetches). That is smaller and
+document-adjacent rather than site-wide, but it is still enough to make a cold fetch
+mismatch, so the header-identity fallback remains load-bearing and the two accepted
+gaps stated above are unchanged. All 61 `content_sha256` values were re-derived from
+the warm cache when extraction changed, and each document's header identity was
+re-parsed and confirmed unchanged first, so the re-derivation could not mask a
+document that had genuinely changed.
+
 ## 10. Correction: `doc_type` classification is unreliable on the real corpus
 
 `_classify` (section 5, `clause.ingest.extract`) reads a fixed 600-character window
@@ -451,9 +484,18 @@ whole-branch review) shows it does not, on two independent counts:
 2. **Near-identical documents split both ways.** `rbi-12922` and `rbi-13310` share
    the same subject line ("Implementation of Section 51A of UAPA, 1967: Updates to
    UNSC's ... Sanctions List") and the same document type in substance, but
-   `_classify` labels the first `master_direction` and the second `notification`,
-   purely because of whether the phrase "master direction" happened to fall inside
-   or outside the 600-character window for that particular document's layout.
+   `_classify` labels the first `master_direction` and the second `notification`.
+
+   **Corrected, 2026-09-20.** An earlier version of this section attributed the
+   split to the 600-character window boundary. That was asserted, not measured, and
+   it is wrong: re-running the classifier over all 61 cached documents with the
+   window widened from 600 to 2,000 characters changes **zero** labels. The actual
+   discriminator is plain keyword presence in the text `_classify` hashes, which is
+   `title + window` — a detail this section previously omitted. `rbi-12922` contains
+   "master direction" in both its stored title and its window; `rbi-13310` contains
+   it in neither. 18 of the 61 titles contain the phrase, so the manifest title —
+   itself a fixed-length window of body prose, see section 5.1 — is doing much of
+   the classifying. Tuning `CLASSIFY_WINDOW_CHARS` would not fix this.
 
 `doc_type` is in `CLAUDE.md`'s non-negotiable provenance tuple, is denormalised
 onto all 1,314 chunks on the stated grounds that it never changes after ingest

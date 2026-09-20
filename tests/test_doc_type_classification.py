@@ -4,17 +4,19 @@
 `doc.doc_type in {"master_direction", "circular", "notification"}` — a tautology
 that cannot fail no matter what the classifier does. This file instead asserts
 specific, real `doc_id -> doc_type` mappings observed against the warm
-`data/raw/` cache, so a change in classification (e.g. touching `_classify`,
-`CLASSIFY_WINDOW_CHARS`, or the header regex it anchors on) is visible as a
-failing assertion here rather than silently passing.
+`data/raw/` cache, so a change in classification — to `_classify`'s keywords, to
+what text it is given, or to extraction upstream of it — is visible as a failing
+assertion here rather than silently passing.
 
-See docs/superpowers/specs/2026-09-19-ingestion-and-storage-design.md section
-5.3/10 for the documented limitation this pins: `_classify` produces zero
-`circular` labels on the real corpus, and two near-identical
-"Implementation of Section 51A of UAPA" documents (rbi-12922, rbi-13310) are
-classified differently from each other, depending only on whether the phrase
-"master direction" happened to land inside the 600-character classification
-window.
+See docs/superpowers/specs/2026-09-19-ingestion-and-storage-design.md section 10
+for the documented limitation this pins: `_classify` produces zero `circular`
+labels on the real corpus, and two near-identical "Implementation of Section 51A
+of UAPA" documents (rbi-12922, rbi-13310) are classified differently from each
+other. The cause is keyword presence in the text `_classify` hashes, which is
+`title + window` — rbi-12922 contains "master direction" in both its title and
+its window, rbi-13310 in neither. It is *not* the window boundary: widening
+`CLASSIFY_WINDOW_CHARS` from 600 to 2,000 changes zero labels across all 61
+documents, so a change to that constant alone would not fail these pins.
 """
 
 from datetime import UTC, datetime
