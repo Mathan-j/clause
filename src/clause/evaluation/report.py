@@ -172,6 +172,18 @@ CHANCE_BASELINE_NOTE = (
     "recorded inputs no longer match this run's golden set or corpus."
 )
 
+FILTER_COVERAGE_NOTE = (
+    "**Metadata filters are not exercised by this evaluation.** `evaluate()` "
+    "calls `search()` with no `published_after`/`published_before`/`entities` "
+    "filter for every question in this golden set, because none of these "
+    "questions are filtered queries. The date-range and regulated-entity "
+    "filters built for retrieval are real and tested in isolation "
+    "(`tests/test_retrieve_filter.py`), but their effect on recall -- whether "
+    "a filtered query's top-k performs the same as, better than, or worse "
+    "than an unfiltered one -- is not measured anywhere in this report. Read "
+    "every number below as unfiltered-query recall only."
+)
+
 NO_VERIFICATION_WARNING = (
     "**No question in this golden set has completed human verification.** "
     "Every question is currently `provenance: drafted`: a model wrote the "
@@ -425,6 +437,15 @@ def _render_header(
     return lines
 
 
+def _render_limitations() -> list[str]:
+    return [
+        "## Limitations",
+        "",
+        FILTER_COVERAGE_NOTE,
+        "",
+    ]
+
+
 def _render_provenance(provenance: dict[str, int]) -> list[str]:
     verified = sum(n for state, n in provenance.items() if state != "drafted")
     lines = [
@@ -600,6 +621,7 @@ def render_markdown(report: dict[str, Any]) -> str:
     mismatch_warning = _mismatch_warning(chance_baseline)
 
     lines = _render_header(fp, staleness_warning, mismatch_warning)
+    lines += _render_limitations()
     lines += _render_provenance(provenance)
     lines += _render_composition(composition)
     lines += _render_results(report, staleness_warning)
