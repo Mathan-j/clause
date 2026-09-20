@@ -16,25 +16,51 @@ from clause.sources.manifest import load_manifest
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
-def _resolve_app_database_url() -> str | None:
-    """Best-effort resolution of the URL the *application* (not the tests) would use.
+_LOOPBACK = {"localhost", "127.0.0.1", "::1", ""}
+_DEFAULT_PG_PORT = 5432
 
-    Mirrors Settings' own resolution order (real env var, falling back to `.env`)
-    without requiring the rest of Settings (e.g. CLAUSE_USER_AGENT) to be valid,
-    which is normal in CI where no `.env` exists at all. This exists solely so the
-    test database can be checked against it below -- see the module docstring on
-    why that check exists.
+
+def _resolve_env_url(key: str) -> str | None:
+    """Resolve a CLAUSE_* URL the way Settings does: real env var, then `.env`.
+
+    Reading `.env` matters: `.env.example` ships both URLs and the README tells you
+    to configure them there, so a guard that only consulted `os.environ` would be
+    inert for exactly the setup the docs describe.
     """
-    if "CLAUSE_DATABASE_URL" in os.environ:
-        return os.environ["CLAUSE_DATABASE_URL"]
+    if key in os.environ:
+        return os.environ[key]
     env_file = REPO_ROOT / ".env"
     if not env_file.exists():
         return None
     for line in env_file.read_text(encoding="utf-8").splitlines():
         stripped = line.strip()
-        if stripped.startswith("CLAUSE_DATABASE_URL="):
+        if stripped.startswith(f"{key}="):
             return stripped.split("=", 1)[1].strip()
     return None
+
+
+def _same_physical_database(left: str, right: str) -> bool:
+    """True when two URLs address the same host, port and database.
+
+    Compared on resolved components, not as strings. `localhost` and `127.0.0.1`,
+    a `postgresql://` and a `postgresql+psycopg://` spelling, an omitted port and
+    an explicit 5432, and a trailing query string all name the same database -- a
+    byte comparison waves every one of them through, and the thing on the other
+    side of this check is the ingested corpus.
+    """
+    try:
+        a, b = make_url(left), make_url(right)
+    except Exception:  # an unparseable URL falls back to exact match
+        return left == right
+
+    def host(url: object) -> str:
+        raw = (getattr(url, "host", None) or "").lower()
+        return "localhost" if raw in _LOOPBACK else raw
+
+    def port(url: object) -> int:
+        return getattr(url, "port", None) or _DEFAULT_PG_PORT
+
+    return (host(a), port(a), a.database) == (host(b), port(b), b.database)
 
 
 # A *distinct* database from the application's, on the same server, by default --
@@ -42,14 +68,15 @@ def _resolve_app_database_url() -> str | None:
 # tears down its schema on every run (see db_session below); sharing a database with
 # the app would mean running `pytest` drops the ingested corpus, which is exactly the
 # incident this default now prevents.
-DB_URL = os.environ.get(
-    "CLAUSE_TEST_DATABASE_URL", "postgresql+psycopg://clause:clause@localhost:5434/clause_test"
+DB_URL = (
+    _resolve_env_url("CLAUSE_TEST_DATABASE_URL")
+    or "postgresql+psycopg://clause:clause@localhost:5434/clause_test"
 )
 
-_app_url = _resolve_app_database_url()
-if _app_url is not None and _app_url == DB_URL:
+_app_url = _resolve_env_url("CLAUSE_DATABASE_URL")
+if _app_url is not None and _same_physical_database(_app_url, DB_URL):
     raise RuntimeError(
-        "CLAUSE_TEST_DATABASE_URL resolves to the exact same database as "
+        "CLAUSE_TEST_DATABASE_URL resolves to the same physical database as "
         f"CLAUSE_DATABASE_URL ({DB_URL!r}). The test suite builds and tears down its "
         "schema on this URL on every run (via `alembic upgrade head` / `downgrade "
         "base`), so pointing it at the application's own database would destroy "
