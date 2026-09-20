@@ -6,9 +6,11 @@ requires-python = ">=3.12,<3.13"
 dependencies = [
     "alembic>=1.20.0",
     "httpx>=0.28.1",
+    "optimum[onnxruntime]>=2.1.0",
     "psycopg[binary]>=3.3.6",
     "pydantic-settings>=2.15.0",
     "selectolax>=0.4.12",
+    "sentence-transformers>=5.7.0",
     "sqlalchemy>=2.0",
 ]
 
@@ -45,4 +47,8 @@ files = ["src/clause"]
 testpaths = ["tests"]
 pythonpath = ["."]
 addopts = "--strict-markers -q"
-markers = ["db: requires a live Postgres instance"]
+markers = [
+    "db: requires a live Postgres instance",
+    "model: requires the embedding model in the local cache",
+    "qdrant: requires a live Qdrant instance",
+]

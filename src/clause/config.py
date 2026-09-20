@@ -28,6 +28,10 @@ class Settings(BaseSettings):
     window_chars: int = Field(default=1200, gt=0)
     overlap_chars: int = Field(default=200, ge=0)
 
+    # Embedding + retrieval
+    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+    qdrant_url: str = "http://localhost:6335"
+
     @model_validator(mode="after")
     def _check_sizes(self) -> "Settings":
         if self.overlap_chars >= self.window_chars:

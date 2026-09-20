@@ -11,3 +11,6 @@ One line per dependency: what it is, what it replaced, why.
 - SQLAlchemy 2.0 — schema and queries. Replaces hand-written SQL; typed declarative models keep the row shape and the domain types in one place.
 - Alembic — migrations. Chosen over ad-hoc DDL scripts so the schema has a history; CI builds it from empty via `alembic upgrade head`/`downgrade base` in the test suite's `db_session` fixture (`tests/conftest.py`).
 - psycopg (binary) — Postgres driver. Replaces psycopg2; version 3 is maintained and ships wheels.
+- sentence-transformers — text embedding. Replaces calling a hosted embedding API; the model runs locally, so an eval run costs nothing per query and is reproducible offline.
+- onnxruntime — execution provider for the embedding model, per CLAUDE.md's stated stack. Chosen over raw PyTorch inference for a smaller install and faster CPU encoding.
+- optimum[onnxruntime] — sentence-transformers' `backend="onnx"` loads through this; it is not optional despite not being named directly in the brief. Version pinned by uv's resolver to one compatible with sentence-transformers' `transformers` requirement (optimum-onnx currently caps `transformers<4.58`, which forced sentence-transformers down to 5.7.0 rather than the just-released 6.1.0).
