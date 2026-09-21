@@ -1,11 +1,15 @@
+from collections.abc import Callable
 from datetime import date
 
 import pytest
 
 from clause.answering.schema import (
     MAX_CITATIONS_PER_SENTENCE,
+    Answer,
     AnswerDraft,
+    AnsweringError,
     Citation,
+    InvalidAnswerError,
     Sentence,
     TooManyCitationsError,
     UncitedClaimError,
@@ -145,5 +149,74 @@ def test_an_empty_draft_does_not_become_an_answer() -> None:
     """A draft with no sentences says nothing; `enforce` must not hand it back as
     an answered contract with a vacuous, always-1.0 resolution rate."""
     draft = AnswerDraft(question="q", sentences=(), hits=())
-    with pytest.raises(ValueError, match="at least one sentence"):
+    with pytest.raises(InvalidAnswerError, match="at least one sentence"):
         enforce(draft, {})
+
+
+def _direct_answer_out_of_range_index() -> None:
+    Answer(
+        question="q",
+        sentences=(Sentence(text="Banks must verify.", citation_indices=(7,), factual=True),),
+        citations=(),
+    )
+
+
+def _empty_draft_via_enforce() -> None:
+    enforce(AnswerDraft(question="q", sentences=(), hits=()), {})
+
+
+def _cap_exceeded_via_enforce() -> None:
+    n = MAX_CITATIONS_PER_SENTENCE + 1
+    draft = AnswerDraft(
+        question="q",
+        sentences=(
+            Sentence(text="a", citation_indices=tuple(range(1, n + 1)), factual=True),
+        ),
+        hits=(),
+    )
+    resolved = {i: _c(i * 4, i * 4 + 4) for i in range(1, n + 1)}
+    enforce(draft, resolved)
+
+
+def _uncited_factual_sentence_via_enforce() -> None:
+    draft = AnswerDraft(
+        question="q",
+        sentences=(Sentence(text="Banks must verify.", citation_indices=(), factual=True),),
+        hits=(),
+    )
+    enforce(draft, {})
+
+
+@pytest.mark.parametrize(
+    "reject",
+    [
+        _direct_answer_out_of_range_index,
+        _empty_draft_via_enforce,
+        _cap_exceeded_via_enforce,
+        _uncited_factual_sentence_via_enforce,
+    ],
+    ids=[
+        "direct-answer-out-of-range-index",
+        "empty-draft-via-enforce",
+        "cap-exceeded-via-enforce",
+        "uncited-factual-sentence-via-enforce",
+    ],
+)
+def test_every_contract_rejection_path_is_catchable_as_answering_error(
+    reject: Callable[[], None],
+) -> None:
+    """Task 10 writes `except AnsweringError:` to record a contract breach. Every
+    way the contract can be rejected -- whether raised directly by `Answer`'s own
+    invariant or by `enforce` -- must be catchable through that one hierarchy, or
+    a future fifth path that forgets it discovers this in Task 10 instead of here.
+
+    Also asserts the raised exception is a `ValueError`: `AnsweringError` inherits
+    from it precisely so every existing `except ValueError` / `pytest.raises
+    (ValueError)` call site keeps working alongside the new `except
+    AnsweringError`. If `AnsweringError` ever stopped inheriting from `ValueError`,
+    this assertion is what would catch it here, not a mismatched call site
+    discovered later.
+    """
+    with pytest.raises(AnsweringError) as exc_info:
+        reject()
+    assert isinstance(exc_info.value, ValueError)

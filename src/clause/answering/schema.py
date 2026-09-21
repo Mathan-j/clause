@@ -28,8 +28,16 @@ from clause.retrieve import Hit
 MAX_CITATIONS_PER_SENTENCE = 3
 
 
-class AnsweringError(Exception):
-    """Base for every failure in the answering path."""
+class AnsweringError(ValueError):
+    """Base for every failure in the answering path.
+
+    Inherits from `ValueError`, not `Exception`, so every existing
+    `except ValueError` and `pytest.raises(ValueError)` -- the dataclass
+    `__post_init__` convention this module already follows -- keeps working,
+    while a caller that instead writes `except AnsweringError:` to record a
+    contract breach (Task 10) now catches every one of them. Nothing has to
+    be traded off between the two.
+    """
 
 
 class UnresolvableCitationError(AnsweringError):
@@ -57,6 +65,13 @@ class ModelNotAvailableError(AnsweringError):
     """The GGUF model file is not present, and this process will not download it."""
 
 
+class InvalidAnswerError(AnsweringError):
+    """An `Answer` was constructed that could not have come from a sound `enforce`.
+
+    Raised by `Answer.__post_init__` -- see its docstring for what it checks.
+    """
+
+
 @dataclass(frozen=True, slots=True)
 class Citation:
     doc_id: str
@@ -68,6 +83,11 @@ class Citation:
     text: str
 
     def __post_init__(self) -> None:
+        # Plain ValueError, deliberately not AnsweringError: these are value-object
+        # invariants on construction inputs. In the real pipeline the resolver
+        # builds a Citation from corpus data it already trusts, so a failure here
+        # means the input data is corrupt, not that an answer's contract was
+        # breached -- Answer's own checks below are the contract checks.
         if self.char_start < 0:
             raise ValueError(f"char_start must not be negative: {self.char_start}")
         if self.char_start >= self.char_end:
@@ -91,6 +111,10 @@ class Sentence:
     factual: bool
 
     def __post_init__(self) -> None:
+        # Plain ValueError, deliberately not AnsweringError -- see Citation's
+        # __post_init__ comment: this is a value-object invariant on a
+        # construction input, not a contract check.
+        #
         # A factual sentence with no citation is deliberately constructible here.
         # `validate.enforce` is the single enforcement point for the citation
         # contract; rejecting it in both places would leave enforce's branch
@@ -130,12 +154,19 @@ class Answer:
     citations: tuple[Citation, ...]
 
     def __post_init__(self) -> None:
+        # InvalidAnswerError, not a plain ValueError: unlike Citation's and
+        # Sentence's checks above, these are the citation contract itself, not a
+        # value-object invariant on a construction input. Task 10's
+        # `except AnsweringError:` must catch this the same way it catches a cap
+        # violation or an uncited claim -- InvalidAnswerError is one, since
+        # AnsweringError now inherits from ValueError, existing
+        # pytest.raises(ValueError) call sites for this check keep working too.
         if not self.sentences:
-            raise ValueError("an answer must carry at least one sentence")
+            raise InvalidAnswerError("an answer must carry at least one sentence")
         for sentence in self.sentences:
             for i in sentence.citation_indices:
                 if not 1 <= i <= len(self.citations):
-                    raise ValueError(
+                    raise InvalidAnswerError(
                         f"citation index {i} is out of range for "
                         f"{len(self.citations)} citation(s): {sentence.text!r}"
                     )
