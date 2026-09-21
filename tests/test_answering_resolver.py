@@ -58,7 +58,7 @@ def test_resolution_slices_the_stored_document_rather_than_trusting_the_hit(
         question="q", sentences=(Sentence(text="s", citation_indices=(1,), factual=True),)
     )
     cites = resolve_citations(draft, [hit], db_session)
-    assert cites[0].text == "2345"
+    assert cites[1].text == "2345"
 
 
 def test_an_index_past_the_presented_hits_is_a_hard_failure(db_session: Session) -> None:
@@ -91,7 +91,7 @@ def test_a_span_past_the_end_of_the_document_is_a_hard_failure(db_session: Sessi
         resolve_citations(draft, [hit], db_session)
 
 
-def test_each_cited_index_appears_once_in_order(db_session: Session) -> None:
+def test_each_cited_index_appears_once_keyed_by_original_index(db_session: Session) -> None:
     _seed(db_session, "doc-a", "0123456789ABCDEFGHIJ")
     hits = [_hit("doc-a", 0, 4, "0123"), _hit("doc-a", 4, 8, "4567")]
     draft = AnswerDraft(
@@ -102,11 +102,13 @@ def test_each_cited_index_appears_once_in_order(db_session: Session) -> None:
         ),
     )
     cites = resolve_citations(draft, hits, db_session)
-    assert [(c.char_start, c.char_end) for c in cites] == [(0, 4), (4, 8)]
+    assert set(cites) == {1, 2}
+    assert (cites[1].char_start, cites[1].char_end) == (0, 4)
+    assert (cites[2].char_start, cites[2].char_end) == (4, 8)
 
 
 def test_a_draft_with_no_citations_resolves_to_nothing(db_session: Session) -> None:
     draft = AnswerDraft(
         question="q", sentences=(Sentence(text="s", citation_indices=(), factual=False),)
     )
-    assert resolve_citations(draft, [], db_session) == ()
+    assert resolve_citations(draft, [], db_session) == {}
