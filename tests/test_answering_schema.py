@@ -5,10 +5,12 @@ import pytest
 from clause.answering.schema import (
     Answer,
     AnswerDraft,
+    AnsweringError,
     Citation,
     Refusal,
     RefusalReason,
     Sentence,
+    TooManyCitationsError,
 )
 
 
@@ -77,10 +79,37 @@ def test_draft_and_answer_carry_the_question() -> None:
     draft = AnswerDraft(
         question="q",
         sentences=(Sentence(text="a", citation_indices=(1,), factual=True),),
+        hits=(),
     )
     assert draft.question == "q"
     answer = Answer(question="q", sentences=draft.sentences, citations=(_citation(),))
     assert answer.citations[0].doc_id == "rbi-12866"
+
+
+def test_answer_rejects_a_citation_index_out_of_range() -> None:
+    """The renumbering invariant belongs to the type, not just to `enforce`: a
+    hand-built `Answer` gets the same guarantee as one built through the
+    validator -- no faked objects needed, this constructs directly and normally.
+    """
+    with pytest.raises(ValueError, match="out of range"):
+        Answer(
+            question="q",
+            sentences=(Sentence(text="Banks must verify.", citation_indices=(7,), factual=True),),
+            citations=(),
+        )
+
+
+def test_answer_requires_at_least_one_sentence() -> None:
+    """An answer with no sentences says nothing, but without this it would still
+    count downstream as 'answered' with a vacuous, always-1.0 resolution rate."""
+    with pytest.raises(ValueError, match="at least one sentence"):
+        Answer(question="q", sentences=(), citations=())
+
+
+def test_too_many_citations_error_is_within_the_answering_error_hierarchy() -> None:
+    """A caller catching `AnsweringError` to record a contract breach must catch
+    a cap violation too -- `AnsweringError`'s own docstring says 'every failure'."""
+    assert issubclass(TooManyCitationsError, AnsweringError)
 
 
 def test_refusal_records_why_and_the_score_that_caused_it() -> None:

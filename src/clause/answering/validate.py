@@ -15,9 +15,19 @@ indices to 1-based positions in that tuple, and it is that rewritten `Sentence`
 that goes into the returned `Answer`. This is what makes `answer.citations[i - 1]`
 a correct, load-bearing invariant for any index carried by any sentence in an
 `Answer` -- including downstream consumers, such as a support-signal computation
-over cited citations, that will do exactly that arithmetic.
+over cited citations, that will do exactly that arithmetic. `Answer` itself now
+also carries that invariant (see `schema.py`), so a caller who builds one by hand
+gets the same guarantee -- this function is *a* way to build a conforming `Answer`,
+not the only thing standing between the type and a broken one.
+
+This function is deliberately pure: it takes an already-resolved mapping rather
+than resolving citations itself, so it has no database dependency and runs in CI
+with no Postgres connection. Folding `resolve_citations` in here would couple the
+validator to Postgres for no benefit -- resolution and enforcement are different
+concerns with different failure surfaces, and only one of them needs a database.
 """
 
+import dataclasses
 from collections.abc import Mapping
 
 from clause.answering.schema import (
@@ -25,7 +35,7 @@ from clause.answering.schema import (
     Answer,
     AnswerDraft,
     Citation,
-    Sentence,
+    TooManyCitationsError,
     UncitedClaimError,
     UnresolvableCitationError,
 )
@@ -43,10 +53,11 @@ def enforce(draft: AnswerDraft, resolved: Mapping[int, Citation]) -> Answer:
     for sentence in draft.sentences:
         if sentence.factual and not sentence.citation_indices:
             raise UncitedClaimError(
-                f"factual sentence carries no citation: {sentence.text!r}"
+                f"factual sentence in answer to {draft.question!r} carries no "
+                f"citation: {sentence.text!r}"
             )
         if len(sentence.citation_indices) > MAX_CITATIONS_PER_SENTENCE:
-            raise ValueError(
+            raise TooManyCitationsError(
                 f"a sentence may carry at most {MAX_CITATIONS_PER_SENTENCE} citations, "
                 f"got {len(sentence.citation_indices)}: {sentence.text!r}"
             )
@@ -54,7 +65,7 @@ def enforce(draft: AnswerDraft, resolved: Mapping[int, Citation]) -> Answer:
             if index not in resolved:
                 raise UnresolvableCitationError(
                     f"citation index {index} has no resolved citation "
-                    f"({len(resolved)} resolved)"
+                    f"(resolved: {sorted(resolved)})"
                 )
             used.setdefault(index, None)
 
@@ -63,10 +74,9 @@ def enforce(draft: AnswerDraft, resolved: Mapping[int, Citation]) -> Answer:
     citations = tuple(resolved[original] for original in order)
 
     sentences = tuple(
-        Sentence(
-            text=sentence.text,
+        dataclasses.replace(
+            sentence,
             citation_indices=tuple(position[i] for i in sentence.citation_indices),
-            factual=sentence.factual,
         )
         for sentence in draft.sentences
     )

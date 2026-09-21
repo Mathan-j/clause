@@ -7,6 +7,7 @@ from clause.answering.schema import (
     AnswerDraft,
     Citation,
     Sentence,
+    TooManyCitationsError,
     UncitedClaimError,
     UnresolvableCitationError,
 )
@@ -27,7 +28,9 @@ def _c(start: int = 0, end: int = 4) -> Citation:
 
 def test_a_clean_draft_becomes_an_answer() -> None:
     draft = AnswerDraft(
-        question="q", sentences=(Sentence(text="a", citation_indices=(1,), factual=True),)
+        question="q",
+        sentences=(Sentence(text="a", citation_indices=(1,), factual=True),),
+        hits=(),
     )
     answer = enforce(draft, {1: _c()})
     assert answer.question == "q"
@@ -37,19 +40,25 @@ def test_a_clean_draft_becomes_an_answer() -> None:
 def test_a_factual_sentence_without_a_citation_raises() -> None:
     """This is the single enforcement point, so the object constructs normally."""
     draft = AnswerDraft(
-        question="q",
+        question="the-question",
         sentences=(Sentence(text="Banks must verify.", citation_indices=(), factual=True),),
+        hits=(),
     )
-    with pytest.raises(UncitedClaimError, match="Banks must verify"):
+    with pytest.raises(UncitedClaimError, match="Banks must verify") as exc_info:
         enforce(draft, {})
+    assert "the-question" in str(exc_info.value)
 
 
 def test_an_index_with_no_matching_citation_raises() -> None:
     draft = AnswerDraft(
-        question="q", sentences=(Sentence(text="a", citation_indices=(2,), factual=True),)
+        question="q",
+        sentences=(Sentence(text="a", citation_indices=(2,), factual=True),),
+        hits=(),
     )
-    with pytest.raises(UnresolvableCitationError, match="index 2"):
+    with pytest.raises(UnresolvableCitationError, match="index 2") as exc_info:
         enforce(draft, {1: _c()})
+    # the message names the keys that actually resolved, not a vestigial count
+    assert "resolved: [1]" in str(exc_info.value)
 
 
 def test_more_citations_than_the_cap_raises() -> None:
@@ -59,9 +68,10 @@ def test_more_citations_than_the_cap_raises() -> None:
         sentences=(
             Sentence(text="a", citation_indices=tuple(range(1, n + 1)), factual=True),
         ),
+        hits=(),
     )
     resolved = {i: _c(i * 4, i * 4 + 4) for i in range(1, n + 1)}
-    with pytest.raises(ValueError, match="at most"):
+    with pytest.raises(TooManyCitationsError, match="at most"):
         enforce(draft, resolved)
 
 
@@ -69,6 +79,7 @@ def test_an_answer_with_no_factual_sentences_needs_no_citations() -> None:
     draft = AnswerDraft(
         question="q",
         sentences=(Sentence(text="I could not find this.", citation_indices=(), factual=False),),
+        hits=(),
     )
     answer = enforce(draft, {})
     assert answer.citations == ()
@@ -77,7 +88,9 @@ def test_an_answer_with_no_factual_sentences_needs_no_citations() -> None:
 def test_unused_citations_are_dropped_not_reported() -> None:
     """A citation nothing references is not evidence; carrying it would inflate the count."""
     draft = AnswerDraft(
-        question="q", sentences=(Sentence(text="a", citation_indices=(1,), factual=True),)
+        question="q",
+        sentences=(Sentence(text="a", citation_indices=(1,), factual=True),),
+        hits=(),
     )
     answer = enforce(draft, {1: _c(0, 4), 2: _c(4, 8)})
     assert len(answer.citations) == 1
@@ -88,7 +101,9 @@ def test_citing_only_a_non_first_hit_produces_an_answer() -> None:
     citation that does not exist just because the resolved mapping's *size* is 1.
     """
     draft = AnswerDraft(
-        question="q", sentences=(Sentence(text="a", citation_indices=(2,), factual=True),)
+        question="q",
+        sentences=(Sentence(text="a", citation_indices=(2,), factual=True),),
+        hits=(),
     )
     answer = enforce(draft, {2: _c()})
     assert len(answer.citations) == 1
@@ -104,6 +119,7 @@ def test_citation_indices_are_renumbered_to_positions_in_answer_citations() -> N
     draft = AnswerDraft(
         question="q",
         sentences=(Sentence(text="a", citation_indices=(3, 1), factual=True),),
+        hits=(),
     )
     answer = enforce(draft, {1: hit1, 3: hit3})
     new_indices = answer.sentences[0].citation_indices
@@ -117,7 +133,17 @@ def test_citation_indices_are_renumbered_to_positions_in_answer_citations() -> N
 
 def test_an_index_absent_from_the_resolved_mapping_raises() -> None:
     draft = AnswerDraft(
-        question="q", sentences=(Sentence(text="a", citation_indices=(5,), factual=True),)
+        question="q",
+        sentences=(Sentence(text="a", citation_indices=(5,), factual=True),),
+        hits=(),
     )
     with pytest.raises(UnresolvableCitationError, match="index 5"):
         enforce(draft, {1: _c()})
+
+
+def test_an_empty_draft_does_not_become_an_answer() -> None:
+    """A draft with no sentences says nothing; `enforce` must not hand it back as
+    an answered contract with a vacuous, always-1.0 resolution rate."""
+    draft = AnswerDraft(question="q", sentences=(), hits=())
+    with pytest.raises(ValueError, match="at least one sentence"):
+        enforce(draft, {})
