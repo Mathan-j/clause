@@ -1,13 +1,19 @@
 This is clause. A regulatory answer engine over sixty-one real Reserve Bank of India circulars.
 
-Ask it something about know-your-customer rules, and every factual sentence it returns carries a citation.
+Ask it about know-your-customer rules, and every factual sentence it returns carries a citation.
 
-But not a citation to a document. To an exact character range. Characters three thousand two hundred and nine, to four thousand seven hundred and fifty-eight, highlighted in the source circular.
+But not a citation to a document. To an exact character range, highlighted in the source circular. The model never writes that text. It's sliced out of the stored document, so a citation cannot disagree with its source.
 
-The model never writes that text. It's sliced out of the stored document, so a citation cannot disagree with its source.
+The model can't invent one either. A grammar constrains decoding so it can only reference passages it was actually shown. And when a draft cites something that doesn't resolve, the answer is discarded rather than returned. That happened to eight percent of drafts in the last run.
 
 Raise the confidence threshold, and it refuses instead of guessing. Instantly, because a refusal never calls the model at all.
 
-And here is what does not work. Fifteen deliberately unanswerable questions. It refused none of them. A retrieval score cannot tell a plausible question from an answerable one. That is measured, not claimed.
+Now the part most demos skip. Retrieval was measured against a hand-built set of sixty-five questions with character-span ground truth.
 
-Python, Postgres, Qdrant, llama dot c p p, a grammar-constrained three billion parameter model, three hundred and sixty-three tests, and a continuous integration gate on the numbers.
+Both chunking strategies, scored against their own chance floor. That floor matters: fixed window leads on raw recall, but structural is ahead once you normalise. Reading recall without it gives you the opposite conclusion.
+
+Per bucket, the weakness is visible. Cross-reference questions, the ones that ask what a circular points at, score zero at rank one.
+
+And here is what does not work. Fifteen deliberately unanswerable questions. At the default threshold it refused none of them. Raise the bar high enough to catch them, and it refuses every real question too. A retrieval score cannot separate answerable from unanswerable.
+
+That is measured, committed, and gated in continuous integration. Python, Postgres, Qdrant, llama dot c p p, three hundred and sixty-three tests.
