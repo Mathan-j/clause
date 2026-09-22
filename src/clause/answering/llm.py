@@ -7,6 +7,7 @@ fetches weights has a different reproducibility story from every run after it.
 """
 
 import json
+import os
 from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
@@ -31,6 +32,25 @@ from clause.answering.schema import (
 from clause.retrieve import Hit
 
 DEFAULT_MODEL_FILENAME = "qwen2.5-3b-instruct-q4_k_m.gguf"
+
+#: Generation budget. Observed answers run 76-250 tokens; 512 was headroom
+#: nothing used, and an unused budget still costs nothing until the model
+#: reaches for it -- but a runaway under grammar constraint spends all of
+#: it, which is exactly the whitespace-attractor failure this grammar was
+#: bounded to prevent. 320 covers the observed range with room to spare.
+MAX_ANSWER_TOKENS = 320
+
+
+def _physical_cores() -> int:
+    """Physical cores, falling back to half the logical count.
+
+    llama.cpp gains nothing from SMT siblings on this workload and loses a
+    little to contention, so the useful thread count is the physical core
+    count rather than `os.cpu_count()`.
+    """
+    logical = os.cpu_count() or 4
+    return max(1, logical // 2)
+
 
 _SYSTEM = (
     "You answer questions about Indian banking regulation using ONLY the numbered "
@@ -70,6 +90,13 @@ class LlamaAnswerer:
             n_ctx=n_ctx,
             verbose=False,
             seed=0,
+            # Prompt processing, not token generation, dominates the wall clock
+            # here: a five-passage prompt is a few thousand tokens and each one
+            # must be run through the model before the first output token
+            # appears. llama.cpp's defaults leave cores idle on this 6-core
+            # part, and prefill parallelises across them almost linearly.
+            n_threads=_physical_cores(),
+            n_batch=512,
         )
 
     def answer(self, question: str, hits: Sequence[Hit]) -> AnswerDraft:
@@ -78,7 +105,7 @@ class LlamaAnswerer:
         result: Any = self._llama(
             _prompt(question, hit_tuple),
             grammar=grammar,
-            max_tokens=512,
+            max_tokens=MAX_ANSWER_TOKENS,
             temperature=0.0,
             seed=0,
         )

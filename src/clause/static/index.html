@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>clause — span-level citations over RBI circulars</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg:        #0D1217;
+    --panel:     #151D25;
+    --panel-2:   #1B242E;
+    --line:      #26323D;
+    --text:      #E4EBF2;
+    --dim:       #8595A5;
+    --faint:     #5A6875;
+    --accent:    #FFC857;
+    --accent-dk: #7A5E1A;
+    --ok:        #3DD68C;
+    --stop:      #F16A6A;
+    --paper:     #FBFAF7;
+    --paper-ink: #1A1D21;
+
+    --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+    --serif: "IBM Plex Serif", Georgia, serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--sans); font-size: 15px; line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header {
+    border-bottom: 1px solid var(--line); padding: 14px 22px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    background: var(--panel);
+  }
+  .brand { font-family: var(--mono); font-weight: 600; font-size: 15px; letter-spacing: -0.02em; }
+  .brand span { color: var(--accent); }
+  .tagline { color: var(--dim); font-size: 13px; }
+  .health { margin-left: auto; font-family: var(--mono); font-size: 11.5px; color: var(--faint); display: flex; gap: 14px; flex-wrap: wrap; }
+  .health b { color: var(--dim); font-weight: 500; }
+
+  main { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); height: calc(100% - 58px); }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; height: auto; } }
+
+  .left { padding: 22px; overflow-y: auto; border-right: 1px solid var(--line); }
+  .right { padding: 22px; overflow-y: auto; background: var(--bg); }
+  @media (max-width: 900px) { .left { border-right: 0; border-bottom: 1px solid var(--line); } }
+
+  label.fieldlabel {
+    display: block; font-family: var(--mono); font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--faint); margin-bottom: 8px;
+  }
+
+  textarea {
+    width: 100%; background: var(--panel); color: var(--text); border: 1px solid var(--line);
+    border-radius: 6px; padding: 12px 14px; font-family: var(--sans); font-size: 15px;
+    line-height: 1.5; resize: vertical; min-height: 76px;
+  }
+  textarea:focus { outline: 2px solid var(--accent-dk); outline-offset: 1px; border-color: var(--accent-dk); }
+
+  .row { display: flex; gap: 12px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
+  button.ask {
+    background: var(--accent); color: #241B04; border: 0; border-radius: 6px;
+    padding: 10px 20px; font-family: var(--sans); font-weight: 600; font-size: 14px; cursor: pointer;
+  }
+  button.ask:hover { filter: brightness(1.08); }
+  button.ask:disabled { opacity: .5; cursor: default; filter: none; }
+
+  .thresh { display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; color: var(--dim); }
+  .thresh input { accent-color: var(--accent); width: 128px; }
+  .thresh output { color: var(--accent); font-weight: 600; min-width: 34px; }
+
+  .examples { margin-top: 16px; display: flex; flex-direction: column; gap: 6px; }
+  .examples button {
+    text-align: left; background: transparent; border: 1px solid var(--line); color: var(--dim);
+    border-radius: 5px; padding: 8px 11px; font-family: var(--sans); font-size: 13px; cursor: pointer;
+  }
+  .examples button:hover { border-color: var(--accent-dk); color: var(--text); }
+  .examples .tag { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); margin-right: 8px; }
+
+  .result { margin-top: 26px; }
+  .statusline {
+    display: flex; gap: 16px; flex-wrap: wrap; font-family: var(--mono); font-size: 11.5px;
+    color: var(--faint); border-top: 1px solid var(--line); padding-top: 12px; margin-bottom: 18px;
+  }
+  .statusline b { color: var(--dim); font-weight: 500; }
+
+  .verdict { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px;
+    text-transform: uppercase; letter-spacing: .1em; padding: 5px 10px; border-radius: 4px; margin-bottom: 16px; }
+  .verdict.answered { background: rgba(61,214,140,.12); color: var(--ok); }
+  .verdict.refused  { background: rgba(241,106,106,.12); color: var(--stop); }
+  .verdict.failed   { background: rgba(241,106,106,.18); color: var(--stop); }
+
+  .sentence { margin-bottom: 14px; display: flex; gap: 10px; align-items: flex-start; }
+  .sentence p { margin: 0; }
+  .chip {
+    flex: none; font-family: var(--mono); font-size: 11px; font-weight: 600;
+    background: var(--panel-2); color: var(--accent); border: 1px solid var(--accent-dk);
+    border-radius: 4px; padding: 2px 7px; cursor: pointer; margin-top: 3px;
+  }
+  .chip:hover { background: var(--accent); color: #241B04; }
+  .chip.active { background: var(--accent); color: #241B04; }
+  .chip.none { color: var(--faint); border-color: var(--line); cursor: default; background: transparent; }
+
+  .refusebox { border: 1px solid var(--line); border-left: 3px solid var(--stop); border-radius: 5px; padding: 14px 16px; background: var(--panel); }
+  .refusebox p { margin: 0 0 8px; }
+  .refusebox p:last-child { margin: 0; color: var(--dim); font-size: 13.5px; }
+
+  /* right panel: the document */
+  .placeholder { color: var(--faint); font-size: 14px; border: 1px dashed var(--line); border-radius: 6px; padding: 30px 22px; text-align: center; }
+  .docmeta { font-family: var(--mono); font-size: 11.5px; color: var(--faint); margin-bottom: 12px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .docmeta a { color: var(--accent); }
+  .doctitle { font-size: 16px; font-weight: 600; margin: 0 0 4px; line-height: 1.35; }
+  .spanlabel { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: .06em; margin-bottom: 10px; }
+
+  .paper {
+    background: var(--paper); color: var(--paper-ink); border-radius: 6px; padding: 24px 26px;
+    font-family: var(--serif); font-size: 14.5px; line-height: 1.8; white-space: pre-wrap;
+    word-wrap: break-word; max-height: calc(100vh - 230px); overflow-y: auto;
+  }
+  .paper mark { background: var(--accent); color: #241B04; padding: 1px 0; box-shadow: 0 0 0 3px var(--accent); border-radius: 1px; }
+
+  .spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid var(--accent-dk); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">clause<span>.</span></div>
+  <div class="tagline">every factual sentence resolves to an exact character span</div>
+  <div class="health" id="health"></div>
+</header>
+
+<main>
+  <div class="left">
+    <label class="fieldlabel" for="q">Ask about RBI KYC / AML rules</label>
+    <textarea id="q" placeholder="e.g. What must a regulated entity do when a customer's KYC records are due for periodic updation?"></textarea>
+
+    <div class="row">
+      <button class="ask" id="askBtn">Ask</button>
+      <div class="thresh">
+        <label for="th">refusal threshold</label>
+        <input type="range" id="th" min="0" max="0.95" step="0.05" value="0.35">
+        <output id="thv">0.35</output>
+      </div>
+    </div>
+
+    <div class="examples" id="examples">
+      <button data-q="What must a regulated entity do when a customer's KYC records are due for periodic updation?"><span class="tag">answerable</span>Periodic KYC updation</button>
+      <button data-q="What is the minimum capital conservation buffer a scheduled commercial bank must maintain under Basel III?"><span class="tag">out of corpus</span>Capital adequacy — not in these documents</button>
+      <button data-q="What are the record retention requirements for customer identification data?"><span class="tag">answerable</span>Record retention</button>
+    </div>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <div class="right" id="right">
+    <div class="placeholder">Ask a question, then click a citation chip to see the exact characters it came from, highlighted in the source document.</div>
+  </div>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const q = $("#q"), askBtn = $("#askBtn"), th = $("#th"), thv = $("#thv");
+const resultEl = $("#result"), rightEl = $("#right");
+let citations = [], docCache = {};
+
+th.addEventListener("input", () => { thv.textContent = Number(th.value).toFixed(2); });
+document.querySelectorAll("#examples button").forEach(b =>
+  b.addEventListener("click", () => { q.value = b.dataset.q; ask(); }));
+askBtn.addEventListener("click", ask);
+q.addEventListener("keydown", e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) ask(); });
+
+fetch("/api/health").then(r => r.json()).then(h => {
+  $("#health").innerHTML =
+    `<span><b>${h.documents}</b> documents</span>` +
+    `<span><b>${h.strategy}</b> chunks</span>` +
+    `<span>model <b>${h.model}</b></span>`;
+}).catch(() => {});
+
+function esc(s) { return s.replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
+
+async function ask() {
+  const question = q.value.trim();
+  if (!question) return;
+  askBtn.disabled = true;
+  resultEl.innerHTML = `<div class="statusline"><span><span class="spinner"></span> retrieving and generating…</span></div>`;
+  try {
+    const res = await fetch("/api/ask", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ question, threshold: Number(th.value) })
+    });
+    render(await res.json());
+  } catch (e) {
+    resultEl.innerHTML = `<div class="verdict failed">request failed</div><p>${esc(String(e))}</p>`;
+  } finally { askBtn.disabled = false; }
+}
+
+function statusline(d) {
+  const bits = [];
+  if (d.top_score != null) bits.push(`<span>top score <b>${d.top_score.toFixed(3)}</b></span>`);
+  if (d.threshold != null) bits.push(`<span>threshold <b>${Number(d.threshold).toFixed(2)}</b></span>`);
+  if (d.timing_ms?.retrieval != null) bits.push(`<span>retrieval <b>${d.timing_ms.retrieval}ms</b></span>`);
+  if (d.timing_ms?.total != null) bits.push(`<span>total <b>${(d.timing_ms.total/1000).toFixed(1)}s</b></span>`);
+  return `<div class="statusline">${bits.join("")}</div>`;
+}
+
+function render(d) {
+  citations = d.citations || [];
+  if (d.kind === "refusal") {
+    resultEl.innerHTML = statusline(d) +
+      `<div class="verdict refused">refused</div>
+       <div class="refusebox">
+         <p>No answer given. Retrieval was not strong enough to support one.</p>
+         <p>Top score ${d.top_score == null ? "—" : d.top_score.toFixed(3)} fell below the threshold of ${Number(d.threshold).toFixed(2)}${d.reason === "no_candidates" ? " — nothing was retrieved at all" : ""}. The system refuses rather than answering from weak evidence.</p>
+       </div>`;
+    rightEl.innerHTML = `<div class="placeholder">Nothing cited — the question was refused.</div>`;
+    return;
+  }
+  if (d.kind === "contract_failure") {
+    resultEl.innerHTML = statusline(d) +
+      `<div class="verdict failed">citation contract failure</div>
+       <div class="refusebox">
+         <p>An answer was generated but <strong>withheld</strong>: its citations did not resolve against the corpus.</p>
+         <p><code>${esc(d.error_type)}</code> — ${esc(d.detail)}</p>
+       </div>`;
+    rightEl.innerHTML = `<div class="placeholder">No answer was released, so there is nothing to show.</div>`;
+    return;
+  }
+
+  const sentences = (d.sentences || []).map(s => {
+    const chips = (s.citation_indices || []).length
+      ? s.citation_indices.map(i => `<button class="chip" data-i="${i}">${i}</button>`).join("")
+      : `<span class="chip none">—</span>`;
+    return `<div class="sentence">${chips}<p>${esc(s.text)}</p></div>`;
+  }).join("");
+
+  resultEl.innerHTML = statusline(d) +
+    `<div class="verdict answered">answered · ${citations.length} citation${citations.length === 1 ? "" : "s"} resolved</div>` +
+    sentences;
+
+  resultEl.querySelectorAll(".chip[data-i]").forEach(c =>
+    c.addEventListener("click", () => showCitation(Number(c.dataset.i), c)));
+
+  if (citations.length) showCitation(1, resultEl.querySelector('.chip[data-i="1"]'));
+}
+
+async function showCitation(i, chipEl) {
+  const c = citations[i - 1];
+  if (!c) return;
+  resultEl.querySelectorAll(".chip").forEach(x => x.classList.remove("active"));
+  resultEl.querySelectorAll(`.chip[data-i="${i}"]`).forEach(x => x.classList.add("active"));
+
+  rightEl.innerHTML = `<div class="placeholder"><span class="spinner"></span> loading ${esc(c.doc_id)}…</div>`;
+  let doc = docCache[c.doc_id];
+  if (!doc) {
+    doc = await (await fetch(`/api/document/${encodeURIComponent(c.doc_id)}`)).json();
+    docCache[c.doc_id] = doc;
+  }
+
+  const pre = doc.text.slice(Math.max(0, c.char_start - 900), c.char_start);
+  const span = doc.text.slice(c.char_start, c.char_end);
+  const post = doc.text.slice(c.char_end, c.char_end + 900);
+
+  rightEl.innerHTML =
+    `<p class="doctitle">${esc(doc.title)}</p>
+     <div class="docmeta">
+       <span>${esc(doc.doc_id)}</span>
+       <span>${esc(doc.doc_type)}</span>
+       <span>${esc(doc.published_date)}</span>
+       <a href="${esc(doc.url)}" target="_blank" rel="noopener">source ↗</a>
+     </div>
+     <div class="spanlabel">characters ${c.char_start.toLocaleString()} – ${c.char_end.toLocaleString()} of ${doc.text.length.toLocaleString()}</div>
+     <div class="paper" id="paper">${pre ? "…" : ""}${esc(pre)}<mark id="hl">${esc(span)}</mark>${esc(post)}${post ? "…" : ""}</div>`;
+
+  const hl = document.getElementById("hl");
+  if (hl) hl.scrollIntoView({ block: "center", behavior: "smooth" });
+}
+</script>
+</body>
+</html>

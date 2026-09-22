@@ -78,7 +78,10 @@ ANSWER_N_CTX = 8192
 #: ten passages of up to 2000 characters degrades (the answer it needs sits
 #: in the middle of a very long context), and the prompt halves, which is the
 #: difference between a run that completes and one that does not on this
-#: machine. Citation indices are 1-based into *these* hits, so `answer_one`
+#: machine. Narrowing further to three was measured and did not help: the
+#: wall clock follows total tokens, and a shorter prompt simply drew a
+#: longer answer. Five it is, for the better retrieval coverage.
+#: Citation indices are 1-based into *these* hits, so `answer_one`
 #: must hand the same narrowed list to both the answerer and the resolver --
 #: the draft carries it, which is what `AnswerDraft.hits` exists to guarantee.
 ANSWER_PROMPT_HITS = 5

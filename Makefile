@@ -33,3 +33,6 @@ up:
 
 down:
 	docker compose down
+
+serve:
+	uv run uvicorn clause.api:app --reload --port 8000
