@@ -24,6 +24,9 @@ secrets/
 data/raw/
 data/cache/
 
+# Local model weights — a multi-GB GGUF file must never be committed
+data/models/
+
 # Local infra
 .qdrant/
 *.db

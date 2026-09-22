@@ -34,6 +34,10 @@ class Settings(BaseSettings):
     embedding_model: str = DEFAULT_MODEL
     qdrant_url: str = "http://localhost:6335"
 
+    # Answering
+    answer_model_path: Path = Path("data/models/qwen2.5-3b-instruct-q4_k_m.gguf")
+    answer_threshold: float = Field(default=0.35, ge=0.0, le=1.0)
+
     @model_validator(mode="after")
     def _check_sizes(self) -> "Settings":
         if self.overlap_chars >= self.window_chars:

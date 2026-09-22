@@ -20,8 +20,14 @@ dependencies = [
     "sqlalchemy>=2.0",
 ]
 
+[project.optional-dependencies]
+answer = ["llama-cpp-python==0.3.19"]
+
 [dependency-groups]
 dev = ["ruff>=0.6", "mypy>=1.11", "pytest>=8.3"]
+
+[tool.uv]
+extra-index-url = ["https://abetlen.github.io/llama-cpp-python/whl/cpu"]
 
 [build-system]
 requires = ["hatchling"]
@@ -57,4 +63,5 @@ markers = [
     "db: requires a live Postgres instance",
     "model: requires the embedding model in the local cache",
     "qdrant: requires a live Qdrant instance",
+    "llm: requires the GGUF answering model in the local cache",
 ]

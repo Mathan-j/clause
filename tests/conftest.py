@@ -11,6 +11,7 @@ from sqlalchemy.engine import make_url
 from sqlalchemy.orm import Session
 
 from clause.cli import ingest, run_eval
+from clause.config import get_settings
 from clause.sources.manifest import load_manifest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -220,3 +221,17 @@ def evaluated(db_session: Session, tmp_path: Path) -> tuple[Path, Path]:
     json_path = tmp_path / "eval.json"
     run_eval(md_path=md_path, json_path=json_path)
     return md_path, json_path
+
+
+@pytest.fixture
+def answer_model() -> Path:
+    """The local GGUF answering model, or a skip.
+
+    Mirrors `Encoder`'s own rule in `clause/embed.py`: a test must never trigger
+    a multi-GB download mid-run. Skipping instead of failing keeps a cold cache
+    legible as deliberate rather than broken, exactly like `ingested` above.
+    """
+    path = get_settings().answer_model_path
+    if not path.exists():
+        pytest.skip(f"answering model not present at {path}")
+    return path
