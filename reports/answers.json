@@ -1,0 +1,186 @@
+{
+  "fingerprint": {
+    "adversarial_sha256": "078305a8f38ac16e38e67aa8f875f34c2f53dd75e46d2420d555e5872cc7bab3",
+    "corpus_documents": 61,
+    "git_commit": "0fc80208829bd736108252dae6fad2a3018cc33f",
+    "golden_sha256": "c138b258815f3fa2b4b7c2f94855454207494c3c63520d9e7558ab2851f2e03f",
+    "model_file": "qwen2.5-3b-instruct-q4_k_m.gguf",
+    "model_sha256": "626b4a6678b86442240e33df819e00132d3ba7dddfe1cdc4fbb18e0a9615c62d",
+    "n_ctx": 8192,
+    "threshold": 0.35
+  },
+  "generation_failures": 0,
+  "resolution_rate": 0.9166666666666666,
+  "sentence_repetition": {
+    "distinct_factual_sentences": 90,
+    "total_factual_sentences": 115
+  },
+  "support": {
+    "at_or_above_half": 93,
+    "mean": 0.8221794608882306,
+    "n": 115,
+    "zero": 2
+  },
+  "sweep": [
+    {
+      "adversarial_answered": 15,
+      "adversarial_refused": 0,
+      "answered": 65,
+      "false_refusals": 0,
+      "refused": 0,
+      "threshold": 0.0
+    },
+    {
+      "adversarial_answered": 15,
+      "adversarial_refused": 0,
+      "answered": 65,
+      "false_refusals": 0,
+      "refused": 0,
+      "threshold": 0.05
+    },
+    {
+      "adversarial_answered": 15,
+      "adversarial_refused": 0,
+      "answered": 65,
+      "false_refusals": 0,
+      "refused": 0,
+      "threshold": 0.1
+    },
+    {
+      "adversarial_answered": 15,
+      "adversarial_refused": 0,
+      "answered": 65,
+      "false_refusals": 0,
+      "refused": 0,
+      "threshold": 0.15
+    },
+    {
+      "adversarial_answered": 15,
+      "adversarial_refused": 0,
+      "answered": 65,
+      "false_refusals": 0,
+      "refused": 0,
+      "threshold": 0.2
+    },
+    {
+      "adversarial_answered": 15,
+      "adversarial_refused": 0,
+      "answered": 65,
+      "false_refusals": 0,
+      "refused": 0,
+      "threshold": 0.25
+    },
+    {
+      "adversarial_answered": 15,
+      "adversarial_refused": 0,
+      "answered": 62,
+      "false_refusals": 3,
+      "refused": 3,
+      "threshold": 0.3
+    },
+    {
+      "adversarial_answered": 15,
+      "adversarial_refused": 0,
+      "answered": 57,
+      "false_refusals": 5,
+      "refused": 8,
+      "threshold": 0.35
+    },
+    {
+      "adversarial_answered": 14,
+      "adversarial_refused": 1,
+      "answered": 52,
+      "false_refusals": 7,
+      "refused": 13,
+      "threshold": 0.4
+    },
+    {
+      "adversarial_answered": 13,
+      "adversarial_refused": 2,
+      "answered": 47,
+      "false_refusals": 10,
+      "refused": 18,
+      "threshold": 0.45
+    },
+    {
+      "adversarial_answered": 12,
+      "adversarial_refused": 3,
+      "answered": 33,
+      "false_refusals": 15,
+      "refused": 32,
+      "threshold": 0.5
+    },
+    {
+      "adversarial_answered": 7,
+      "adversarial_refused": 8,
+      "answered": 23,
+      "false_refusals": 20,
+      "refused": 42,
+      "threshold": 0.55
+    },
+    {
+      "adversarial_answered": 3,
+      "adversarial_refused": 12,
+      "answered": 11,
+      "false_refusals": 25,
+      "refused": 54,
+      "threshold": 0.6
+    },
+    {
+      "adversarial_answered": 3,
+      "adversarial_refused": 12,
+      "answered": 0,
+      "false_refusals": 28,
+      "refused": 65,
+      "threshold": 0.65
+    },
+    {
+      "adversarial_answered": 0,
+      "adversarial_refused": 15,
+      "answered": 0,
+      "false_refusals": 28,
+      "refused": 65,
+      "threshold": 0.7
+    },
+    {
+      "adversarial_answered": 0,
+      "adversarial_refused": 15,
+      "answered": 0,
+      "false_refusals": 28,
+      "refused": 65,
+      "threshold": 0.75
+    },
+    {
+      "adversarial_answered": 0,
+      "adversarial_refused": 15,
+      "answered": 0,
+      "false_refusals": 28,
+      "refused": 65,
+      "threshold": 0.8
+    },
+    {
+      "adversarial_answered": 0,
+      "adversarial_refused": 15,
+      "answered": 0,
+      "false_refusals": 28,
+      "refused": 65,
+      "threshold": 0.85
+    },
+    {
+      "adversarial_answered": 0,
+      "adversarial_refused": 15,
+      "answered": 0,
+      "false_refusals": 28,
+      "refused": 65,
+      "threshold": 0.9
+    },
+    {
+      "adversarial_answered": 0,
+      "adversarial_refused": 15,
+      "answered": 0,
+      "false_refusals": 28,
+      "refused": 65,
+      "threshold": 0.95
+    }
+  ]
+}

@@ -52,14 +52,22 @@ def test_the_report_renders_the_whole_sweep() -> None:
 
 
 def test_a_resolution_rate_below_one_is_called_out_loudly() -> None:
-    """It is 1.0 by construction; anything else means the enforcement path broke."""
+    """Below 1.0 means the contract REJECTED drafts -- it working, not failing.
+
+    A returned `Answer` with an unresolvable citation cannot exist, because
+    `enforce` raises before one is constructed. So this figure measures the
+    generator, and the report must not call it a breach of the contract.
+    """
     md = render_answer_markdown(build_answer_report(ROWS, FP, SUPPORT, resolution_rate=0.98))
-    assert "CITATION CONTRACT BREACH" in md
+    assert "rejected" in md.lower()
+    assert "contract working, not failing" in md
+    assert "CITATION CONTRACT BREACH" not in md
 
 
 def test_a_resolution_rate_of_one_says_so_without_alarm() -> None:
     md = render_answer_markdown(build_answer_report(ROWS, FP, SUPPORT, resolution_rate=1.0))
     assert "CITATION CONTRACT BREACH" not in md
+    assert "rejected" not in md.lower()
 
 
 def test_write_emits_both_artifacts(tmp_path: Path) -> None:

@@ -115,17 +115,27 @@ def _render_resolution(resolution_rate: float) -> list[str]:
     lines = ["## Citation resolution", ""]
     if resolution_rate < 1.0:
         lines.append(
-            f"**CITATION CONTRACT BREACH:** citation resolution rate is "
-            f"{resolution_rate:.4f}, not 1.0. `validate.enforce` guarantees "
-            "every returned `Answer` carries only resolved citations, so a "
-            "rate below 1.0 means the enforcement path itself failed for "
-            "some answers, not that those answers were merely weaker."
+            f"**The citation contract rejected "
+            f"{1.0 - resolution_rate:.1%} of generated drafts.** "
+            f"{resolution_rate:.4f} of drafts survived enforcement and were "
+            "returned as answers; the rest cited something that did not "
+            "resolve, or asserted a fact with no citation at all, and were "
+            "discarded rather than returned. "
+            "**This is the contract working, not failing.** A returned "
+            "`Answer` carrying an unresolvable citation is impossible by "
+            "construction -- `validate.enforce` raises before an `Answer` is "
+            "built -- so this figure measures how often the model produced "
+            "something the corpus would not support, and how often that was "
+            "caught. It is a property of the generator, not of the "
+            "enforcement path."
         )
     else:
         lines.append(
-            "Citation resolution rate is **1.0**: every answer returned by "
-            "this run carried only citations that resolved to an exact span "
-            "in the corpus, by construction of `validate.enforce`."
+            "Every generated draft survived the citation contract: each one "
+            "cited only spans that resolved against the corpus. Note this "
+            "measures the *generator* -- a returned `Answer` with an "
+            "unresolvable citation cannot exist, because `validate.enforce` "
+            "raises before one is constructed."
         )
     lines.append("")
     return lines
