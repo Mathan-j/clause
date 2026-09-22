@@ -28,6 +28,9 @@
     --serif: "IBM Plex Serif", Georgia, serif;
   }
   * { box-sizing: border-box; }
+  /* an explicit display on main/#evidence beats the hidden attribute's default,
+     so the toggle needs to win explicitly */
+  [hidden] { display: none !important; }
   html, body { height: 100%; }
   body {
     margin: 0; background: var(--bg); color: var(--text);
@@ -47,6 +50,53 @@
   .stat { font-family: var(--mono); font-size: 11px; color: var(--faint); background: var(--panel-2);
     border: 1px solid var(--line); border-radius: 4px; padding: 5px 10px; line-height: 1.3; }
   .stat b { display: block; color: var(--text); font-size: 14px; font-weight: 600; letter-spacing: -.01em; }
+
+  .tabs { display: flex; gap: 2px; margin-left: 20px; }
+  .tabs button { background: transparent; border: 0; border-bottom: 2px solid transparent;
+    color: var(--faint); font-family: var(--mono); font-size: 12px; letter-spacing: .06em;
+    text-transform: uppercase; padding: 8px 12px; cursor: pointer; }
+  .tabs button:hover { color: var(--dim); }
+  .tabs button.on { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .filters { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 12px;
+    padding-top: 12px; border-top: 1px solid var(--line); }
+  .filters label { font-family: var(--mono); font-size: 11px; color: var(--faint);
+    text-transform: uppercase; letter-spacing: .08em; }
+  .filters select, .filters input[type=date] {
+    background: var(--panel); color: var(--text); border: 1px solid var(--line);
+    border-radius: 4px; padding: 5px 8px; font-family: var(--mono); font-size: 12px; }
+
+  /* evidence view */
+  #evidence { padding: 26px 30px; overflow-y: auto; }
+  #evidence h2 { font-size: 15px; font-family: var(--mono); text-transform: uppercase;
+    letter-spacing: .1em; color: var(--accent); margin: 0 0 6px; font-weight: 600; }
+  #evidence .note { color: var(--dim); font-size: 14px; margin: 0 0 20px; max-width: 76ch; line-height: 1.6; }
+  #evidence section { margin-bottom: 38px; }
+  table.ev { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  table.ev th { font-family: var(--mono); font-size: 10.5px; text-transform: uppercase;
+    letter-spacing: .08em; color: var(--faint); font-weight: 600; text-align: right;
+    padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  table.ev th:first-child { text-align: left; }
+  table.ev td { padding: 9px 10px; border-bottom: 1px solid var(--line); text-align: right;
+    font-variant-numeric: tabular-nums; font-family: var(--mono); }
+  table.ev td:first-child { text-align: left; font-family: var(--sans); color: var(--dim); }
+  table.ev tr.total td { color: var(--text); font-weight: 600; border-bottom: 0; }
+  table.ev .floor { color: var(--accent); }
+
+  .bars { display: grid; gap: 10px; margin-top: 4px; }
+  .barrow { display: grid; grid-template-columns: 130px 1fr 74px; gap: 12px; align-items: center; }
+  .barrow .nm { font-family: var(--mono); font-size: 12px; color: var(--dim); }
+  .track { height: 22px; background: var(--panel-2); border: 1px solid var(--line);
+    border-radius: 3px; position: relative; overflow: hidden; }
+  .track .fill { position: absolute; inset: 0 auto 0 0; background: var(--accent); opacity: .85; }
+  .track .floor { position: absolute; top: 0; bottom: 0; background: var(--stop); width: 2px; }
+  .barrow .val { font-family: var(--mono); font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; }
+
+  .sweep { display: grid; grid-template-columns: repeat(auto-fit, minmax(58px, 1fr)); gap: 3px; margin-top: 10px; }
+  .sweep div { text-align: center; font-family: var(--mono); font-size: 10px; color: var(--faint); }
+  .sweep .col { display: flex; flex-direction: column-reverse; height: 110px; gap: 2px; margin-bottom: 5px; }
+  .sweep .a { background: var(--ok); opacity: .8; }
+  .sweep .r { background: var(--stop); opacity: .75; }
 
   main { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); height: calc(100% - 58px); }
   @media (max-width: 900px) { main { grid-template-columns: 1fr; height: auto; } }
@@ -154,10 +204,14 @@
 <header>
   <div class="brand">clause<span>.</span></div>
   <div class="tagline">every factual sentence resolves to an exact character span</div>
+  <div class="tabs">
+    <button id="tabAsk" class="on">ask</button>
+    <button id="tabEv">evidence</button>
+  </div>
   <div class="health" id="health"></div>
 </header>
 
-<main>
+<main id="askView">
   <div class="left">
     <label class="fieldlabel" for="q">Ask about RBI KYC / AML rules</label>
     <textarea id="q" placeholder="e.g. What must a regulated entity do when a customer's KYC records are due for periodic updation?"></textarea>
@@ -169,6 +223,18 @@
         <input type="range" id="th" min="0" max="0.95" step="0.05" value="0.35">
         <output id="thv">0.35</output>
       </div>
+    </div>
+
+    <div class="filters">
+      <label for="strat">chunking</label>
+      <select id="strat">
+        <option value="structural">structural</option>
+        <option value="fixed_window">fixed_window</option>
+      </select>
+      <label for="after">published after</label>
+      <input type="date" id="after">
+      <label for="ent">entity</label>
+      <select id="ent"><option value="">any</option></select>
     </div>
 
     <div class="examples" id="examples">
@@ -185,6 +251,8 @@
     <div class="placeholder">Ask a question, then click a citation chip to see the exact characters it came from, highlighted in the source document.</div>
   </div>
 </main>
+
+<div id="evidence" hidden></div>
 
 <script>
 const $ = s => document.querySelector(s);
@@ -236,7 +304,13 @@ async function ask() {
   try {
     const res = await fetch("/api/ask", {
       method: "POST", headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({ question, threshold: Number(th.value) })
+      body: JSON.stringify({
+        question,
+        threshold: Number(th.value),
+        strategy: $("#strat").value,
+        published_after: $("#after").value || null,
+        entities: $("#ent").value ? [$("#ent").value] : null
+      })
     });
     render(await res.json());
   } catch (e) {
@@ -329,6 +403,119 @@ async function showCitation(i, chipEl) {
   const hl = document.getElementById("hl");
   if (hl) hl.scrollIntoView({ block: "center", behavior: "smooth" });
 }
+
+// ---- tabs -------------------------------------------------------------
+const askView = document.getElementById("askView");
+const evView  = document.getElementById("evidence");
+let evidenceLoaded = false;
+
+function show(which) {
+  const isAsk = which === "ask";
+  askView.hidden = !isAsk;
+  evView.hidden = isAsk;
+  $("#tabAsk").classList.toggle("on", isAsk);
+  $("#tabEv").classList.toggle("on", !isAsk);
+  if (!isAsk && !evidenceLoaded) { evidenceLoaded = true; loadEvidence(); }
+}
+$("#tabAsk").addEventListener("click", () => show("ask"));
+$("#tabEv").addEventListener("click", () => show("evidence"));
+
+// ---- filters ----------------------------------------------------------
+fetch("/api/entities").then(r => r.json()).then(d => {
+  const sel = $("#ent");
+  (d.entities || []).forEach(e => {
+    const o = document.createElement("option");
+    o.value = e; o.textContent = e; sel.appendChild(o);
+  });
+}).catch(() => {});
+
+// ---- evidence ---------------------------------------------------------
+function pct(x) { return (x * 100).toFixed(0) + "%"; }
+
+async function loadEvidence() {
+  evView.innerHTML = `<p class="note"><span class="spinner"></span> loading committed reports…</p>`;
+  let d;
+  try { d = await (await fetch("/api/evidence")).json(); }
+  catch (e) { evView.innerHTML = `<p class="note">could not load: ${esc(String(e))}</p>`; return; }
+
+  let html = "";
+
+  if (!d.retrieval) {
+    html += `<section><h2>retrieval</h2><p class="note">No committed <code>reports/eval.json</code>. Run <code>make eval</code>.</p></section>`;
+  } else {
+    const R = d.retrieval, cb = R.chance_baseline?.measured || {};
+    const names = Object.keys(R.strategies).sort();
+
+    html += `<section>
+      <h2>retrieval, measured</h2>
+      <p class="note">From the committed <code>reports/eval.json</code>, regenerated by <code>make eval</code>
+        and gated in CI. The <span class="floor">chance floor</span> is the probability a random top-5 would
+        contain an acceptable span, computed per strategy over the real answer-span counts &mdash; recall
+        without it is a bare number.</p>
+      <div class="bars">`;
+
+    names.forEach(n => {
+      const o = R.strategies[n].overall, floor = (cb[n] || {}).recall_at_5 || 0;
+      html += `<div class="barrow">
+          <div class="nm">${esc(n)}</div>
+          <div class="track">
+            <div class="fill" style="width:${pct(o.recall_at_5)}"></div>
+            <div class="floor" style="left:${pct(floor)}" title="chance floor ${floor.toFixed(3)}"></div>
+          </div>
+          <div class="val">${o.recall_at_5.toFixed(3)}</div>
+        </div>`;
+    });
+    html += `</div>
+      <p class="note" style="margin-top:14px">Bar is recall@5; the red mark is that strategy's chance floor.
+        The two rankings disagree &mdash; <code>fixed_window</code> leads on raw recall, <code>structural</code>
+        is ahead against its own floor. Its lead is partly mechanical: a 200-character overlap duplicates text,
+        giving it more acceptable chunks per question.</p>
+    </section>`;
+
+    names.forEach(n => {
+      const S = R.strategies[n], buckets = Object.keys(S.per_bucket).sort();
+      html += `<section><h2>${esc(n)} &mdash; per bucket</h2><table class="ev">
+        <thead><tr><th>bucket</th><th>n</th><th>recall@1</th><th>recall@5</th><th>recall@10</th><th>MRR@10</th></tr></thead><tbody>`;
+      buckets.forEach(b => {
+        const r = S.per_bucket[b];
+        html += `<tr><td>${esc(b)}</td><td>${r.n}</td><td>${r.recall_at_1.toFixed(2)}</td>
+                 <td>${r.recall_at_5.toFixed(2)}</td><td>${r.recall_at_10.toFixed(2)}</td>
+                 <td>${r.mrr_at_10.toFixed(3)}</td></tr>`;
+      });
+      const o = S.overall;
+      html += `<tr class="total"><td>overall</td><td>${o.n}</td><td>${o.recall_at_1.toFixed(2)}</td>
+               <td>${o.recall_at_5.toFixed(2)}</td><td>${o.recall_at_10.toFixed(2)}</td>
+               <td>${o.mrr_at_10.toFixed(3)}</td></tr></tbody></table>
+        <p class="note" style="margin-top:10px">About 16 questions per bucket, so one question moves a bucket by ~6 points.</p></section>`;
+    });
+  }
+
+  if (!d.answering) {
+    html += `<section><h2>answering &amp; refusal</h2>
+      <p class="note">No committed <code>reports/answers.json</code> yet. Nothing is shown rather than a
+      remembered figure &mdash; every number on this page comes from a committed artifact.</p></section>`;
+  } else {
+    const A = d.answering, sweep = A.sweep || [];
+    html += `<section><h2>refusal threshold sweep</h2>
+      <p class="note">Green is golden questions answered, red is trick questions still answered.
+        Raising the bar far enough to refuse the unanswerable ones also refuses the answerable ones.
+        There is no setting that separates them &mdash; the approach is measurably wrong.</p>
+      <div class="sweep">`;
+    sweep.forEach(r => {
+      const ansPct = (r.answered / 65) * 100;
+      const advPct = ((r.adversarial_answered || 0) / 15) * 100;
+      html += `<div>
+        <div class="col">
+          <div class="a" style="height:${ansPct}%" title="answered ${r.answered}/65"></div>
+          <div class="r" style="height:${advPct}%" title="trick answered ${r.adversarial_answered}/15"></div>
+        </div>${Number(r.threshold).toFixed(2)}</div>`;
+    });
+    html += `</div></section>`;
+  }
+
+  evView.innerHTML = html;
+}
+
 </script>
 </body>
 </html>

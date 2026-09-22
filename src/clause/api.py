@@ -17,6 +17,7 @@ import time
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from dataclasses import asdict
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -46,6 +47,11 @@ STATIC_DIR = Path(__file__).parent / "static"
 #: documentation. No report, no numbers shown.
 ANSWERS_REPORT = Path("reports/answers.json")
 
+#: The committed retrieval evaluation. Served verbatim so the page renders the
+#: same figures `make eval` wrote and CI gates -- the UI cannot show a number
+#: that is not in a committed artifact.
+EVAL_REPORT = Path("reports/eval.json")
+
 #: How many chunks retrieval fetches for the API. The same depth the evaluation
 #: uses, so a question asked here scores the way it would score there.
 API_RETRIEVAL_DEPTH = 10
@@ -54,6 +60,9 @@ API_RETRIEVAL_DEPTH = 10
 class AskRequest(BaseModel):
     question: str = Field(min_length=1, max_length=500)
     threshold: float = Field(default=DEFAULT_THRESHOLD, ge=0.0, le=1.0)
+    strategy: str = Field(default=ANSWER_STRATEGY)
+    published_after: date | None = None
+    entities: list[str] | None = None
 
 
 class _State:
@@ -116,9 +125,11 @@ def ask(request: AskRequest) -> dict[str, Any]:
     hits = search(
         state.client,
         state.encoder,
-        ANSWER_STRATEGY,
+        request.strategy,
         request.question,
         limit=API_RETRIEVAL_DEPTH,
+        published_after=request.published_after,
+        entities=request.entities or None,
     )
     retrieved_ms = int((time.monotonic() - started) * 1000)
 
@@ -169,8 +180,37 @@ def ask(request: AskRequest) -> dict[str, Any]:
         ],
         "top_score": hits[0].score if hits else None,
         "threshold": request.threshold,
+        "strategy": request.strategy,
         "timing_ms": timing,
     }
+
+
+@app.get("/api/evidence")
+def evidence() -> dict[str, Any]:
+    """The committed evaluation reports, served verbatim.
+
+    Both are optional: the page renders whichever exists and says so when one
+    does not, rather than showing a figure with no artifact behind it.
+    """
+    out: dict[str, Any] = {"retrieval": None, "answering": None}
+    for key, path in (("retrieval", EVAL_REPORT), ("answering", ANSWERS_REPORT)):
+        if path.exists():
+            try:
+                out[key] = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                out[key] = None
+    return out
+
+
+@app.get("/api/entities")
+def entities() -> dict[str, Any]:
+    """Regulated-entity values present in the corpus, for the filter control."""
+    with Session(state.engine) as session:
+        rows = session.scalars(sa.select(DocumentRow.regulated_entity)).all()
+    seen: set[str] = set()
+    for row in rows:
+        seen.update(row or [])
+    return {"entities": sorted(seen)}
 
 
 @app.get("/api/limitations")
