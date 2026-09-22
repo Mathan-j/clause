@@ -30,3 +30,4 @@ data/models/
 # Local infra
 .qdrant/
 *.db
+.video/
