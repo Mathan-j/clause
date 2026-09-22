@@ -12,6 +12,7 @@ copies of a 2 GB file in memory on a machine that does not have room for one
 spare.
 """
 
+import json
 import time
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
@@ -38,6 +39,12 @@ from clause.evaluation.answer_run import ANSWER_STRATEGY, answer_one
 from clause.retrieve import search
 
 STATIC_DIR = Path(__file__).parent / "static"
+
+#: The committed answering report. The UI reads its limitation figures from
+#: here rather than hardcoding them, so the page can only ever state numbers
+#: that exist in a committed artifact -- the same rule CLAUDE.md applies to
+#: documentation. No report, no numbers shown.
+ANSWERS_REPORT = Path("reports/answers.json")
 
 #: How many chunks retrieval fetches for the API. The same depth the evaluation
 #: uses, so a question asked here scores the way it would score there.
@@ -163,6 +170,41 @@ def ask(request: AskRequest) -> dict[str, Any]:
         "top_score": hits[0].score if hits else None,
         "threshold": request.threshold,
         "timing_ms": timing,
+    }
+
+
+@app.get("/api/limitations")
+def limitations() -> dict[str, Any]:
+    """Measured limitations, read from the committed report.
+
+    Returns `{"measured": false}` when no report is committed. The page then
+    shows nothing rather than a remembered figure: a number on screen with no
+    artifact behind it is exactly the failure this project forbids.
+    """
+    if not ANSWERS_REPORT.exists():
+        return {"measured": False}
+    try:
+        report = json.loads(ANSWERS_REPORT.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {"measured": False}
+
+    sweep = report.get("sweep", [])
+    default = state.settings.answer_threshold if hasattr(state, "settings") else 0.35
+    row = min(
+        sweep, key=lambda r: abs(float(r.get("threshold", 0)) - default), default=None
+    )
+    if row is None:
+        return {"measured": False}
+    return {
+        "measured": True,
+        "threshold": row.get("threshold"),
+        "adversarial_refused": row.get("adversarial_refused"),
+        "adversarial_total": (row.get("adversarial_refused", 0) or 0)
+        + (row.get("adversarial_answered", 0) or 0),
+        "false_refusals": row.get("false_refusals"),
+        "answered": row.get("answered"),
+        "support_mean": (report.get("support") or {}).get("mean"),
+        "resolution_rate": report.get("resolution_rate"),
     }
 
 

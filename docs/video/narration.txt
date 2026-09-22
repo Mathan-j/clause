@@ -1,0 +1,13 @@
+This is clause. A regulatory answer engine over sixty-one real Reserve Bank of India circulars.
+
+Ask it something about know-your-customer rules, and every factual sentence it returns carries a citation.
+
+But not a citation to a document. To an exact character range. Characters three thousand two hundred and nine, to four thousand seven hundred and fifty-eight, highlighted in the source circular.
+
+The model never writes that text. It's sliced out of the stored document, so a citation cannot disagree with its source.
+
+Raise the confidence threshold, and it refuses instead of guessing. Instantly, because a refusal never calls the model at all.
+
+And here is what does not work. Fifteen deliberately unanswerable questions. It refused none of them. A retrieval score cannot tell a plausible question from an answerable one. That is measured, not claimed.
+
+Python, Postgres, Qdrant, llama dot c p p, a grammar-constrained three billion parameter model, three hundred and sixty-three tests, and a continuous integration gate on the numbers.
