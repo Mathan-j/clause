@@ -1,6 +1,6 @@
 # Status
 
-**Phase:** 3 — complete
+**Phase:** 3 — built, not yet measured
 
 | Phase | State | Evidence |
 |---|---|---|
