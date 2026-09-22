@@ -26,6 +26,7 @@ from clause.answering.grammar import build_grammar
 from clause.answering.schema import (
     MAX_CITATIONS_PER_SENTENCE,
     AnswerDraft,
+    GenerationError,
     ModelNotAvailableError,
     Sentence,
 )
@@ -33,12 +34,13 @@ from clause.retrieve import Hit
 
 DEFAULT_MODEL_FILENAME = "qwen2.5-3b-instruct-q4_k_m.gguf"
 
-#: Generation budget. Observed answers run 76-250 tokens; 512 was headroom
-#: nothing used, and an unused budget still costs nothing until the model
-#: reaches for it -- but a runaway under grammar constraint spends all of
-#: it, which is exactly the whitespace-attractor failure this grammar was
-#: bounded to prevent. 320 covers the observed range with room to spare.
-MAX_ANSWER_TOKENS = 320
+#: Generation budget. This was briefly cut to 320 on the theory that observed
+#: answers were short; a five-sentence answer then hit the cap and was
+#: truncated mid-string, and grammar-constrained JSON cut off partway is
+#: invalid JSON, not a shorter answer. Truncation is not graceful here, so
+#: the budget is set well above the longest observed answer rather than
+#: close to it.
+MAX_ANSWER_TOKENS = 768
 
 
 def _physical_cores() -> int:
@@ -109,7 +111,21 @@ class LlamaAnswerer:
             temperature=0.0,
             seed=0,
         )
-        payload = json.loads(result["choices"][0]["text"])
+        raw = result["choices"][0]["text"]
+        finish = result["choices"][0].get("finish_reason")
+        try:
+            payload = json.loads(raw)
+        except json.JSONDecodeError as exc:
+            # The grammar guarantees the shape of what is *emitted*, not that
+            # generation ran to completion. Hitting the token cap stops it
+            # mid-structure, and the result is unparseable rather than short.
+            # Raise something the caller can record as a generation failure,
+            # not a bare JSONDecodeError escaping the answering layer.
+            raise GenerationError(
+                f"model output was not valid JSON (finish_reason={finish!r}, "
+                f"{len(raw)} chars). At finish_reason='length' the answer was "
+                f"truncated by MAX_ANSWER_TOKENS={MAX_ANSWER_TOKENS}."
+            ) from exc
         sentences: list[Sentence] = []
         for raw in payload["sentences"]:
             indices = tuple(int(i) for i in raw["citations"])[:MAX_CITATIONS_PER_SENTENCE]

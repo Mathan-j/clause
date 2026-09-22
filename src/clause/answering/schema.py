@@ -61,6 +61,15 @@ class TooManyCitationsError(AnsweringError):
     """
 
 
+class GenerationError(AnsweringError):
+    """The model produced nothing usable -- truncated, or not parseable.
+
+    Distinct from a citation failure: no draft existed for the contract to
+    enforce, so this is a failure to generate rather than a breached
+    contract, and the evaluation counts it separately.
+    """
+
+
 class ModelNotAvailableError(AnsweringError):
     """The GGUF model file is not present, and this process will not download it."""
 
