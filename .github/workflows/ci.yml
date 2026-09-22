@@ -32,6 +32,14 @@ jobs:
         with:
           enable-cache: true
       - run: uv sync --frozen
+      - run: uv run python -c "import importlib.util, sys; sys.exit(0 if importlib.util.find_spec('llama_cpp') is None else 1)"
+        # Phase 3's answering path depends on llama-cpp-python, but only via the
+        # optional `answer` extra (pyproject.toml), never the base install --
+        # it is a C++ extension this CI does not build. If that dependency is
+        # ever moved into the base install by mistake, `uv sync --frozen` above
+        # would start trying to compile it here, and the resulting failure
+        # would not obviously point at "someone moved a dependency" as the
+        # cause. This assertion turns that into a clear, immediate failure.
       - run: uv run ruff check .
       - run: uv run mypy
       - run: uv run pytest

@@ -1,4 +1,4 @@
-.PHONY: install lint test migrate ingest index eval gate serve up down
+.PHONY: install lint test migrate ingest index eval answer-eval gate serve up down
 
 install:
 	uv sync
@@ -21,6 +21,9 @@ index:
 
 eval:
 	uv run python -m clause.cli eval
+
+answer-eval:
+	uv run python -m clause.cli answer-eval
 
 gate:
 	uv run python -m clause.cli gate

@@ -138,3 +138,44 @@ pathlib.Path("reports/baseline.json").write_text(
 )
 PY
 ```
+
+## Running the answering evaluation
+
+Phase 3 covers answering with enforced citations: a local model drafts an answer
+over retrieved passages, every citation is resolved against the corpus or the
+answer is rejected outright, and retrieval too weak to answer at all triggers a
+refusal instead. This is separate from `make eval` above and is never run in CI:
+it needs a multi-gigabyte local GGUF model and takes on the order of tens of
+minutes, neither of which belongs in a push-triggered pipeline. As with every
+other section here, no number belongs in this file — the actual figures live in
+`reports/answers.md`, which `make answer-eval` generates and commits alongside
+this README.
+
+**Prerequisites**
+
+- Everything in "Running the evaluation" above, with the corpus already indexed.
+- The `answer` extra, which pulls in `llama-cpp-python` (a C++ extension CI does
+  not build):
+
+  ```bash
+  uv sync --extra answer
+  ```
+
+- The GGUF model file itself, fetched by hand into `data/models/` (this process
+  never downloads it for you — see `clause.answering.llm.LlamaAnswerer`). The
+  path and filename `CLAUSE_ANSWER_MODEL_PATH` names in `.env` must match where
+  you put it.
+
+**Run it**
+
+```bash
+make answer-eval   # or: uv run python -m clause.cli answer-eval
+```
+
+This loads one model instance and reuses it across the whole golden set
+(`data/golden/kyc-v1.jsonl`) and the adversarial out-of-corpus set
+(`data/adversarial/out-of-corpus-v1.jsonl`), retrieving once per question and
+generating only for questions that clear the refusal threshold. Expect on the
+order of tens of minutes end to end, dominated by generation rather than
+retrieval — budget for one full run, not iterative experimentation. Read
+`reports/answers.md` for what it actually measured.

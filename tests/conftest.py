@@ -1,6 +1,7 @@
 import contextlib
 import os
 from collections.abc import Iterator
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 import pytest
@@ -12,6 +13,8 @@ from sqlalchemy.orm import Session
 
 from clause.cli import ingest, run_eval
 from clause.config import get_settings
+from clause.db.schema import ChunkRow, DocumentRow
+from clause.retrieve import Hit
 from clause.sources.manifest import load_manifest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -221,6 +224,69 @@ def evaluated(db_session: Session, tmp_path: Path) -> tuple[Path, Path]:
     json_path = tmp_path / "eval.json"
     run_eval(md_path=md_path, json_path=json_path)
     return md_path, json_path
+
+
+@pytest.fixture
+def seeded_hit(db_session: Session) -> Hit:
+    """A `DocumentRow` and matching `ChunkRow` with known text, plus the `Hit`
+    that names them -- for exercising `answer_one` (Task 10) against a real
+    Postgres session without needing live retrieval.
+
+    The hit's `(char_start, char_end)` and `text` agree with the stored
+    `ChunkRow` and `DocumentRow` exactly, so `resolve_citations` -- which
+    checks a hit's span against the stored chunk's, not just against the
+    document -- resolves cleanly, matching the pattern in
+    `tests/test_answering_resolver.py`.
+    """
+    doc_id = "seeded-doc"
+    text_ = "Regulated entities shall verify customer identity within 7 days of account opening."
+    start, end = 0, len(text_)
+    db_session.add(
+        DocumentRow(
+            doc_id=doc_id,
+            rbi_id=1,
+            url="https://example.invalid/seeded",
+            circular_no="C/1",
+            dept_ref="D/1",
+            title="t",
+            doc_type="notification",
+            published_date=date(2025, 1, 1),
+            effective_date=None,
+            sha256="0" * 64,
+            fetched_at=datetime.now(UTC),
+            text=text_,
+            regulated_entity=[],
+        )
+    )
+    db_session.flush()
+    db_session.add(
+        ChunkRow(
+            doc_id=doc_id,
+            strategy="structural",
+            ordinal=0,
+            char_start=start,
+            char_end=end,
+            text=text_,
+            source_url="https://example.invalid/seeded",
+            effective_date=None,
+            doc_type="notification",
+            regulated_entity=[],
+            created_at=datetime.now(UTC),
+        )
+    )
+    db_session.flush()
+    return Hit(
+        doc_id=doc_id,
+        strategy="structural",
+        ordinal=0,
+        char_start=start,
+        char_end=end,
+        score=0.9,
+        text=text_,
+        source_url="https://example.invalid/seeded",
+        published_date=date(2025, 1, 1),
+        regulated_entity=(),
+    )
 
 
 @pytest.fixture

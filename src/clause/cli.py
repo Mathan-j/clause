@@ -21,6 +21,7 @@ from clause.db.repository import replace_chunks, upsert_document
 from clause.db.schema import ChunkRow, DocumentRow
 from clause.db.session import make_engine, session_factory
 from clause.embed import Encoder
+from clause.evaluation.answer_run import DEFAULT_ANSWERS_JSON, DEFAULT_ANSWERS_MD, run_answer_eval
 from clause.evaluation.gate import GateFailure, check
 from clause.evaluation.golden import load_golden, provenance_split, validate_spans
 from clause.evaluation.metrics import RETRIEVAL_DEPTH, Span
@@ -512,6 +513,9 @@ def main(argv: list[str] | None = None) -> int:
     ing.add_argument("--manifest", type=Path, required=True)
     sub.add_parser("index")
     sub.add_parser("eval")
+    answer_eval = sub.add_parser("answer-eval")
+    answer_eval.add_argument("--md", type=Path, default=DEFAULT_ANSWERS_MD)
+    answer_eval.add_argument("--json", type=Path, default=DEFAULT_ANSWERS_JSON)
     gate = sub.add_parser("gate")
     gate.add_argument("--report", type=Path, default=DEFAULT_REPORT_JSON)
     gate.add_argument("--baseline", type=Path, default=DEFAULT_BASELINE_JSON)
@@ -539,6 +543,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "eval":
         run_eval(settings=settings)
         return 0
+
+    if args.command == "answer-eval":
+        return run_answer_eval(md_path=args.md, json_path=args.json, settings=settings)
 
     return _cmd_ingest(args.manifest, settings)
 
